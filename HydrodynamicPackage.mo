@@ -16,12 +16,12 @@ package Hydrodynamic
       // Wave profile component
       Forces.HydrodynamicBlock6D hydrodynamicBlock6D( enablePTOForce = true, enableDragForce = false, enableRadiationForce = true, enableHydrostaticForce = true) annotation(
         Placement(transformation(origin = {12, -20}, extent = {{-10, -10}, {10, 10}})));
-  WaveProfile.IrregularWave.PiersonMoskowitzWave piersonMoskowitzWave annotation(
+    WaveProfile.IrregularWave.PiersonMoskowitzWave piersonMoskowitzWave annotation(
         Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
-  Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
+    Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
     equation
-// Connections between components
+    // Connections between components
       connect(world.frame_b, prismatic.frame_a) annotation(
         Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
       connect(prismatic.frame_b, hydrodynamicBlock6D.frame_a) annotation(
@@ -87,19 +87,19 @@ package Hydrodynamic
         Placement(transformation(origin = {-14, -20}, extent = {{-10, -10}, {10, 10}})));
     // Hydrodynamic body component
       // Wave profile component
-      WaveProfile.IrregularWave.PiersonMoskowitzWave piersonMoskowitzWave annotation(
+      Forces1D.PiersonMoskowitzWave1D piersonMoskowitzWave1D annotation(
         Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
     Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-  Forces.HydrodynamicBlock6D_1DoFRad hydrodynamicBlock6D_1DoFRad(enablePTOForce = true, enableRadiationForce = true)  annotation(
+  Forces1D.HydrodynamicBlock6D_1DoFRad hydrodynamicBlock6D_1DoFRad(enablePTOForce = true, enableRadiationForce = true)  annotation(
         Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections between components
       connect(world.frame_b, prismatic.frame_a) annotation(
         Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
-      connect(piersonMoskowitzWave.F, forceAndTorque.force) annotation(
+      connect(piersonMoskowitzWave1D.F, forceAndTorque.force) annotation(
         Line(points = {{60, -14}, {50, -14}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(piersonMoskowitzWave.T, forceAndTorque.torque) annotation(
+      connect(piersonMoskowitzWave1D.T, forceAndTorque.torque) annotation(
         Line(points = {{60, -24}, {50, -24}, {50, -26}}, color = {0, 0, 127}, thickness = 0.5));
   connect(hydrodynamicBlock6D_1DoFRad.frame_b, forceAndTorque.frame_b) annotation(
         Line(points = {{20, -20}, {28, -20}}));
@@ -178,7 +178,7 @@ package Hydrodynamic
       extends Modelica.Blocks.Icons.Block;
       extends Hydrodynamic.Connector.absolutePosition_con;
       extends Hydrodynamic.Connector.forceTorque_con;
-      extends DoF6Radread;
+      extends Hydrodynamic.Forces.readHydroCoeff;
       // Enable/disable force
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation";
       // Internal variables
@@ -220,68 +220,6 @@ package Hydrodynamic
       </html>"),
         Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "HS 6D", fontName = "Arial")}));
     end HydrostaticForce6D;
-
-    model RadiationF "1D Radiation Force Calculation for Hydrodynamic Systems"
-      extends Hydrodynamic.readHydroParam;
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.absolutePosition_con;
-      extends Hydrodynamic.Connector.absoluteVelocity_con;
-      extends Hydrodynamic.Connector.forceTorque_con;
-      // Control parameter
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
-      // State variables
-      Real x[2] "State vector for 1D radiation force model";
-      Real F_rad "Calculated 1D radiation force [N]";
-    initial equation
-      x = {0, 0} "Initialize state vector to zero";
-    equation
-// 1D Radiation force state-space model
-// Note: Only the third element of the velocity vector (vertical motion) is used
-      der(x) = A*x + B[:, 1]*v_abs[3];
-      F_rad = scalar(C*x) + D*v_abs[3];
-// Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
-      if enableRadiationForce then
-        F = {0, 0, -F_rad, 0, 0, 0};
-      else
-        F = {0, 0, 0, 0, 0, 0};
-      end if;
-      annotation(
-        Documentation(info = "<html>
-        <h4>1D Radiation Force Model for Hydrodynamic Systems</h4>
-        <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
-        considering only the vertical direction (1D model).</p>
-        
-        <p>Model Description:</p>
-        <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
-        based on the vertical velocity input. This simplification allows for efficient modeling of systems 
-        where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
-        
-        <p>Inputs:</p>
-        <ul>
-          <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
-          <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
-        </ul>
-        
-        <p>Outputs:</p>
-        <ul>
-          <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
-        </ul>
-        
-        <p>Key Parameters:</p>
-        <ul>
-          <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
-          <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
-        </ul>
-        
-        <p>Notes:</p>
-        <ul>
-          <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
-          <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
-          <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
-        </ul>
-      </html>"),
-        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "1D Rad F", fontName = "Arial")}));
-    end RadiationF;
 
     model DragForce6D "6-Dimensional Drag Force and Torque Calculation"
       extends Modelica.Blocks.Icons.Block;
@@ -466,7 +404,7 @@ package Hydrodynamic
         Dialog(group = "Hydrostatic Stiffness Parameters"));
       HydrostaticForce6D hydrostaticForce6D(enableHydrostaticForce = enableHydrostaticForce) "Hydrostatic force calculation" annotation(
             Placement(transformation(origin = {16, -20}, extent = {{-10, -10}, {10, 10}})));
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation" annotation(
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
         Dialog(group = "Radiation Force Parameters"));
       // HydrodynamicBlock6D components and connections
       // Parameters for PTO6D
@@ -530,7 +468,7 @@ package Hydrodynamic
         Placement(transformation(origin = {82, 0}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = false, get_z = false, get_angles = true, get_w = true) annotation(
         Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
-  DoF6Rad doF6Rad annotation(
+  RadiationForce6D radiationForce6D annotation(
         Placement(transformation(origin = {18, 64}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(bodyShape.frame_a, frame_a) annotation(
@@ -567,11 +505,11 @@ package Hydrodynamic
         Line(points = {{28, -46}, {30, -46}, {30, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
       connect(hydrostaticForce6D.F, forceToqueSum.Fhs) annotation(
         Line(points = {{28, -20}, {30, -20}, {30, 2}, {38, 2}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensor.v, doF6Rad.v_abs) annotation(
+  connect(absoluteSensor.v, radiationForce6D.v_abs) annotation(
         Line(points = {{-68, -12}, {-70, -12}, {-70, 62}, {6, 62}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensor.w, doF6Rad.omega_abs) annotation(
+  connect(absoluteSensor.w, radiationForce6D.omega_abs) annotation(
         Line(points = {{-54, -12}, {-48, -12}, {-48, 56}, {6, 56}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(doF6Rad.F, forceToqueSum.Fr) annotation(
+  connect(radiationForce6D.F, forceToqueSum.Fr) annotation(
         Line(points = {{30, 64}, {38, 64}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
         Diagram,
@@ -598,438 +536,63 @@ package Hydrodynamic
       </html>"),
         Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "HD Block 6D", fontName = "Arial")}));
     end HydrodynamicBlock6D;
-
-    model RadiationF3D "1D Radiation Force Calculation for Hydrodynamic Systems"
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.absolutePosition_con;
-      extends Hydrodynamic.Connector.absoluteVelocity_con;
+    
+    model RadiationForce6D
+      extends Hydrodynamic.Forces.readHydroCoeff;
       extends Hydrodynamic.Connector.forceTorque_con;
-    // State-space model parameters for 3D radiation force
-      parameter Real A11[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A12[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A13[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A21[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A22[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A23[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A31[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A32[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      parameter Real A33[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
-      
-      parameter Real B11[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B12[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B13[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B21[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B22[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B23[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B31[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B32[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      parameter Real B33[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
-      
-      parameter Real C11[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C12[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C13[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C21[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C22[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C23[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C31[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C32[2] = {1, 0} "Output vector for 3D model";
-      parameter Real C33[2] = {1, 0} "Output vector for 3D model";
-      
-      parameter Real D11 = 0 "Feed-through scalar for 3D model";
-      parameter Real D12 = 0 "Feed-through scalar for 3D model";
-      parameter Real D13 = 0 "Feed-through scalar for 3D model";
-      parameter Real D21 = 0 "Feed-through scalar for 3D model";
-      parameter Real D22 = 0 "Feed-through scalar for 3D model";
-      parameter Real D23 = 0 "Feed-through scalar for 3D model";
-      parameter Real D31 = 0 "Feed-through scalar for 3D model";
-      parameter Real D32 = 0 "Feed-through scalar for 3D model";
-      parameter Real D33 = 0 "Feed-through scalar for 3D model";
-    
-      parameter Real A[3, 3, 2,2] = {
-        {A11, A12, A13},
-        {A21, A22, A23},
-        {A31, A32, A33}
-      } "State matrix for 3D model";
-      parameter Real B[3, 3, 2] = {
-        {B11, B12, B13},
-        {B21, B22, B23},
-        {B31, B32, B33}
-      } "Input matrix for 3D model";
-      parameter Real C[3, 3, 2] = {
-        {C11, C12, C13},
-        {C21, C22, C23},
-        {C31, C32, C33}
-      } "Output matrix for 3D model";
-      parameter Real D[3, 3] = {
-        {D11, D12, D13},
-        {D21, D22, D23},
-        {D31, D32, D33}
-      } "Feed-through matrix for 3D model";
-    // Control parameter
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
-    // State variables
-      Real x[18] "State vector for 1D radiation force model";
-      Real F_rad[3] "Calculated 1D radiation force [N]";
-    
-    initial equation
-      x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
-    
-    equation
-// 3D Radiation force state-space model
-      for i in 1:3 loop
-      for j in 1:3 loop
-         der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
-        F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
-      end for;
-    end for;
-// Output: 3D radiation force
-      if enableRadiationForce then
-        F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
-      else
-        F = {0, 0, 0, 0, 0, 0};
-      end if;
-      annotation(
-        Documentation(info = "<html>
-            <h4>3D Radiation Force Model for Hydrodynamic Systems</h4>
-            <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
-            considering only the vertical directions (3D model).</p>
-            
-            <p>Model Description:</p>
-            <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
-            based on the vertical velocity input. This simplification allows for efficient modeling of systems 
-            where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
-            
-            <p>Inputs:</p>
-            <ul>
-              <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
-              <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
-            </ul>
-            
-            <p>Outputs:</p>
-            <ul>
-              <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
-            </ul>
-            
-            <p>Key Parameters:</p>
-            <ul>
-              <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
-              <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
-            </ul>
-            
-            <p>Notes:</p>
-            <ul>
-              <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
-              <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
-              <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
-            </ul>
-          </html>"),
-        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "6D Rad F", fontName = "Arial")}));
-    end RadiationF3D;
-
-    model RadiationF2D "1D Radiation Force Calculation for Hydrodynamic Systems"
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.absolutePosition_con;
       extends Hydrodynamic.Connector.absoluteVelocity_con;
-      extends Hydrodynamic.Connector.forceTorque_con;
-    // Control parameter
+    
+    
+      Real x[n_states[2]] "State vector for 1D radiation force model";
+      Real F_rad[6] "6D radiation force [N]";
+      Real v_omega[6];
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
-    // State variables
-      Real x[18] "State vector for 1D radiation force model";
-      Real F_rad[3] "Calculated 1D radiation force [N]";
-    
+      
     initial equation
-      x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
-    
+      x = zeros(n_states[2]) "Initialize state vector to zero";
     equation
-// 3D Radiation force state-space model
-      for i in 1:3 loop
-      for j in 1:3 loop
-         der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
-        F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
-      end for;
-    end for;
-// Output: 3D radiation force
+    v_omega = cat(1, v_abs, omega_abs);
+    // 1D Radiation force state-space model
+    // Note: Only the third element of the velocity vector (vertical motion) is used
+      der(x) = A*x + B*v_omega;
+      F_rad = C*x + D*v_omega;
+    // Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
       if enableRadiationForce then
-        F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
+        F = -F_rad;
       else
-        F = {0, 0, 0, 0, 0, 0};
+        F = {0,0,0,0, 0, 0};
       end if;
-      annotation(
-        Documentation(info = "<html>
-            <h4>3D Radiation Force Model for Hydrodynamic Systems</h4>
-            <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
-            considering only the vertical directions (3D model).</p>
-            
-            <p>Model Description:</p>
-            <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
-            based on the vertical velocity input. This simplification allows for efficient modeling of systems 
-            where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
-            
-            <p>Inputs:</p>
-            <ul>
-              <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
-              <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
-            </ul>
-            
-            <p>Outputs:</p>
-            <ul>
-              <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
-            </ul>
-            
-            <p>Key Parameters:</p>
-            <ul>
-              <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
-              <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
-            </ul>
-            
-            <p>Notes:</p>
-            <ul>
-              <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
-              <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
-              <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
-            </ul>
-          </html>"),
-        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "6D Rad F", fontName = "Arial")}));
-    end RadiationF2D;
+      
     
-    model HydrodynamicBlock6D_1DoFRad "6-Dimensional Hydrodynamic Forces and Moments Calculation"
-     extends Hydrodynamic.readHydroParam;
-      extends Modelica.Units.SI;
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.inputOutput_con;
-      // Parameters for BodyShape
-      parameter Position r[3] = {0, 0, 0} "Position vector" annotation(
-        Dialog(group = "Body"));
-      parameter Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
-        Dialog(group = "Body"));
-      parameter Position length = 0.1 "Length of the body" annotation(
-        Dialog(group = "Body"));
-      parameter Position width = 0.1 "Width of the body" annotation(
-        Dialog(group = "Body"));
-      parameter Position height = 0.1 "Height of the body" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      parameter Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
-        Dialog(group = "Body"));
-      Modelica.Mechanics.MultiBody.Parts.BodyShape bodyShape(r = r, r_CM = r_CM, m = m, length = length, width = width, height = height, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
-        Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
-      // Parameters for HydrostaticForce6D
-      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-      parameter TranslationalSpringConstant G1 = 0 "Hydrostatic restoring coefficient for x-axis translation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-      parameter TranslationalSpringConstant G2 = 0 "Hydrostatic restoring coefficient for y-axis translation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-      parameter RotationalSpringConstant G4 = 0 "Hydrostatic restoring coefficient for x-axis rotation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-      parameter RotationalSpringConstant G5 = 0 "Hydrostatic restoring coefficient for y-axis rotation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-      parameter RotationalSpringConstant G6 = 0 "Hydrostatic restoring coefficient for z-axis rotation" annotation(
-        Dialog(group = "Hydrostatic Stiffness Parameters"));
-    //HydrostaticForce6D_6DoFRad hydrostaticForce6D_6DoFRad(enableHydrostaticForce = enableHydrostaticForce, G1 = G1, G2 = G2, G4 = G4, G5 = G5, G6 = G6) "Hydrostatic force calculation" annotation(
-      //  Placement(transformation(origin = {16, -20}, extent = {{-10, -10}, {10, 10}})));
-      // Hydrostatic Force components
-      // Parameters for RadiationF
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation" annotation(
-        Dialog(group = "Radiation Force Parameters"));
-      // HydrodynamicBlock6D components and connections
-      RadiationF radiationF(A = A, B = B, C = C, D = D, enableRadiationForce = enableRadiationForce) "1D Radiation Force Calculation" annotation(
-        Placement(transformation(origin = {16, 56}, extent = {{-10, -10}, {10, 10}})));
-      // Parameters for PTO6D
-      parameter Boolean enablePTOForce = false "Switch to enable/disable PTO force calculation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter String controllerSelect = "reactive" "Controller type select" annotation(
-        Dialog(group = "PTO Parameters"));
+    end RadiationForce6D;
+    
+    model readHydroCoeff
+    
+    parameter String fileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat";
+    
+    parameter Real nDoF_read = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.body.ndof",1,1)) "Degrees-of-Freedom";
+    parameter Integer  nDoF = integer(nDoF_read) "Degrees-of-Freedom";
+    
+    
+    parameter Real n_stateSpace[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad.order", nDoF, nDoF) "State-space approximation for each mode";
+    
+    parameter Integer n_states[2] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydroCoeff.ss_rad.processed.A") "Number of states";
      
-      parameter AngularFrequency omega_peak = 0.9423 "Peak spectral frequency" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
-        Dialog(group = "PTO Parameters"));
-      // PTO components
-      PTO6D pto6d(omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, enablePTOForce = enablePTOForce, controllerSelect = controllerSelect) "Power Take-Off force calculation" annotation(
-        Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
-    // Parameters for DragForce6D
-      parameter Boolean enableDragForce = false "Switch to enable/disable drag force calculation" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter MassConcentration rho = 1000 "Density of fluid" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Area A1 = 1 "Reference area" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Cdx = 100 "Translational drag coefficient for x-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Cdy = 0.01 "Translational drag coefficient for y-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Cdz = 100 "Translational drag coefficient for z-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Crx = 100 "Rotational drag coefficient for x-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Cry = 0.01 "Rotational drag coefficient for y-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      parameter Real Crz = 100 "Rotational drag coefficient for z-axis" annotation(
-        Dialog(group = "Drag Parameters"));
-      // Drag force components
-      DragForce6D dragForce6D(rho = rho, A = A1, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDragForce = enableDragForce) "Drag force calculation" annotation(
-        Placement(transformation(origin = {16, 24}, extent = {{-10, -10}, {10, 10}})));
-      // Force and torque application components
-      ForceToqueSum forceToqueSum annotation(
-        Placement(transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
-        Placement(transformation(origin = {82, 0}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = false, get_z = false, get_angles = true, get_w = true) annotation(
-        Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
-  HydrostaticForce6D_1DoFRad hydrostaticForce6D_1DoFRad(enableHydrostaticForce = enableHydrostaticForce, G1 = G1, G2 = G2, G4 = G4, G5 = G5, G6 = G6) "Hydrostatic force calculation" annotation(
-        Placement(transformation(origin = {-10, -12}, extent = {{-10, -10}, {10, 10}})));
-    equation
-      connect(bodyShape.frame_a, frame_a) annotation(
-        Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
-      connect(bodyShape.frame_b, frame_b) annotation(
-        Line(points = {{20, -84}, {102, -84}, {102, 0}}, color = {95, 95, 95}));
-      connect(forceAndTorque.frame_b, bodyShape.frame_b) annotation(
-        Line(points = {{92, 0}, {92, -84}, {20, -84}}, color = {95, 95, 95}));
-      connect(forceToqueSum.F, forceAndTorque.force) annotation(
-        Line(points = {{61, 5}, {64, 5}, {64, 6}, {70, 6}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(forceToqueSum.T, forceAndTorque.torque) annotation(
-        Line(points = {{61, -5}, {70, -5}, {70, -6}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, radiationF.v_abs) annotation(
-        Line(points = {{-68, -11}, {-72, -11}, {-72, 54}, {4, 54}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, radiationF.theta_abs) annotation(
-        Line(points = {{-59, -11}, {-72, -11}, {-72, 59}, {4, 59}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, radiationF.omega_abs) annotation(
-        Line(points = {{-54, -11}, {-72, -11}, {-72, 48}, {4, 48}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, dragForce6D.omega_abs) annotation(
-        Line(points = {{-54, -11}, {-72, -11}, {-72, 16}, {4, 16}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, radiationF.u_abs) annotation(
-        Line(points = {{-72, -11}, {-72, 64}, {4, 64}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, pto6d.omega_abs) annotation(
-        Line(points = {{-54, -12}, {-72, -12}, {-72, -54}, {4, -54}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, pto6d.u_abs) annotation(
-        Line(points = {{-72, -12}, {-72, -38}, {4, -38}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, pto6d.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-72, -12}, {-72, -44}, {4, -44}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, pto6d.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, -48}, {4, -48}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, dragForce6D.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, 22}, {4, 22}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.frame_a, bodyShape.frame_b) annotation(
-        Line(points = {{-72, 2}, {-86, 2}, {-86, -68}, {20, -68}, {20, -84}}, color = {95, 95, 95}));
-      connect(radiationF.F, forceToqueSum.Fr) annotation(
-        Line(points = {{27, 56}, {30, 56}, {30, 8}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(dragForce6D.F, forceToqueSum.Fd) annotation(
-        Line(points = {{27, 24}, {30, 24}, {30, -2}, {38, -2}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(pto6d.F, forceToqueSum.Fpto) annotation(
-        Line(points = {{28, -46}, {30, -46}, {30, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(hydrostaticForce6D_1DoFRad.F, forceToqueSum.Fhs) annotation(
-        Line(points = {{2, -12}, {24, -12}, {24, 2}, {38, 2}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensor.r, hydrostaticForce6D_1DoFRad.u_abs) annotation(
-        Line(points = {{-72, -12}, {-46, -12}, {-46, -4}, {-22, -4}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensor.angles, hydrostaticForce6D_1DoFRad.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-48, -12}, {-48, -24}, {-32, -24}, {-32, -10}, {-22, -10}}, color = {0, 0, 127}, thickness = 0.5));
-      annotation(
-        Diagram,
-        Documentation(info = "<html>
-        <p>This model calculates and applies 6-dimensional hydrodynamic forces and moments to a multibody system.</p>
-        <p>It incorporates the following hydrodynamic effects:</p>
-        <ul>
-          <li>Drag forces and torques</li>
-          <li>Power Take-Off (PTO) forces and torques</li>
-          <li>Hydrostatic forces and torques</li>
-          <li>Radiation forces</li>
-        </ul>
-        <p>The model uses absolute position, velocity, and angular sensors to determine the body's state, 
-        calculates the various hydrodynamic forces, and applies them to the body.</p>
-        <p>Inputs:</p>
-        <ul>
-          <li><code>frame_a</code>: Input frame for body state</li>
-        </ul>
-        <p>Outputs:</p>
-        <ul>
-          <li><code>frame_b</code>: Output frame with applied hydrodynamic forces and torques</li>
-        </ul>
-        <p>Note: Some force components (e.g., drag and PTO) are disabled by default and can be enabled by modifying the respective parameters.</p>
-      </html>"),
-        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "HD Block 6D", fontName = "Arial")}));
-    end HydrodynamicBlock6D_1DoFRad;
+    parameter Real A[n_states[1], n_states[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad.processed.A", n_states[1], n_states[1]) "State matrix";
+    parameter Real B[n_states[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad.processed.B", n_states[1], nDoF) "Input matrix";
+    parameter Real C[nDoF, n_states[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad.processed.C", nDoF, n_states[1]) "Output matrix";
+    parameter Real D[nDoF,nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad.processed.D", nDoF, nDoF) "Feedforward matrix";
     
-    model HydrostaticForce6D_1DoFRad "6-Dimensional Hydrostatic Force and Torque Calculation"
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.absolutePosition_con;
-      extends Hydrodynamic.Connector.forceTorque_con;
-      extends Hydrodynamic.readHydroParam;
-      // Hydrostatic restoring coefficients
-      parameter Real G1 "Hydrostatic restoring coefficient for x-axis translation [N/m]";
-      parameter Real G2 "Hydrostatic restoring coefficient for y-axis translation [N/m]";
-      parameter Real G4 "Hydrostatic restoring coefficient for x-axis rotation [N*m/rad]";
-      parameter Real G5 "Hydrostatic restoring coefficient for y-axis rotation [N*m/rad]";
-      parameter Real G6 "Hydrostatic restoring coefficient for z-axis rotation [N*m/rad]";
-      parameter Real G[6, 6] = diagonal({G1, G2, G3, G4, G5, G6}) "Combined hydrostatic restoring coefficient matrix";
-      // Enable/disable force
-      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation";
-      // Internal variables
-      Real u_theta[6] "Combined displacement vector [m, rad]";
-      Real fhs[6] "Hydrostatic force/torque vector [N, N*m]";
-    equation
-// Combine linear and angular displacements into a single vector
-      u_theta = cat(1, u_abs, theta_abs);
-// Calculate the 6D hydrostatic force/torque vector
-      fhs = -G*u_theta;
-// Use the switch to conditionally output the force and torque
-      if enableHydrostaticForce then
-        F = fhs;
-      else
-        F = zeros(6);
-      end if;
-      annotation(
-        Documentation(info = "<html>
-            <p>This block calculates the 6-dimensional hydrostatic force and torque for both translational and rotational motion in a fluid medium.</p>
-            <p>The hydrostatic force/torque is calculated using linear restoring coefficients, where the force is proportional to the displacement from the equilibrium position.</p>
-            <p>The block can be enabled or disabled using the <code>enableHydrostaticForce</code> parameter.</p>
-            <p>Inputs:</p>
-            <ul>
-              <li><code>u</code>: Linear displacement vector [m]</li>
-              <li><code>theta</code>: Angular displacement vector [rad]</li>
-            </ul>
-            <p>Outputs:</p>
-            <ul>
-              <li><code>y</code>: Translational hydrostatic force vector [N]</li>
-              <li><code>y1</code>: Rotational hydrostatic torque vector [N*m]</li>
-            </ul>
-            <p>Key Parameters:</p>
-            <ul>
-              <li><code>G1</code>, <code>G2</code>, <code>G3</code>: Translational hydrostatic restoring coefficients [N/m]</li>
-              <li><code>G4</code>, <code>G5</code>, <code>G6</code>: Rotational hydrostatic restoring coefficients [N*m/rad]</li>
-            </ul>
-            <p>The hydrostatic restoring coefficients are combined into a diagonal matrix to allow for different coefficients in each dimension.</p>
-            <p>Note: By default, only the z-axis translation (heave) has a non-zero restoring coefficient, which is typical for floating bodies.</p>
-          </html>"),
-        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "HS 6D", fontName = "Arial")}));
-    end HydrostaticForce6D_1DoFRad;
+    parameter Modelica.Units.SI.Mass M = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.hydroCoefficients.m", 1, 1)) "Total mass of the body (including ballast)";
+    parameter Modelica.Units.SI.Mass Ainf[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.hydroCoefficients.Ainf", nDoF, nDoF) "Added mass at maximum (cut-off) frequency";
+    parameter Modelica.Units.SI.TranslationalSpringConstant Khs[nDoF,nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.hydroCoefficients.Khs", nDoF, nDoF) "Hydrostatic stiffness";
+    
+    parameter Real F_excRe[nDoF,:] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.excitation.FexcRe", nDoF, wDim[1]) "Real part of excitation force coefficients";
+      parameter Real F_excIm[nDoF,:] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.excitation.FexcIm", nDoF, wDim[1]) "Imaginary part of excitation force coefficients";
+       parameter Integer wDim[2] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydroCoeff.excitation.w") "Dimensions of the frequency vector";
+      parameter Real w[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.excitation.w", wDim[1], 1)) "Angular frequency vector [rad/s]";
+    
+    end readHydroCoeff;
     annotation(
       Documentation(info = "<html>
       <h4>Forces Package for Hydrodynamic Systems</h4>
@@ -1137,12 +700,13 @@ package Hydrodynamic
       extends Modelica.Icons.Package;
 
       model PiersonMoskowitzWave "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
-        extends Hydrodynamic.readHydroParam;
+        extends Hydrodynamic.Connector.forceandTorque_con;
+        extends Hydrodynamic.Forces.readHydroCoeff;
         extends Modelica.Blocks.Icons.Block;
         import Modelica.Math.Vectors;
-        extends Hydrodynamic.Connector.forceandTorque_con;
+       
+       
         // Internal connector for wave properties
-        Hydrodynamic.Internal.Connectors.WaveOutConn wconn "Internal connector for wave properties";
         constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
         constant Real g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
         // Wave and environmental parameters
@@ -1183,28 +747,40 @@ package Hydrodynamic
         parameter Real Tp[n_omega] = 2*pi./omega "Wave period components [s]";
         parameter Real k[n_omega] = Hydrodynamic.Internal.Functions.waveNumber(d, omega) "Wave number components [1/m]";
         // Variables
-        Real ExcCoeffRe[n_omega] "Real component of excitation coefficient for frequency components";
-        Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
+        Real ExcCoeffRe[nDoF,n_omega] "Real component of excitation coefficient for frequency components";
+        Real ExcCoeffIm[nDoF,n_omega] "Imaginary component of excitation coefficient for frequency components";
+        Real F_exc[nDoF] "6D excitation force [N]";
         Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
       equation
 // Interpolate excitation coefficients (Re & Im) for each frequency component
-        for i in 1:n_omega loop
-          ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe, omega[i])*rho*g;
-          ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm, omega[i])*rho*g;
+        for i in 1:nDoF loop   
+          for j in 1:n_omega loop
+            ExcCoeffRe[i,j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i,:], omega[j])*rho*g;
+            ExcCoeffIm[i,j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i,:], omega[j])*rho*g;
+          end for;
         end for;
 // Calculate sea surface elevation (SSE) as the sum of all wave components
         SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
         // Calculate and apply ramping to the excitation force
-if time < Trmp then
-// Ramp up the excitation force during the initial phase
-          wconn.F_exc = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
-        else
-// Apply full excitation force after the ramping period
-          wconn.F_exc = sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
-        end if;
+  for i in 1:nDoF loop // could probably extend zeta and time for 6 DoF for efficiency, but loop works in the interim
+    if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+              F_exc[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
+            else
+    // Apply full excitation force after the ramping period
+              F_exc[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
+            end if;
+  end for;
+      /*
 // Assign excitation force to output (vertical component only)
-        F = {0, 0, wconn.F_exc};
+        F = {0, 0, F_exc[3]};
         T = {0, 0, 0};
+      */
+        
+        // Assign excitation force to output (6DoF)
+        F = F_exc[1:3];
+        T = F_exc[4:6];
+        
         annotation(
           Documentation(info = "<html>
             <h4>Pierson-Moskowitz Wave Spectrum Model</h4>
@@ -2520,7 +2096,790 @@ if time < Trmp then
   </html>"),
         Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "1D Exc F", fontName = "Arial")}));
     end ExcitationForce;
+    
+    model RadiationF3D "1D Radiation Force Calculation for Hydrodynamic Systems"
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absolutePosition_con;
+      extends Hydrodynamic.Connector.absoluteVelocity_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+    // State-space model parameters for 3D radiation force
+      parameter Real A11[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A12[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A13[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A21[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A22[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A23[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A31[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A32[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      parameter Real A33[2, 2] = [0, 1; -1.01116567551434, -0.936555983964093] "State matrix for 3D model";
+      
+      parameter Real B11[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B12[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B13[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B21[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B22[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B23[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B31[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B32[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      parameter Real B33[2] = {683236.706073938, -585411.342188539} "Input vector for 3D model";
+      
+      parameter Real C11[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C12[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C13[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C21[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C22[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C23[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C31[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C32[2] = {1, 0} "Output vector for 3D model";
+      parameter Real C33[2] = {1, 0} "Output vector for 3D model";
+      
+      parameter Real D11 = 0 "Feed-through scalar for 3D model";
+      parameter Real D12 = 0 "Feed-through scalar for 3D model";
+      parameter Real D13 = 0 "Feed-through scalar for 3D model";
+      parameter Real D21 = 0 "Feed-through scalar for 3D model";
+      parameter Real D22 = 0 "Feed-through scalar for 3D model";
+      parameter Real D23 = 0 "Feed-through scalar for 3D model";
+      parameter Real D31 = 0 "Feed-through scalar for 3D model";
+      parameter Real D32 = 0 "Feed-through scalar for 3D model";
+      parameter Real D33 = 0 "Feed-through scalar for 3D model";
+    
+      parameter Real A[3, 3, 2,2] = {
+        {A11, A12, A13},
+        {A21, A22, A23},
+        {A31, A32, A33}
+      } "State matrix for 3D model";
+      parameter Real B[3, 3, 2] = {
+        {B11, B12, B13},
+        {B21, B22, B23},
+        {B31, B32, B33}
+      } "Input matrix for 3D model";
+      parameter Real C[3, 3, 2] = {
+        {C11, C12, C13},
+        {C21, C22, C23},
+        {C31, C32, C33}
+      } "Output matrix for 3D model";
+      parameter Real D[3, 3] = {
+        {D11, D12, D13},
+        {D21, D22, D23},
+        {D31, D32, D33}
+      } "Feed-through matrix for 3D model";
+    // Control parameter
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
+    // State variables
+      Real x[18] "State vector for 1D radiation force model";
+      Real F_rad[3] "Calculated 1D radiation force [N]";
+    
+    initial equation
+      x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
+    
+    equation
+    // 3D Radiation force state-space model
+      for i in 1:3 loop
+      for j in 1:3 loop
+         der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
+        F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
+      end for;
+    end for;
+    // Output: 3D radiation force
+      if enableRadiationForce then
+        F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
+      else
+        F = {0, 0, 0, 0, 0, 0};
+      end if;
+      annotation(
+        Documentation(info = "<html>
+            <h4>3D Radiation Force Model for Hydrodynamic Systems</h4>
+            <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
+            considering only the vertical directions (3D model).</p>
+            
+            <p>Model Description:</p>
+            <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
+            based on the vertical velocity input. This simplification allows for efficient modeling of systems 
+            where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
+            
+            <p>Inputs:</p>
+            <ul>
+              <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
+              <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
+            </ul>
+            
+            <p>Outputs:</p>
+            <ul>
+              <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
+            </ul>
+            
+            <p>Key Parameters:</p>
+            <ul>
+              <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
+              <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
+            </ul>
+            
+            <p>Notes:</p>
+            <ul>
+              <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
+              <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
+              <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
+            </ul>
+          </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "6D Rad F", fontName = "Arial")}));
+    end RadiationF3D;
+    
+    model RadiationF2D "1D Radiation Force Calculation for Hydrodynamic Systems"
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absolutePosition_con;
+      extends Hydrodynamic.Connector.absoluteVelocity_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+    // Control parameter
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
+    // State variables
+      Real x[18] "State vector for 1D radiation force model";
+      Real F_rad[3] "Calculated 1D radiation force [N]";
+    
+    initial equation
+      x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
+    
+    equation
+    // 3D Radiation force state-space model
+      for i in 1:3 loop
+      for j in 1:3 loop
+         der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
+        F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
+      end for;
+    end for;
+    // Output: 3D radiation force
+      if enableRadiationForce then
+        F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
+      else
+        F = {0, 0, 0, 0, 0, 0};
+      end if;
+      annotation(
+        Documentation(info = "<html>
+            <h4>3D Radiation Force Model for Hydrodynamic Systems</h4>
+            <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
+            considering only the vertical directions (3D model).</p>
+            
+            <p>Model Description:</p>
+            <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
+            based on the vertical velocity input. This simplification allows for efficient modeling of systems 
+            where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
+            
+            <p>Inputs:</p>
+            <ul>
+              <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
+              <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
+            </ul>
+            
+            <p>Outputs:</p>
+            <ul>
+              <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
+            </ul>
+            
+            <p>Key Parameters:</p>
+            <ul>
+              <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
+              <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
+            </ul>
+            
+            <p>Notes:</p>
+            <ul>
+              <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
+              <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
+              <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
+            </ul>
+          </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "6D Rad F", fontName = "Arial")}));
+    end RadiationF2D;
   end Archive;
+
+  package Forces1D
+    model HydrodynamicBlock6D_1DoFRad "6-Dimensional Hydrodynamic Forces and Moments Calculation"
+     extends Hydrodynamic.Forces1D.readHydroParam1D;
+      extends Modelica.Units.SI;
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.inputOutput_con;
+      // Parameters for BodyShape
+      parameter Position r[3] = {0, 0, 0} "Position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Position length = 0.1 "Length of the body" annotation(
+        Dialog(group = "Body"));
+      parameter Position width = 0.1 "Width of the body" annotation(
+        Dialog(group = "Body"));
+      parameter Position height = 0.1 "Height of the body" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      Modelica.Mechanics.MultiBody.Parts.BodyShape bodyShape(r = r, r_CM = r_CM, m = m, length = length, width = width, height = height, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
+        Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
+      // Parameters for HydrostaticForce6D
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter TranslationalSpringConstant G1 = 0 "Hydrostatic restoring coefficient for x-axis translation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter TranslationalSpringConstant G2 = 0 "Hydrostatic restoring coefficient for y-axis translation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter RotationalSpringConstant G4 = 0 "Hydrostatic restoring coefficient for x-axis rotation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter RotationalSpringConstant G5 = 0 "Hydrostatic restoring coefficient for y-axis rotation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter RotationalSpringConstant G6 = 0 "Hydrostatic restoring coefficient for z-axis rotation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+    //HydrostaticForce6D_6DoFRad hydrostaticForce6D_6DoFRad(enableHydrostaticForce = enableHydrostaticForce, G1 = G1, G2 = G2, G4 = G4, G5 = G5, G6 = G6) "Hydrostatic force calculation" annotation(
+      //  Placement(transformation(origin = {16, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Hydrostatic Force components
+      // Parameters for RadiationF
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      // HydrodynamicBlock6D components and connections
+      Radiation1D radiation1D(A = A, B = B, C = C, D = D, enableRadiationForce = enableRadiationForce) "1D Radiation Force Calculation" annotation(
+        Placement(transformation(origin = {16, 56}, extent = {{-10, -10}, {10, 10}})));
+      // Parameters for PTO6D
+      parameter Boolean enablePTOForce = false "Switch to enable/disable PTO force calculation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter String controllerSelect = "reactive" "Controller type select" annotation(
+        Dialog(group = "PTO Parameters"));
+     
+      parameter AngularFrequency omega_peak = 0.9423 "Peak spectral frequency" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+        Dialog(group = "PTO Parameters"));
+      // PTO components
+      PTO6D pto6d(omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, enablePTOForce = enablePTOForce, controllerSelect = controllerSelect) "Power Take-Off force calculation" annotation(
+        Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
+    // Parameters for DragForce6D
+      parameter Boolean enableDragForce = false "Switch to enable/disable drag force calculation" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter MassConcentration rho = 1000 "Density of fluid" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Area A1 = 1 "Reference area" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Cdx = 100 "Translational drag coefficient for x-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Cdy = 0.01 "Translational drag coefficient for y-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Cdz = 100 "Translational drag coefficient for z-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Crx = 100 "Rotational drag coefficient for x-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Cry = 0.01 "Rotational drag coefficient for y-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      parameter Real Crz = 100 "Rotational drag coefficient for z-axis" annotation(
+        Dialog(group = "Drag Parameters"));
+      // Drag force components
+      DragForce6D dragForce6D(rho = rho, A = A1, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDragForce = enableDragForce) "Drag force calculation" annotation(
+        Placement(transformation(origin = {16, 24}, extent = {{-10, -10}, {10, 10}})));
+      // Force and torque application components
+      ForceToqueSum forceToqueSum annotation(
+        Placement(transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
+        Placement(transformation(origin = {82, 0}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = false, get_z = false, get_angles = true, get_w = true) annotation(
+        Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
+    HydrostaticForce6D_1DoFRad hydrostaticForce6D_1DoFRad(enableHydrostaticForce = enableHydrostaticForce, G1 = G1, G2 = G2, G4 = G4, G5 = G5, G6 = G6) "Hydrostatic force calculation" annotation(
+        Placement(transformation(origin = {-10, -12}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(bodyShape.frame_a, frame_a) annotation(
+        Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
+      connect(bodyShape.frame_b, frame_b) annotation(
+        Line(points = {{20, -84}, {102, -84}, {102, 0}}, color = {95, 95, 95}));
+      connect(forceAndTorque.frame_b, bodyShape.frame_b) annotation(
+        Line(points = {{92, 0}, {92, -84}, {20, -84}}, color = {95, 95, 95}));
+      connect(forceToqueSum.F, forceAndTorque.force) annotation(
+        Line(points = {{61, 5}, {64, 5}, {64, 6}, {70, 6}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(forceToqueSum.T, forceAndTorque.torque) annotation(
+        Line(points = {{61, -5}, {70, -5}, {70, -6}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.v, radiation1D.v_abs) annotation(
+        Line(points = {{-68, -11}, {-72, -11}, {-72, 54}, {4, 54}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.angles, radiation1D.theta_abs) annotation(
+        Line(points = {{-59, -11}, {-72, -11}, {-72, 59}, {4, 59}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.w, radiation1D.omega_abs) annotation(
+        Line(points = {{-54, -11}, {-72, -11}, {-72, 48}, {4, 48}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.w, dragForce6D.omega_abs) annotation(
+        Line(points = {{-54, -11}, {-72, -11}, {-72, 16}, {4, 16}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.r, radiation1D.u_abs) annotation(
+        Line(points = {{-72, -11}, {-72, 64}, {4, 64}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.w, pto6d.omega_abs) annotation(
+        Line(points = {{-54, -12}, {-72, -12}, {-72, -54}, {4, -54}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.r, pto6d.u_abs) annotation(
+        Line(points = {{-72, -12}, {-72, -38}, {4, -38}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.angles, pto6d.theta_abs) annotation(
+        Line(points = {{-58, -12}, {-72, -12}, {-72, -44}, {4, -44}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.v, pto6d.v_abs) annotation(
+        Line(points = {{-68, -12}, {-72, -12}, {-72, -48}, {4, -48}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.v, dragForce6D.v_abs) annotation(
+        Line(points = {{-68, -12}, {-72, -12}, {-72, 22}, {4, 22}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.frame_a, bodyShape.frame_b) annotation(
+        Line(points = {{-72, 2}, {-86, 2}, {-86, -68}, {20, -68}, {20, -84}}, color = {95, 95, 95}));
+      connect(radiation1D.F, forceToqueSum.Fr) annotation(
+        Line(points = {{27, 56}, {30, 56}, {30, 8}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(dragForce6D.F, forceToqueSum.Fd) annotation(
+        Line(points = {{27, 24}, {30, 24}, {30, -2}, {38, -2}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(pto6d.F, forceToqueSum.Fpto) annotation(
+        Line(points = {{28, -46}, {30, -46}, {30, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(hydrostaticForce6D_1DoFRad.F, forceToqueSum.Fhs) annotation(
+        Line(points = {{2, -12}, {24, -12}, {24, 2}, {38, 2}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(absoluteSensor.r, hydrostaticForce6D_1DoFRad.u_abs) annotation(
+        Line(points = {{-72, -12}, {-46, -12}, {-46, -4}, {-22, -4}}, color = {0, 0, 127}, thickness = 0.5));
+    connect(absoluteSensor.angles, hydrostaticForce6D_1DoFRad.theta_abs) annotation(
+        Line(points = {{-58, -12}, {-48, -12}, {-48, -24}, {-32, -24}, {-32, -10}, {-22, -10}}, color = {0, 0, 127}, thickness = 0.5));
+    
+    end HydrodynamicBlock6D_1DoFRad;
+    
+    block PTO6D "6-Dimensional Power Take-Off (PTO) System"
+      extends Hydrodynamic.Forces1D.readHydroParam1D;
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absolutePosition_con;
+      extends Hydrodynamic.Connector.absoluteVelocity_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+      
+      
+     
+      parameter Modelica.Units.SI.AngularFrequency omega_peak "Peak spectral frequency";
+      Modelica.Units.SI.Mass amdep = Modelica.Math.Vectors.interpolate(w, Adep, omega_peak);
+      Modelica.Units.SI.TranslationalDampingConstant Bpto = Modelica.Math.Vectors.interpolate(w, Rdamp, omega_peak);
+      Modelica.Units.SI.TranslationalSpringConstant Kpto;
+      Modelica.Units.SI.Mass Mpto;
+      //Modelica.Units.SI.Force Fpto;
+      //Modelica.Units.SI.Power Ppto;
+      //Modelica.Blocks.Math.ContinuousMean Ppto_avg;
+      // Proportional gain parameters
+      parameter Real Kpx "Proportional gain for x-axis translation [N/(m/s)]";
+      parameter Real Kpy "Proportional gain for y-axis translation [N/(m/s)]";
+      Real Kpz "Proportional gain for z-axis translation [N/(m/s)]";
+      parameter Real Kprx "Proportional gain for x-axis rotation [N*m/(rad/s)]";
+      parameter Real Kpry "Proportional gain for y-axis rotation [N*m/(rad/s)]";
+      parameter Real Kprz "Proportional gain for z-axis rotation [N*m/(rad/s)]";
+      Real Kp[6, 6] "Combined proportional gain matrix";
+      // Integral gain parameters
+      parameter Real Kix "Integral gain for x-axis translation [N/m]";
+      parameter Real Kiy "Integral gain for y-axis translation [N/m]";
+      Real Kiz "Integral gain for z-axis translation [N/m]";
+      parameter Real Kirx "Integral gain for x-axis rotation [N*m/rad]";
+      parameter Real Kiry "Integral gain for y-axis rotation [N*m/rad]";
+      parameter Real Kirz "Integral gain for z-axis rotation [N*m/rad]";
+      Real Ki[6, 6] "Combined integral gain matrix";
+      // Control parameter
+      parameter Boolean enablePTOForce = true "Switch to enable/disable PTO force calculation";
+      // Internal variable
+      Real fpto[6] "Combined PTO force/torque vector [N, N*m]";
+      Real u_theta[6] "Combined displacement vector [m, rad]";
+      Real v_omega[6] "Combined linear and angular velocity vector [m/s, rad/s]";
+      Real bpto;
+      parameter String controllerSelect = "reactive" annotation(
+        Dialog(group = "Controller type select"));
+    equation
+      Kiz = Kpto;
+      Kp = diagonal({Kpx, Kpy, Kpz, Kprx, Kpry, Kprz});
+      Kpz = bpto;
+      Ki = diagonal({Kix, Kiy, Kiz, Kirx, Kiry, Kirz});
+      u_theta = cat(1, u_abs, theta_abs);
+      v_omega = cat(1, v_abs, omega_abs);
+    // Calculate the combined PTO force/torque vector
+      fpto = Kp*v_omega + Ki*u_theta;
+      Mpto = M + amdep;
+    // Use the switch to conditionally output the force and torque
+      if enablePTOForce then
+        F = -fpto;
+      else
+        F = zeros(6);
+      end if;
+      if controllerSelect == "passive" then
+        Kpto = 0;
+        bpto = (Bpto^2 + (omega_peak*(Mpto) - Khs/omega_peak)^2)^(1/2);
+      elseif controllerSelect == "reactive" then
+        Kpto = (Mpto)*omega_peak - Khs/omega_peak;
+    // no khs in here
+        bpto = Bpto;
+      end if;
+      annotation(
+        Documentation(info = "<html>
+        <p>This block models a 6-dimensional Power Take-Off (PTO) system for both translational and rotational motion.</p>
+        <p>The PTO force/torque is calculated using a combination of proportional and integral control based on the input velocities and displacements.</p>
+        <p>The block can be enabled or disabled using the <code>enablePTOForce</code> parameter.</p>
+        <p>Inputs:</p>
+        <ul>
+          <li><code>u</code>: Linear velocity vector [m/s]</li>
+          <li><code>s</code>: Linear displacement vector [m]</li>
+          <li><code>omega</code>: Angular velocity vector [rad/s]</li>
+          <li><code>theta</code>: Angular displacement vector [rad]</li>
+        </ul>
+        <p>Outputs:</p>
+        <ul>
+          <li><code>y</code>: Translational PTO force vector [N]</li>
+          <li><code>y1</code>: Rotational PTO torque vector [N*m]</li>
+        </ul>
+      </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "PTO 6D", fontName = "Arial")}));
+    end PTO6D;
+    
+    model Radiation1D "1D Radiation Force Calculation for Hydrodynamic Systems"
+      extends Hydrodynamic.Forces1D.readHydroParam1D;
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absolutePosition_con;
+      extends Hydrodynamic.Connector.absoluteVelocity_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+      // Control parameter
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 1D radiation force calculation";
+      // State variables
+      Real x[2] "State vector for 1D radiation force model";
+      Real F_rad "Calculated 1D radiation force [N]";
+    initial equation
+      x = {0, 0} "Initialize state vector to zero";
+    equation
+    // 1D Radiation force state-space model
+    // Note: Only the third element of the velocity vector (vertical motion) is used
+      der(x) = A*x + B[:, 1]*v_abs[3];
+      F_rad = scalar(C*x) + D*v_abs[3];
+    // Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
+      if enableRadiationForce then
+        F = {0, 0, -F_rad, 0, 0, 0};
+      else
+        F = {0, 0, 0, 0, 0, 0};
+      end if;
+      annotation(
+        Documentation(info = "<html>
+        <h4>1D Radiation Force Model for Hydrodynamic Systems</h4>
+        <p>This model calculates the radiation force for hydrodynamic systems using a state-space representation, 
+        considering only the vertical direction (1D model).</p>
+        
+        <p>Model Description:</p>
+        <p>The radiation force is computed solely for the vertical direction (third element of the vectors) 
+        based on the vertical velocity input. This simplification allows for efficient modeling of systems 
+        where the primary concern is the vertical motion, such as in wave energy converters or floating structures.</p>
+        
+        <p>Inputs:</p>
+        <ul>
+          <li><code>z[3]</code>: Position vector [m] (currently not used in calculations, included for future extensions)</li>
+          <li><code>v[3]</code>: Velocity vector [m/s] (only the third element, representing vertical velocity, is used)</li>
+        </ul>
+        
+        <p>Outputs:</p>
+        <ul>
+          <li><code>y[3]</code>: Radiation force vector [N] (force applied only in the vertical direction, third element)</li>
+        </ul>
+        
+        <p>Key Parameters:</p>
+        <ul>
+          <li><code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>: State-space model matrices and vectors for the 1D system</li>
+          <li><code>enableRadiationForce</code>: Boolean switch to enable/disable the radiation force calculation</li>
+        </ul>
+        
+        <p>Notes:</p>
+        <ul>
+          <li>The state-space model parameters (A, B, C, D) should be adjusted based on the specific 1D hydrodynamic system being modeled.</li>
+          <li>This model assumes that the radiation force acts only in the vertical direction, simplifying the calculations for many marine applications.</li>
+          <li>The position input (z) is currently not used in the calculations but is included for potential future enhancements or compatibility with other models.</li>
+        </ul>
+      </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "1D Rad F", fontName = "Arial")}));
+    end Radiation1D;
+    
+    model DragForce6D "6-Dimensional Drag Force and Torque Calculation"
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absoluteVelocity_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+      // Fluid and reference parameters
+      parameter Real rho "Density of fluid [kg/m^3]";
+      parameter Real A "Reference area [m^2]";
+      // Drag coefficients
+      parameter Real Cdx "Translational drag coefficient for x-axis [-]";
+      parameter Real Cdy "Translational drag coefficient for y-axis [-]";
+      parameter Real Cdz "Translational drag coefficient for z-axis [-]";
+      parameter Real Crx "Rotational drag coefficient for x-axis [-]";
+      parameter Real Cry "Rotational drag coefficient for y-axis [-]";
+      parameter Real Crz "Rotational drag coefficient for z-axis [-]";
+      parameter Real Cd[6, 6] = diagonal({Cdx, Cdy, Cdz, Crx, Cry, Crz}) "Combined drag coefficient matrix";
+      // Control parameter
+      parameter Boolean enableDragForce = true "Switch to enable/disable drag force calculation";
+      // Internal variables
+      Real c "Combined constant term for drag calculation";
+      Real fd[6] "6D drag force/torque vector [N, N*m]";
+      Real v_omega[6] "Combined linear and angular velocity vector [m/s, rad/s]";
+    equation
+    // Calculate the combined constant term
+      c = 0.5*rho*A;
+    // Combine linear and angular velocities into a single vector
+      v_omega = cat(1, v_abs, omega_abs);
+    // Calculate the 6D drag force/torque vector
+      fd = -c*Cd*v_omega.*abs(v_omega);
+    // Use the switch to conditionally output the force and torque
+      if enableDragForce then
+        F = fd[1:3];
+      else
+        F = zeros(6);
+      end if;
+      annotation(
+        Documentation(info = "<html>
+        <p>This block calculates the 6-dimensional drag force and torque for both translational and rotational motion in a fluid medium.</p>
+        <p>The drag force/torque is calculated using a quadratic drag model, where the force is proportional to the square of the velocity.</p>
+        <p>The block can be enabled or disabled using the <code>enableDragForce</code> parameter.</p>
+        <p>Inputs:</p>
+        <ul>
+          <li><code>u</code>: Linear velocity vector [m/s]</li>
+          <li><code>a</code>: Angular velocity vector [rad/s]</li>
+        </ul>
+        <p>Outputs:</p>
+        <ul>
+          <li><code>y</code>: Translational drag force vector [N]</li>
+          <li><code>y1</code>: Rotational drag torque vector [N*m]</li>
+        </ul>
+        <p>Key Parameters:</p>
+        <ul>
+          <li><code>rho</code>: Fluid density [kg/m^3]</li>
+          <li><code>A</code>: Reference area [m^2]</li>
+          <li><code>Cdx</code>, <code>Cdy</code>, <code>Cdz</code>: Translational drag coefficients [-]</li>
+          <li><code>Crx</code>, <code>Cry</code>, <code>Crz</code>: Rotational drag coefficients [-]</li>
+        </ul>
+        <p>The drag coefficients are combined into a diagonal matrix to allow for different coefficients in each dimension.</p>
+      </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "Drag F 6D", fontName = "Arial")}));
+    end DragForce6D;
+    
+    model HydrostaticForce6D_1DoFRad "6-Dimensional Hydrostatic Force and Torque Calculation"
+      extends Modelica.Blocks.Icons.Block;
+      extends Hydrodynamic.Connector.absolutePosition_con;
+      extends Hydrodynamic.Connector.forceTorque_con;
+      extends Hydrodynamic.Forces1D.readHydroParam1D;
+      // Hydrostatic restoring coefficients
+      parameter Real G1 "Hydrostatic restoring coefficient for x-axis translation [N/m]";
+      parameter Real G2 "Hydrostatic restoring coefficient for y-axis translation [N/m]";
+      parameter Real G4 "Hydrostatic restoring coefficient for x-axis rotation [N*m/rad]";
+      parameter Real G5 "Hydrostatic restoring coefficient for y-axis rotation [N*m/rad]";
+      parameter Real G6 "Hydrostatic restoring coefficient for z-axis rotation [N*m/rad]";
+      parameter Real G[6, 6] = diagonal({G1, G2, G3, G4, G5, G6}) "Combined hydrostatic restoring coefficient matrix";
+      // Enable/disable force
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation";
+      // Internal variables
+      Real u_theta[6] "Combined displacement vector [m, rad]";
+      Real fhs[6] "Hydrostatic force/torque vector [N, N*m]";
+    equation
+    // Combine linear and angular displacements into a single vector
+      u_theta = cat(1, u_abs, theta_abs);
+    // Calculate the 6D hydrostatic force/torque vector
+      fhs = -G*u_theta;
+    // Use the switch to conditionally output the force and torque
+      if enableHydrostaticForce then
+        F = fhs;
+      else
+        F = zeros(6);
+      end if;
+      annotation(
+        Documentation(info = "<html>
+            <p>This block calculates the 6-dimensional hydrostatic force and torque for both translational and rotational motion in a fluid medium.</p>
+            <p>The hydrostatic force/torque is calculated using linear restoring coefficients, where the force is proportional to the displacement from the equilibrium position.</p>
+            <p>The block can be enabled or disabled using the <code>enableHydrostaticForce</code> parameter.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>u</code>: Linear displacement vector [m]</li>
+              <li><code>theta</code>: Angular displacement vector [rad]</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>y</code>: Translational hydrostatic force vector [N]</li>
+              <li><code>y1</code>: Rotational hydrostatic torque vector [N*m]</li>
+            </ul>
+            <p>Key Parameters:</p>
+            <ul>
+              <li><code>G1</code>, <code>G2</code>, <code>G3</code>: Translational hydrostatic restoring coefficients [N/m]</li>
+              <li><code>G4</code>, <code>G5</code>, <code>G6</code>: Rotational hydrostatic restoring coefficients [N*m/rad]</li>
+            </ul>
+            <p>The hydrostatic restoring coefficients are combined into a diagonal matrix to allow for different coefficients in each dimension.</p>
+            <p>Note: By default, only the z-axis translation (heave) has a non-zero restoring coefficient, which is typical for floating bodies.</p>
+          </html>"),
+        Icon(graphics = {Text(extent = {{-100, 100}, {100, -100}}, textString = "HS 6D", fontName = "Arial")}));
+    end HydrostaticForce6D_1DoFRad;
+    
+    model readHydroParam1D
+      extends Modelica.Units.SI;
+      extends Modelica.Icons.Package;
+     parameter String fileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_1DoF.mat"  "Path to the hydroCoeff.mat file" annotation(
+        Dialog(group = "PTO Parameters"));
+      parameter Real A[2, 2] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad33.A", 2, 2) "State matrix" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      parameter Real B[2, 1] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad33.B", 2, 1) "Input matrix" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      parameter Real C[1, 2] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad33.C", 1, 2) "Output matrix" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      parameter Real D = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.ss_rad33.D", 1, 1)) "Feed matrix" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      parameter Mass m = M + Ainf "Mass of the body" annotation(
+        Dialog(group = "Body"));
+      parameter TranslationalSpringConstant G3 = Khs "Hydrostatic restoring coefficient for z-axis translation" annotation(
+        Dialog(group = "Hydrostatic Stiffness Parameters"));
+      parameter Modelica.Units.SI.Mass M = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.m33", 1, 1)) "Total mass of the body (including ballast)";
+      parameter Modelica.Units.SI.Mass Ainf = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.Ainf33", 1, 1)) "Added mass at maximum (cut-off) frequency";
+      parameter Modelica.Units.SI.TranslationalSpringConstant Khs = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.Khs33", 1, 1)) "Hydrostatic stiffness";
+      parameter Integer wDims[:] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydroCoeff.w") "Dimensions of the frequency vector";
+      parameter Integer wSize = wDims[2] "Size of the frequency vector";
+      parameter Real F_excRe[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.FexcRe", 1, wSize)) "Real part of excitation force coefficients";
+      parameter Real F_excIm[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.FexcIm", 1, wSize)) "Imaginary part of excitation force coefficients";
+      parameter Real w[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.w", 1, wSize)) "Angular frequency vector [rad/s]";
+      parameter Real Adep[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.added_mass", wSize, 1)) "Frequency dependent added mass";
+      parameter Real Rdamp[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.radiation_damping", wSize, 1)) "Radiation damping";
+      
+    equation
+    
+    annotation(
+        Documentation(info = "<html>
+        <p><strong>readHydroParam Model</strong></p>
+        <p>This model is designed to read and store hydrodynamic parameters from a MATLAB .mat file. These parameters are crucial for accurate modeling of radiation forces and other hydrodynamic effects in marine and offshore engineering applications. This is also used to store parameters and extend to other blocks. </p>
+        
+        <p><strong>Parameters:</strong></p>
+        <ul>
+          <li><strong>fileName:</strong> Path to the MATLAB .mat file containing hydrodynamic coefficients and matrices.</li>
+          <li><strong>A:</strong> State matrix of the system, read from the .mat file.</li>
+          <li><strong>B:</strong> Input matrix for the system, read from the .mat file.</li>
+          <li><strong>C:</strong> Output matrix for the system, read from the .mat file.</li>
+          <li><strong>D:</strong> Feed matrix for the system, read from the .mat file.</li>
+          <li><strong>m:</strong> Total mass of the body, including added mass.</li>
+          <li><strong>G3:</strong> Hydrostatic restoring coefficient for z-axis translation.</li>
+          <li><strong>M:</strong> Total mass of the body (including ballast).</li>
+          <li><strong>Ainf:</strong> Added mass at maximum (cut-off) frequency.</li>
+          <li><strong>Khs:</strong> Hydrostatic stiffness.</li>
+          <li><strong>wDims:</strong> Dimensions of the frequency vector.</li>
+          <li><strong>wSize:</strong> Size of the frequency vector.</li>
+          <li><strong>F_excRe:</strong> Real part of excitation force coefficients.</li>
+          <li><strong>F_excIm:</strong> Imaginary part of excitation force coefficients.</li>
+          <li><strong>w:</strong> Angular frequency vector [rad/s].</li>
+        </ul>
+        
+        <p><strong>Usage:</strong></p>
+        <p>This model is essential for integrating empirical data into hydrodynamic simulations, enabling accurate modeling of radiation forces and system responses based on real-world measurements.</p>
+        <p><strong>Applications:</strong></p>
+        <ul>
+          <li>Marine engineering and offshore structure design.</li>
+          <li>Dynamic response analysis of marine systems under wave loads.</li>
+          <li>Hydrodynamic modeling for wave energy converters and coastal engineering projects.</li>
+        </ul>
+      </html>"));
+    end readHydroParam1D;
+    
+    model PiersonMoskowitzWave1D "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
+      extends Hydrodynamic.readHydroParam;
+      extends Modelica.Blocks.Icons.Block;
+      import Modelica.Math.Vectors;
+      extends Hydrodynamic.Connector.forceandTorque_con;
+      // Internal connector for wave properties
+      Hydrodynamic.Internal.Connectors.WaveOutConn wconn "Internal connector for wave properties";
+      constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+      constant Real g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+      // Wave and environmental parameters
+      parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
+        Dialog(group = "Wave Parameters"));
+      parameter Modelica.Units.SI.Density rho = 1025 "Density of seawater [kg/m^3]" annotation(
+        Dialog(group = "Environmental Parameters"));
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_min = 0.03141 "Lowest frequency component [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_max = 3.141 "Highest frequency component [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Real spectralWidth_min = 0.07 "Lower spectral bound for JONSWAP" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Real spectralWidth_max = 0.09 "Upper spectral bound for JONSWAP" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Integer n_omega = 100 "Number of frequency components" annotation(
+        Dialog(group = "Discretization"));
+      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Real rnd_shft[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed, globalSeed, n_omega) "Random shifts for frequency selection";
+      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Real epsilon[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
+      parameter Real Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      // Derived parameters
+      parameter Real omega[n_omega] = Hydrodynamic.Internal.Functions.frequencySelector(omega_min, omega_max, rnd_shft) "Selected frequency components [rad/s]";
+      parameter Real S[n_omega] = Hydrodynamic.Internal.Functions.spectrumGenerator_PM(Hs, omega) "Spectral values for frequency components [m^2-s/rad]";
+      parameter Modelica.Units.SI.Length zeta[n_omega] = sqrt(2*S*omega_min) "Wave amplitude components [m]";
+      parameter Real Tp[n_omega] = 2*pi./omega "Wave period components [s]";
+      parameter Real k[n_omega] = Hydrodynamic.Internal.Functions.waveNumber(d, omega) "Wave number components [1/m]";
+      // Variables
+      Real ExcCoeffRe[n_omega] "Real component of excitation coefficient for frequency components";
+      Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+    equation
+    // Interpolate excitation coefficients (Re & Im) for each frequency component
+      for i in 1:n_omega loop
+        ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe, omega[i])*rho*g;
+        ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm, omega[i])*rho*g;
+      end for;
+    // Calculate sea surface elevation (SSE) as the sum of all wave components
+      SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+      // Calculate and apply ramping to the excitation force
+    if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+        wconn.F_exc = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+      else
+    // Apply full excitation force after the ramping period
+        wconn.F_exc = sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+      end if;
+    // Assign excitation force to output (vertical component only)
+      F = {0, 0, wconn.F_exc};
+      T = {0, 0, 0};
+      annotation(
+        Documentation(info = "<html>
+          <h4>Pierson-Moskowitz Wave Spectrum Model</h4>
+          <p>This model implements the Pierson-Moskowitz (PM) wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+          <p>Key features:</p>
+          <ul>
+            <li>Generates a wave spectrum based on the PM formulation</li>
+            <li>Discretizes the spectrum into multiple frequency components</li>
+            <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
+            <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+            <li>Applies a ramping function to the excitation force during the initial phase</li>
+            <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+          </ul>
+          <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+          <h4>Usage Notes:</h4>
+          <ul>
+            <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
+            <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
+            <li>Random seeds can be changed to generate different realizations of the same sea state</li>
+          </ul>
+        </html>"),
+        Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Pierson Moskowitz ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end PiersonMoskowitzWave1D;
+  
+  
+  
+  end Forces1D;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle
     {0, 0, 0}, fillPattern = // Light gray fill
