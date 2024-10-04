@@ -21,7 +21,7 @@ package Hydrodynamic
     Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
     equation
-    // Connections between components
+// Connections between components
       connect(world.frame_b, prismatic.frame_a) annotation(
         Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
       connect(prismatic.frame_b, hydrodynamicBlock6D.frame_a) annotation(
@@ -87,8 +87,8 @@ package Hydrodynamic
         Placement(transformation(origin = {-14, -20}, extent = {{-10, -10}, {10, 10}})));
     // Hydrodynamic body component
       // Wave profile component
-      Forces1D.PiersonMoskowitzWave1D piersonMoskowitzWave1D annotation(
-        Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
+      //Hydrodynamic.Forces1D.PiersonMoskowitzWave1D piersonMoskowitzWave1D annotation(Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
+      Forces1D.EqualEnergy_PiersonMoskowitzWave1D piersonMoskowitzWave1D annotation(Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
     Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
   Forces1D.HydrodynamicBlock6D_1DoFRad hydrodynamicBlock6D_1DoFRad(enablePTOForce = true, enableRadiationForce = true)  annotation(
@@ -552,11 +552,11 @@ package Hydrodynamic
       x = zeros(n_states[2]) "Initialize state vector to zero";
     equation
     v_omega = cat(1, v_abs, omega_abs);
-    // 1D Radiation force state-space model
-    // Note: Only the third element of the velocity vector (vertical motion) is used
+// 1D Radiation force state-space model
+// Note: Only the third element of the velocity vector (vertical motion) is used
       der(x) = A*x + B*v_omega;
       F_rad = C*x + D*v_omega;
-    // Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
+// Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
       if enableRadiationForce then
         F = -F_rad;
       else
@@ -704,9 +704,7 @@ package Hydrodynamic
         extends Hydrodynamic.Forces.readHydroCoeff;
         extends Modelica.Blocks.Icons.Block;
         import Modelica.Math.Vectors;
-       
-       
-        // Internal connector for wave properties
+       // Internal connector for wave properties
         constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
         constant Real g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
         // Wave and environmental parameters
@@ -764,10 +762,10 @@ package Hydrodynamic
         // Calculate and apply ramping to the excitation force
   for i in 1:nDoF loop // could probably extend zeta and time for 6 DoF for efficiency, but loop works in the interim
     if time < Trmp then
-    // Ramp up the excitation force during the initial phase
+// Ramp up the excitation force during the initial phase
               F_exc[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
             else
-    // Apply full excitation force after the ramping period
+// Apply full excitation force after the ramping period
               F_exc[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
             end if;
   end for;
@@ -776,8 +774,7 @@ package Hydrodynamic
         F = {0, 0, F_exc[3]};
         T = {0, 0, 0};
       */
-        
-        // Assign excitation force to output (6DoF)
+// Assign excitation force to output (6DoF)
         F = F_exc[1:3];
         T = F_exc[4:6];
         
@@ -1443,7 +1440,7 @@ if time < Trmp then
                                                  This function utilizes the Xorshift64star algorithm for efficient random number generation */
         input Integer ls = 614657 "Local seed for random number generation";
         input Integer gs = 30020 "Global seed for random number generation";
-        input Integer n = 100 "Number of random numbers to generate";
+       constant input Integer n = 100 "Number of random numbers to generate";
         output Real r64[n] "Vector of generated random numbers";
       protected
         Integer state64[2](each start = 0, each fixed = true) "State vector for XOR shift algorithm";
@@ -1480,9 +1477,9 @@ if time < Trmp then
       function frequencySelector "Function to randomly select frequency components within a specified range"
         /* Uses a random phase vector to perturb frequencies
                                                  This function ensures a good distribution of frequencies for irregular wave generation */
-        input Real omega_min "Minimum frequency [rad/s]";
-        input Real omega_max "Maximum frequency [rad/s]";
-        input Real epsilon[:] "Random phase vector for frequency perturbation";
+        constant input Real omega_min "Minimum frequency [rad/s]";
+        constant input Real omega_max "Maximum frequency [rad/s]";
+        constant input Real epsilon[:] "Random phase vector for frequency perturbation";
         output Real omega[size(epsilon, 1)] "Output vector of selected frequency components [rad/s]";
       protected
         parameter Real ref_omega[size(epsilon, 1)] = omega_min:(omega_max - omega_min)/(size(epsilon, 1) - 1):omega_max "Reference frequency vector [rad/s]";
@@ -2173,14 +2170,14 @@ if time < Trmp then
       x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
     
     equation
-    // 3D Radiation force state-space model
+// 3D Radiation force state-space model
       for i in 1:3 loop
       for j in 1:3 loop
          der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
         F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
       end for;
     end for;
-    // Output: 3D radiation force
+// Output: 3D radiation force
       if enableRadiationForce then
         F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
       else
@@ -2239,14 +2236,14 @@ if time < Trmp then
       x = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} "Initialize state vector to zero";
     
     equation
-    // 3D Radiation force state-space model
+// 3D Radiation force state-space model
       for i in 1:3 loop
       for j in 1:3 loop
          der(x[2*i-1:2*i]) = A[i, :, :] * x[2*i-1:2*i] + B[i, :, :] * v_abs;
         F_rad[i] = C[i, :, :] * x[2*i-1:2*i] + D[i, :] * v_abs;
       end for;
     end for;
-    // Output: 3D radiation force
+// Output: 3D radiation force
       if enableRadiationForce then
         F = {F_rad[1], F_rad[2], F_rad[3], 0, 0, 0};
       else
@@ -2503,10 +2500,10 @@ if time < Trmp then
       Ki = diagonal({Kix, Kiy, Kiz, Kirx, Kiry, Kirz});
       u_theta = cat(1, u_abs, theta_abs);
       v_omega = cat(1, v_abs, omega_abs);
-    // Calculate the combined PTO force/torque vector
+// Calculate the combined PTO force/torque vector
       fpto = Kp*v_omega + Ki*u_theta;
       Mpto = M + amdep;
-    // Use the switch to conditionally output the force and torque
+// Use the switch to conditionally output the force and torque
       if enablePTOForce then
         F = -fpto;
       else
@@ -2517,7 +2514,7 @@ if time < Trmp then
         bpto = (Bpto^2 + (omega_peak*(Mpto) - Khs/omega_peak)^2)^(1/2);
       elseif controllerSelect == "reactive" then
         Kpto = (Mpto)*omega_peak - Khs/omega_peak;
-    // no khs in here
+// no khs in here
         bpto = Bpto;
       end if;
       annotation(
@@ -2555,11 +2552,11 @@ if time < Trmp then
     initial equation
       x = {0, 0} "Initialize state vector to zero";
     equation
-    // 1D Radiation force state-space model
-    // Note: Only the third element of the velocity vector (vertical motion) is used
+// 1D Radiation force state-space model
+// Note: Only the third element of the velocity vector (vertical motion) is used
       der(x) = A*x + B[:, 1]*v_abs[3];
       F_rad = scalar(C*x) + D*v_abs[3];
-    // Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
+// Output: 1D radiation force only in the third element (vertical direction), with enable/disable switch
       if enableRadiationForce then
         F = {0, 0, -F_rad, 0, 0, 0};
       else
@@ -2625,13 +2622,13 @@ if time < Trmp then
       Real fd[6] "6D drag force/torque vector [N, N*m]";
       Real v_omega[6] "Combined linear and angular velocity vector [m/s, rad/s]";
     equation
-    // Calculate the combined constant term
+// Calculate the combined constant term
       c = 0.5*rho*A;
-    // Combine linear and angular velocities into a single vector
+// Combine linear and angular velocities into a single vector
       v_omega = cat(1, v_abs, omega_abs);
-    // Calculate the 6D drag force/torque vector
+// Calculate the 6D drag force/torque vector
       fd = -c*Cd*v_omega.*abs(v_omega);
-    // Use the switch to conditionally output the force and torque
+// Use the switch to conditionally output the force and torque
       if enableDragForce then
         F = fd[1:3];
       else
@@ -2682,11 +2679,11 @@ if time < Trmp then
       Real u_theta[6] "Combined displacement vector [m, rad]";
       Real fhs[6] "Hydrostatic force/torque vector [N, N*m]";
     equation
-    // Combine linear and angular displacements into a single vector
+// Combine linear and angular displacements into a single vector
       u_theta = cat(1, u_abs, theta_abs);
-    // Calculate the 6D hydrostatic force/torque vector
+// Calculate the 6D hydrostatic force/torque vector
       fhs = -G*u_theta;
-    // Use the switch to conditionally output the force and torque
+// Use the switch to conditionally output the force and torque
       if enableHydrostaticForce then
         F = fhs;
       else
@@ -2809,7 +2806,7 @@ if time < Trmp then
         Dialog(group = "Spectrum Parameters"));
       parameter Real spectralWidth_max = 0.09 "Upper spectral bound for JONSWAP" annotation(
         Dialog(group = "Spectrum Parameters"));
-      parameter Integer n_omega = 100 "Number of frequency components" annotation(
+      parameter Integer n_omega = 500 "Number of frequency components" annotation(
         Dialog(group = "Discretization"));
       parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
         Dialog(group = "Random Generation"));
@@ -2834,22 +2831,22 @@ if time < Trmp then
       Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
       Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
     equation
-    // Interpolate excitation coefficients (Re & Im) for each frequency component
+// Interpolate excitation coefficients (Re & Im) for each frequency component
       for i in 1:n_omega loop
         ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe, omega[i])*rho*g;
         ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm, omega[i])*rho*g;
       end for;
-    // Calculate sea surface elevation (SSE) as the sum of all wave components
+// Calculate sea surface elevation (SSE) as the sum of all wave components
       SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
       // Calculate and apply ramping to the excitation force
-    if time < Trmp then
-    // Ramp up the excitation force during the initial phase
+if time < Trmp then
+// Ramp up the excitation force during the initial phase
         wconn.F_exc = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
       else
-    // Apply full excitation force after the ramping period
+// Apply full excitation force after the ramping period
         wconn.F_exc = sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
       end if;
-    // Assign excitation force to output (vertical component only)
+// Assign excitation force to output (vertical component only)
       F = {0, 0, wconn.F_exc};
       T = {0, 0, 0};
       annotation(
@@ -2876,6 +2873,266 @@ if time < Trmp then
         Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Pierson Moskowitz ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
         experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
     end PiersonMoskowitzWave1D;
+    
+    model EqualEnergy_PiersonMoskowitzWave1D "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
+      extends Hydrodynamic.readHydroParam;
+      extends Modelica.Blocks.Icons.Block;
+      import Modelica.Math.Vectors;
+      extends Hydrodynamic.Connector.forceandTorque_con;
+      // Internal connector for wave properties
+      Hydrodynamic.Internal.Connectors.WaveOutConn wconn "Internal connector for wave properties";
+      constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+      constant Real g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+      // Wave and environmental parameters
+      parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
+        Dialog(group = "Wave Parameters"));
+      parameter Modelica.Units.SI.Density rho = 1025 "Density of seawater [kg/m^3]" annotation(
+        Dialog(group = "Environmental Parameters"));
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_min = 0.03141 "Lowest frequency component [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_max = 3.141 "Highest frequency component [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Real spectralWidth_min = 0.07 "Lower spectral bound for JONSWAP" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Real spectralWidth_max = 0.09 "Upper spectral bound for JONSWAP" annotation(
+        Dialog(group = "Spectrum Parameters"));
+      parameter Integer n_omega = 50 "Number of frequency components" annotation(
+        Dialog(group = "Discretization"));
+      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Real rnd_shft[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed, globalSeed, n_omega) "Random shifts for frequency selection";
+      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+        Dialog(group = "Random Generation"));
+      parameter Real epsilon[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
+      parameter Real Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      // Derived parameters
+      
+      /*parameter Real omega[n_omega] = Hydrodynamic.Internal.Functions.frequencySelector(omega_min, omega_max, rnd_shft) "Selected frequency components [rad/s]"; */
+      
+      parameter Real omega_int[n_omega_int] = Hydrodynamic.Forces1D.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
+      parameter Integer n_omega_int = 500;
+      Real omega[n_omega];
+      Real S[n_omega];
+      // These all (except for S, need to go back to removing _int
+      parameter Real S_int[n_omega_int] = Hydrodynamic.Internal.Functions.spectrumGenerator_PM(Hs, omega_int) "Spectral values for frequency components [m^2-s/rad]";
+      
+      Modelica.Units.SI.Length zeta[n_omega]  "Wave amplitude components [m]";
+      Real Tp[n_omega] "Wave period components [s]";
+      Real k[n_omega] "Wave number components [1/m]";
+      // Variables
+      Real ExcCoeffRe[n_omega] "Real component of excitation coefficient for frequency components";
+      Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+      
+      Real mean, new;
+      Real cum[n_omega_int];
+      Real domega[n_omega];
+    
+    equation
+      
+      domega = Hydrodynamic.Forces1D.dfrequencyGen(omega, S, n_omega);
+    
+      zeta = sqrt(2*S.*domega);
+      Tp = 2*pi./omega;
+      k = Hydrodynamic.Internal.Functions.waveNumber(d, omega);
+      
+        // Can be issues when selecting n_int and n_omega, need to make more robust
+      (omega, S,cum,mean,new) = Hydrodynamic.Forces1D.equalEnergyGen(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
+      
+    
+    // Interpolate excitation coefficients (Re & Im) for each frequency component
+      for i in 1:n_omega loop
+        ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe, omega[i])*rho*g;
+        ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm, omega[i])*rho*g;
+      end for;
+    // Calculate sea surface elevation (SSE) as the sum of all wave components
+      SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+      // Calculate and apply ramping to the excitation force
+    if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+        wconn.F_exc = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+      else
+    // Apply full excitation force after the ramping period
+        wconn.F_exc = sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+      end if;
+    // Assign excitation force to output (vertical component only)
+      F = {0, 0, wconn.F_exc};
+      T = {0, 0, 0};
+      
+    
+      
+      annotation(
+        Documentation(info = "<html>
+          <h4>Pierson-Moskowitz Wave Spectrum Model</h4>
+          <p>This model implements the Pierson-Moskowitz (PM) wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+          <p>Key features:</p>
+          <ul>
+            <li>Generates a wave spectrum based on the PM formulation</li>
+            <li>Discretizes the spectrum into multiple frequency components</li>
+            <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
+            <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+            <li>Applies a ramping function to the excitation force during the initial phase</li>
+            <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+          </ul>
+          <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+          <h4>Usage Notes:</h4>
+          <ul>
+            <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
+            <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
+            <li>Random seeds can be changed to generate different realizations of the same sea state</li>
+          </ul>
+        </html>"),
+        Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Pierson Moskowitz ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end EqualEnergy_PiersonMoskowitzWave1D;
+
+    function equalEnergyGen
+     
+     // Can lead to errors if n_omega and n_omega_int are not selected properly, need to make more rubust
+     
+      input Real omega_min "Minimum frequency [rad/s]";
+      input Real omega_max "Maximum frequency [rad/s]";
+      constant input Integer n_omega "Number of frequency compenents defining the spectrum"; 
+      constant input Integer n_omega_int "Number of steps for integrating the spectrum"; 
+      input Real omega_int[n_omega_int] "Integration frquencies";
+      input Real S_int[n_omega_int] "Energy Spectrum";
+    
+      
+      output Real omega[n_omega] "Output vector of selected frequency components [rad/s]";
+      output Real S[n_omega];
+      output Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+      //output Real eng_check[n_omega];
+      //output Real energy_sum;
+      output Real mean_energy;
+      output Real new_energy;
+    
+      protected
+      Real domega = (omega_max-omega_min)/(n_omega_int-1) "Omega int frequency step";
+      //Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+      Real tot_energy "Total energy in the spectrum";
+      Real energy "Element to iterate current area off of";
+      //Real mean_energy;
+      Real tolerance "Tolerance for area";
+      //Real current_energy_diff, next_energy_diff;
+      //Integer k = 1;
+      
+      
+    algorithm
+    
+     
+    //energy_sum := 0;
+    Cum_energy[1] := 0;
+    omega[1] := omega_min;
+    omega[n_omega] := omega_max;
+    S[1] := S_int[1];
+    S[n_omega] := S_int[n_omega_int];
+      
+      for i in 2:n_omega_int loop
+        energy := Hydrodynamic.Forces1D.trapIntegration(S_int[i-1], S_int[i], domega);
+        Cum_energy[i] := Cum_energy[i-1] + energy;
+       
+      end for;
+      
+      tot_energy := Cum_energy[end];
+      mean_energy := tot_energy/(n_omega-1);
+      tolerance := mean_energy/5;
+    
+        for i in 2:(n_omega-1) loop
+        
+        // This is really sensitive to integration step size, need to make more robust
+         /* for j in k:(n_omega_int-1) loop
+            current_energy_diff := abs(Cum_energy[j] - Cum_energy[k] - mean_energy);
+            next_energy_diff := abs(Cum_energy[j+1] - Cum_energy[k] - mean_energy);
+          
+            if  Cum_energy[j] - Cum_energy[k] >= mean_energy or current_energy_diff <= tolerance then 
+              omega[i] := omega_int[j];
+              S[i] := S_int[j];
+              eng_check[i] := Cum_energy[j] - Cum_energy[k];
+              energy_sum := energy_sum + eng_check[i];
+              k := j;
+              break;
+            end if;
+            
+          end for; */
+          
+          //for j in k:(n_omega_int-1) loop
+            new_energy := new_energy + mean_energy;
+            
+            omega[i] := Modelica.Math.Vectors.interpolate(Cum_energy, omega_int, new_energy);
+            S[i] := Modelica.Math.Vectors.interpolate(omega_int, S_int, omega[i]);
+          
+          //end for; */
+          
+        
+        end for;
+    
+      
+    end equalEnergyGen;
+
+    function trapIntegration
+      input Real y1;
+      input Real y2;
+      input Real domega;
+      
+      output Real Area;
+    
+    algorithm
+  
+      Area := 0.5*domega*(y1+y2);
+    
+    end trapIntegration;
+
+    function integrationFrequencyGen
+    
+      input Real omega_min "Minimum frequency [rad/s]";
+      input Real omega_max "Maximum frequency [rad/s]";
+      constant input Integer n_omega_int "Number of frequency compenents defining the spectrum"; 
+    
+      output Real omega_int[n_omega_int];// = omega_min:domega_int:omega_max "Frequencies for spectrum generation and integration";
+      
+      protected
+      Real domega_int = (omega_max-omega_min)/(n_omega_int-1)"Frequency step size";
+      
+    algorithm
+    
+    for i in 1:n_omega_int loop
+        omega_int[i] := omega_min + (i - 1) * (omega_max - omega_min) / (n_omega_int - 1);
+      end for;
+    
+
+    end integrationFrequencyGen;
+
+    function dfrequencyGen
+    
+      input Real omega[n_omega];
+      input Real S[n_omega];
+      constant input Integer n_omega;
+    
+      output Real domega[n_omega];
+      
+      protected
+      Real omega_mean;
+     
+    algorithm
+    
+      for i in 2:n_omega  loop
+        domega[i] := omega[i] - omega[i-1];
+      end for;
+      
+      omega_mean := sum(domega)/n_omega;
+      
+      domega[1] := omega_mean;
+      
+    end dfrequencyGen;
   
   
   

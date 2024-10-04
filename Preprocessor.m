@@ -18,6 +18,8 @@ hydroCoeff.hydroCoefficients.m = hydroCoeff.parameters.rho * h5read(filename,'/b
 hydroCoeff.hydroCoefficients.Ainf = hydroCoeff.parameters.rho * h5read(filename,'/body1/hydro_coeffs/added_mass/inf_freq');           % Infinite-frequency added mass
 hydroCoeff.hydroCoefficients.Ainf = hydroCoeff.hydroCoefficients.Ainf(1:6,:); % Removing b2b coupling terms
 hydroCoeff.hydroCoefficients.Khs = hydroCoeff.parameters.rho * hydroCoeff.parameters.g * h5read(filename,'/body1/hydro_coeffs/linear_restoring_stiffness'); % Linear hydrostatic stiffness
+hydroCoeff.body.cg = h5read(filename,'/body1/properties/cg');
+
 
 % Excitation parameters
 hydroCoeff.excitation.w = h5read(filename,'/simulation_parameters/w')';       % Frequency values
