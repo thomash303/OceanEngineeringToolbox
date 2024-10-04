@@ -760,15 +760,21 @@ package Hydrodynamic
 // Calculate sea surface elevation (SSE) as the sum of all wave components
         SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
         // Calculate and apply ramping to the excitation force
-  for i in 1:nDoF loop // could probably extend zeta and time for 6 DoF for efficiency, but loop works in the interim
-    if time < Trmp then
-// Ramp up the excitation force during the initial phase
+      
+  
+      
+      for i in 1:nDoF loop // could probably extend zeta and time for 6 DoF for efficiency, but loop works in the interim
+      if time < Trmp then
+      // Ramp up the excitation force during the initial phase
               F_exc[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
             else
-// Apply full excitation force after the ramping period
+      // Apply full excitation force after the ramping period
               F_exc[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
             end if;
-  end for;
+      end for;
+      
+      
+      
       /*
 // Assign excitation force to output (vertical component only)
         F = {0, 0, F_exc[3]};
@@ -991,15 +997,143 @@ if time < Trmp then
       end JonswapWave;
 
       partial model IrregularWaveParameters
+       
+        extends Hydrodynamic.readHydroParam;
         extends Modelica.Blocks.Icons.Block;
-        parameter Real Tp[n_omega] = 2*pi./omega "Wave period";
+        import Modelica.Math.Vectors;
+        extends Hydrodynamic.Connector.forceandTorque_con;
+        // Internal connector for wave properties
+        Hydrodynamic.Internal.Connectors.WaveOutConn wconn "Internal connector for wave properties";
+        // Output connector for excitation force
+        constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+        constant Real g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+        // Wave and environmental parameters
+        parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
+          Dialog(group = "Environmental Parameters"));
+        parameter Modelica.Units.SI.Density rho = 1025 "Density of seawater [kg/m^3]" annotation(
+          Dialog(group = "Environmental Parameters"));
+        parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+          Dialog(group = "Wave Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omega_min = 0.03141 "Lowest frequency component [rad/s]" annotation(
+          Dialog(group = "Spectrum Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omega_max = 3.141 "Highest frequency component [rad/s]" annotation(
+          Dialog(group = "Spectrum Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+          Dialog(group = "Spectrum Parameters"));
+        parameter Integer n_omega = 100 "Number of frequency components" annotation(
+          Dialog(group = "Discretization"));
+        parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+          Dialog(group = "Random Generation"));
+        parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+          Dialog(group = "Random Generation"));
+        parameter Real rnd_shft[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed, globalSeed, n_omega) "Random shifts for frequency selection";
+        parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+          Dialog(group = "Random Generation"));
+        parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+          Dialog(group = "Random Generation"));
+        parameter Real epsilon[n_omega] = Hydrodynamic.Internal.Functions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
+        parameter Real Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
+          Dialog(group = "Simulation Parameters"));
+        // Derived parameters
+        Real omega[n_omega]; 
+       Modelica.Units.SI.Length zeta[n_omega];
+          Real domega[n_omega];
+        Real Tp[n_omega]"Wave period components [s]";
+        Real k[n_omega];
+        parameter String frequencySelection = "equalEnergy"; // or equalEnergy
+        Real S[n_omega];
+        // Variables
+        Real ExcCoeffRe[n_omega] "Real component of excitation coefficient for frequency components";
+        Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
+        Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+      
+       Real omega_int[n_omega_int];
+        parameter Integer n_omega_int = 500;
+       Real S_int[n_omega_int];
+      
+      
+      equation
+          Tp = 2*pi./omega "Wave period components [s]";
+          k = Hydrodynamic.Internal.Functions.waveNumber(d, omega) "Wave number components [1/m]";
+      
+        if frequencySelection == "equalEnergy" then
+          omega_int = Hydrodynamic.Forces1D.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
+          (omega, S) = Hydrodynamic.Forces1D.equalEnergyGen(omega_min, omega_max, n_omega, n_omega_int,         omega_int, S_int);
+          
+          elseif frequencySelection == "random" then
+          omega = Hydrodynamic.Internal.Functions.frequencySelector(omega_min, omega_max, rnd_shft) "Selected frequency components [rad/s]";
+          omega_int = zeros(n_omega_int);
+          S_int = zeros(n_omega_int);
+          
+        end if;
+      
+      domega = Hydrodynamic.Forces1D.dfrequencyGen(omega, S, n_omega);
+      zeta = sqrt(2*S.*domega) "Wave amplitude components [m]";
+      // Interpolate excitation coefficients (Re & Im) for each frequency component
+        for i in 1:n_omega loop
+          ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe, omega[i])*rho*g;
+          ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm, omega[i])*rho*g;
+        end for;
+      // Calculate sea surface elevation (SSE) as the sum of all wave components
+        SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+        // Calculate and apply ramping to the excitation force
+      if time < Trmp then
+      // Ramp up the excitation force during the initial phase
+          wconn.F_exc = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+        else
+      // Apply full excitation force after the ramping period
+          wconn.F_exc = sum((ExcCoeffRe.*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm.*zeta.*sin(omega*time - 2*pi*epsilon)));
+        end if;
+      // Assign excitation force to output (vertical component only)
+        F = {0, 0, wconn.F_exc};
+        T = {0, 0, 0};
         annotation(
           Documentation(info = "<html>
-            <h4>JONSWAP Wave Spectrum Model</h4>
-            <p>This model implements the JONSWAP (Joint North Sea Wave Project) wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+            <p><b>Bretschneider Wave Spectrum Model</b></p>
+            <p>This model implements the Bretschneider wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+            <p><b>Key features:</b></p>
+            <ul>
+              <li>Generates a wave spectrum based on the Bretschneider formulation</li>
+              <li>Discretizes the spectrum into multiple frequency components</li>
+              <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
+              <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+              <li>Applies a ramping function to the excitation force during the initial phase</li>
+              <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+            </ul>
+            <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+            <p><b>Usage Notes:</b></p>
+            <ul>
+              <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
+              <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
+              <li>Random seeds can be changed to generate different realizations of the same sea state</li>
+            </ul>
+          </html>"),
+          Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Bretschneider ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
+          experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+      
+      
+      end IrregularWaveParameters;
+      
+      model OOP_BretschneiderWave "Implementation of Bretschneider wave spectrum for irregular wave generation"
+        extends Hydrodynamic.WaveProfile.IrregularWave.IrregularWaveParameters;
+        
+        equation
+        
+        if frequencySelection == "equalEnergy" then
+          S_int = Hydrodynamic.Internal.Functions.spectrumGenerator_BRT(Hs, omega_int, omega_peak) "Spectral values for frequency components [m^2-s/rad]";
+          
+          elseif frequencySelection == "random" then
+        S = Hydrodynamic.Internal.Functions.spectrumGenerator_BRT(Hs, omega, omega_peak) "Spectral values for frequency components [m^2-s/rad]";
+        
+        end if;
+          
+        annotation(
+          Documentation(info = "<html>
+            <h4>Pierson-Moskowitz Wave Spectrum Model</h4>
+            <p>This model implements the Pierson-Moskowitz (PM) wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
             <p>Key features:</p>
             <ul>
-              <li>Generates a wave spectrum based on the JONSWAP formulation</li>
+              <li>Generates a wave spectrum based on the PM formulation</li>
               <li>Discretizes the spectrum into multiple frequency components</li>
               <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
               <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
@@ -1012,12 +1146,11 @@ if time < Trmp then
               <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
               <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
               <li>Random seeds can be changed to generate different realizations of the same sea state</li>
-              <li>JONSWAP spectrum is particularly suitable for modeling developing seas and storm conditions</li>
             </ul>
           </html>"),
-          Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier)}),
+          Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Pierson Moskowitz ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
           experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
-      end IrregularWaveParameters;
+      end OOP_BretschneiderWave;
       annotation(
         Documentation(info = "<html>
       <p><strong>IrregularWave Package</strong></p>
@@ -2933,8 +3066,8 @@ if time < Trmp then
       Real ExcCoeffIm[n_omega] "Imaginary component of excitation coefficient for frequency components";
       Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
       
-      Real mean, new;
-      Real cum[n_omega_int];
+      //Real mean, new;
+      //Real cum[n_omega_int];
       Real domega[n_omega];
     
     equation
@@ -2946,7 +3079,7 @@ if time < Trmp then
       k = Hydrodynamic.Internal.Functions.waveNumber(d, omega);
       
         // Can be issues when selecting n_int and n_omega, need to make more robust
-      (omega, S,cum,mean,new) = Hydrodynamic.Forces1D.equalEnergyGen(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
+      (omega, S) = Hydrodynamic.Forces1D.equalEnergyGen(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
       
     
     // Interpolate excitation coefficients (Re & Im) for each frequency component
@@ -3009,21 +3142,23 @@ if time < Trmp then
       
       output Real omega[n_omega] "Output vector of selected frequency components [rad/s]";
       output Real S[n_omega];
-      output Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+      //output Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
       //output Real eng_check[n_omega];
       //output Real energy_sum;
-      output Real mean_energy;
-      output Real new_energy;
+      //output Real mean_energy;
+      //output Real new_energy;
     
       protected
       Real domega = (omega_max-omega_min)/(n_omega_int-1) "Omega int frequency step";
-      //Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+      Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
       Real tot_energy "Total energy in the spectrum";
       Real energy "Element to iterate current area off of";
       //Real mean_energy;
       Real tolerance "Tolerance for area";
       //Real current_energy_diff, next_energy_diff;
       //Integer k = 1;
+      Real mean_energy;
+      Real new_energy;
       
       
     algorithm
