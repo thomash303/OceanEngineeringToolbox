@@ -13,6 +13,10 @@ filename = 'C:\Users\Thomas\Documents\GitHub\OET_6DoF\rm3.h5';
 hydroCoeff.parameters.rho = h5read(filename,'/simulation_parameters/rho');  % Density of water
 hydroCoeff.parameters.g = h5read(filename,'/simulation_parameters/g');    % Acceleration due to gravity
 
+% Body properties
+hydroCoeff.bodyProperties.body1.name = h5read(filename, '/body1/properties/name'); % Body name
+hydroCoeff.bodyProperties.body1.number = h5read(filename, '/body1/properties/body_number'); % Body number
+
 % Hydro coefficients
 hydroCoeff.hydroCoefficients.m = hydroCoeff.parameters.rho * h5read(filename,'/body1/properties/disp_vol');         % Equilibrium mass
 hydroCoeff.hydroCoefficients.Ainf = hydroCoeff.parameters.rho * h5read(filename,'/body1/hydro_coeffs/added_mass/inf_freq');           % Infinite-frequency added mass
@@ -63,10 +67,13 @@ hydroCoeff.ss_rad.processed.B = B;
 hydroCoeff.ss_rad.processed.C = C .*hydroCoeff.parameters.rho;
 hydroCoeff.ss_rad.processed.D = zeros(hydroCoeff.body.ndof,hydroCoeff.body.ndof);
 
-% Preserving 1-DoF import for test cases and control
-hydroCoeff.frequency_dependent.added_mass = h5read(filename,'/body1/hydro_coeffs/added_mass/all');  
-hydroCoeff.frequency_dependent.radiation_damping = h5read(filename,'/body1/hydro_coeffs/radiation_damping/all');
-hydroCoeff.frequency_dependent.added_mass = hydroCoeff.frequency_dependent.added_mass(:,3,3)*hydroCoeff.parameters.rho - hydroCoeff.hydroCoefficients.Ainf(3,3); % Frequency dependent added mass (only)
-hydroCoeff.frequency_dependent.radiation_damping = hydroCoeff.frequency_dependent.radiation_damping(:,3,3)*hydroCoeff.parameters.rho.*hydroCoeff.excitation.w'; % Radiation damping
+% PTO Data
+hydroCoeff.PTO.Adep = h5read(filename,'/body1/hydro_coeffs/added_mass/all');  
+hydroCoeff.PTO.Adep = hydroCoeff.PTO.Adep(:,1:6,:);
+hydroCoeff.PTO.Rdamp = h5read(filename,'/body1/hydro_coeffs/radiation_damping/all');
+hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp(:,1:6,:);
+hydroCoeff.PTO.Adep = permute(permute(hydroCoeff.PTO.Adep*hydroCoeff.parameters.rho,[2,3,1]) - hydroCoeff.hydroCoefficients.Ainf,[3,1,2]); % Frequency dependent added mass (only)
+hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp*hydroCoeff.parameters.rho.*hydroCoeff.excitation.w; % Radiation damping
+
 
 save('hydroCoeff_6DoF.mat','hydroCoeff')
