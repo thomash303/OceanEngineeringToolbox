@@ -698,8 +698,7 @@ package Hydrodynamic
       // BodyShape parameters
       parameter Modelica.Units.SI.Mass m = M + Ainf[3,3] "Mass of the body" annotation(Dialog(group = "Body"));
         
-         // The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO
-         // force code base to determine the control gain
+         /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
       
       parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
         Dialog(group = "Body"));
@@ -862,8 +861,7 @@ package Hydrodynamic
     end HydrodynamicBody;
     
     block PTOForce "Power Take-Off (PTO) force"
-    /* The code has not been refined, work needs to be done on fully importing the 260x6x6 frequency dependent data,
-     Selecting which mode is being excited and which is responding, and remove control gains as parameters */
+    /* The code has not been refined, work needs to be done on fully importing the 260x6x6 frequency dependent data, selecting which mode is being excited and which is responding, remove control gains as parameters, and integrate power metrics */
     
       // Inheritance
       extends Hydrodynamic.Models.positionSensorInput; // position input and concatenation
