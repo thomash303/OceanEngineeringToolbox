@@ -24,7 +24,6 @@ hydroCoeff.hydroCoefficients.Ainf = hydroCoeff.hydroCoefficients.Ainf(1:6,:); % 
 hydroCoeff.hydroCoefficients.Khs = hydroCoeff.parameters.rho * hydroCoeff.parameters.g * h5read(filename,'/body1/hydro_coeffs/linear_restoring_stiffness'); % Linear hydrostatic stiffness
 hydroCoeff.body.cg = h5read(filename,'/body1/properties/cg');
 
-
 % Excitation parameters
 hydroCoeff.excitation.w = h5read(filename,'/simulation_parameters/w')';       % Frequency values
 hydroCoeff.excitation.FexcRe =permute(h5read(filename,'/body1/hydro_coeffs/excitation/re'),[3,1,2]);    % Real component of wave excitation force coefficient
@@ -67,13 +66,20 @@ hydroCoeff.ss_rad.processed.B = B;
 hydroCoeff.ss_rad.processed.C = C .*hydroCoeff.parameters.rho;
 hydroCoeff.ss_rad.processed.D = zeros(hydroCoeff.body.ndof,hydroCoeff.body.ndof);
 
-% PTO Data
-hydroCoeff.PTO.Adep = h5read(filename,'/body1/hydro_coeffs/added_mass/all');  
-hydroCoeff.PTO.Adep = hydroCoeff.PTO.Adep(:,1:6,:);
-hydroCoeff.PTO.Rdamp = h5read(filename,'/body1/hydro_coeffs/radiation_damping/all');
-hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp(:,1:6,:);
-hydroCoeff.PTO.Adep = permute(permute(hydroCoeff.PTO.Adep*hydroCoeff.parameters.rho,[2,3,1]) - hydroCoeff.hydroCoefficients.Ainf,[3,1,2]); % Frequency dependent added mass (only)
-hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp*hydroCoeff.parameters.rho.*hydroCoeff.excitation.w; % Radiation damping
+% 1D PTO data
+hydroCoeff.PTO1D.added_mass = h5read(filename,'/body1/hydro_coeffs/added_mass/all');  
+hydroCoeff.PTO1D.radiation_damping = h5read(filename,'/body1/hydro_coeffs/radiation_damping/all');
+hydroCoeff.PTO1D.added_mass = hydroCoeff.PTO1D.added_mass(:,3,3)*hydroCoeff.parameters.rho; % Frequency dependent added mass (only)
+hydroCoeff.PTO1D.radiation_damping = hydroCoeff.PTO1D.radiation_damping(:,3,3)*hydroCoeff.parameters.rho.*hydroCoeff.excitation.w; % Radiation damping
 
+% PTO Data (too much for Moedlica)
+hydroCoeff.PTO.Adep = h5read(filename,'/body1/hydro_coeffs/added_mass/all'); % Reading data
+hydroCoeff.PTO.Adep = hydroCoeff.PTO.Adep(:,1:6,:); % Removing b2b coupling terms
+hydroCoeff.PTO.Rdamp = h5read(filename,'/body1/hydro_coeffs/radiation_damping/all');  % Reading data
+hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp(:,1:6,:); % Removing b2b coupling terms
+hydroCoeff.PTO.Adep = permute(permute(hydroCoeff.PTO.Adep*hydroCoeff.parameters.rho,[2,3,1]) - hydroCoeff.hydroCoefficients.Ainf,[3,1,2]); % need to temporarily reshape to allow broadcasting
+hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp*hydroCoeff.parameters.rho.*hydroCoeff.excitation.w; % Unnormalizing data
+hydroCoeff.PTO.Adep = reshape(hydroCoeff.PTO.Adep,size(hydroCoeff.PTO.Adep,1),[],1); % Reshaping to a 260x36
+hydroCoeff.PTO.Rdamp = reshape(hydroCoeff.PTO.Rdamp,size(hydroCoeff.PTO.Rdamp,1),[],1); % Reshaping to a 260x36v
 
 save('hydroCoeff_6DoF.mat','hydroCoeff')

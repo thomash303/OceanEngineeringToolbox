@@ -232,7 +232,7 @@ package Hydrodynamic
             <li>The wave parameters may need to be adjusted to represent specific sea states</li>
           </ul>
         </html>"),
-        Diagram(coordinateSystem(extent = {{-80, 0}, {100, -40}})),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
         experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05)
     );
     end OOP_SingleBodyWEC1D;
@@ -655,7 +655,7 @@ package Hydrodynamic
     
     end RadiationForce6D;
     
-    model readHydroCoeff
+    model readHydroCoeff "No longer needed, keeping for use in SingleBodyWEC1D"
     
       parameter String fileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" annotation(
           Dialog(group = "Filepath"));
@@ -692,27 +692,30 @@ package Hydrodynamic
     model HydrodynamicBody "6-Dimensional Hydrodynamic Forces and Moments Calculation"
     
       // Inheritance
-      extends Hydrodynamic.readHydroParam;
-      extends Modelica.Units.SI;
-      extends Modelica.Blocks.Icons.Block;
       extends Hydrodynamic.Connector.inputOutput_con;
+      extends Hydrodynamic.HydroDataImport.massData; /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
       
       // BodyShape parameters
-      parameter Position r[3] = {0, 0, 0} "Position vector" annotation(
+      parameter Modelica.Units.SI.Mass m = M + Ainf[3,3] "Mass of the body" annotation(Dialog(group = "Body"));
+        
+         // The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO
+         // force code base to determine the control gain
+      
+      parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
         Dialog(group = "Body"));
-      parameter Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
+      parameter Modelica.Units.SI.Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      parameter Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+      parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
       Modelica.Mechanics.MultiBody.Parts.BodyShape bodyShape(r = r, r_CM = r_CM, m = m, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
         Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
@@ -729,11 +732,12 @@ package Hydrodynamic
         Placement(transformation(origin = {18, 64}, extent = {{-10, -10}, {10, 10}})));
       
       // PTO force parameters
-      parameter Boolean enablePTOForce = false "Switch to enable/disable PTO force calculation" annotation(
+      parameter Boolean enablePTOForce = true "Switch to enable/disable PTO force calculation" annotation(
         Dialog(group = "PTO Force Parameters"));
       parameter String controllerSelect = "reactive" "Controller type select" annotation(
         Dialog(group = "PTO Force Parameters"));
-     
+      Hydrodynamic.Forces.PTOForce ptoForce(/*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect) "PTO force calculation" annotation(
+        Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
     /* 
       parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
         Dialog(group = "PTO Parameters"));
@@ -756,14 +760,11 @@ package Hydrodynamic
       parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
         Dialog(group = "PTO Parameters"));
     */  
-      
-      PTO6D ptoForce(/*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect) "Power Take-Off force calculation" annotation(
-        Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
     
       // Drag force parameters
       parameter Boolean enableDampingDragForce = false "Switch to enable/disable drag force calculation" annotation(
         Dialog(group = "Damping and Drag Force Parameters"));
-      parameter Area Ac = 1 "Reference area" annotation(
+      parameter Modelica.Units.SI.Area Ac = 1 "Reference area" annotation(
         Dialog(group = "Damping and Drag Force Parameters"));
       parameter Real Cdx = 100 "Translational drag coefficient for x-axis" annotation(
         Dialog(group = "Damping and Drag Force Parameters"));
@@ -791,6 +792,7 @@ package Hydrodynamic
         Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
     
     equation
+    
       //Conections
       connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
@@ -860,25 +862,28 @@ package Hydrodynamic
     end HydrodynamicBody;
     
     block PTOForce "Power Take-Off (PTO) force"
+    /* The code has not been refined, work needs to be done on fully importing the 260x6x6 frequency dependent data,
+     Selecting which mode is being excited and which is responding, and remove control gains as parameters */
     
       // Inheritance
-      extends Hydrodynamic.readHydroParam;
-      extends Modelica.Blocks.Icons.Block;
-      extends Hydrodynamic.Connector.absolutePosition_con;
-      extends Hydrodynamic.Connector.absoluteVelocity_con;
-      extends Hydrodynamic.Connector.forceTorque_con;
+      extends Hydrodynamic.Models.positionSensorInput; // position input and concatenation
+      extends Hydrodynamic.Models.velocitySensorInput; // velocity input and concatenation
+      extends Hydrodynamic.Models.forceTorque; // force declaration and output
+      extends Hydrodynamic.HydroDataImport.ptoData; // PTO parameters
+      extends Hydrodynamic.HydroDataImport.hydrostaticData; // hydrostatic data
       
-      // Control parameter
+      
+      // Enable/disable PTO force
       parameter Boolean enablePTOForce = true "Switch to enable/disable PTO force calculation" annotation(Dialog(group = "PTO Force Parameters"));
-     
-      parameter Modelica.Units.SI.AngularFrequency omega_peak "Peak spectral frequency";
-      Modelica.Units.SI.Mass amdep = Modelica.Math.Vectors.interpolate(w, Adep, omega_peak);
-      Modelica.Units.SI.TranslationalDampingConstant Bpto = Modelica.Math.Vectors.interpolate(w, Rdamp, omega_peak);
-      Modelica.Units.SI.TranslationalSpringConstant Kpto;
-      Modelica.Units.SI.Mass Mpto;
-      //Modelica.Units.SI.Force Fpto;
+       // Select controller
+      parameter String controllerSelect = "reactive" annotation(Dialog(group = "PTO Force Parameters"));
+    // User input peak spectral frequency
+      parameter Modelica.Units.SI.AngularFrequency PTO_omega_peak = 0.9423 "Peak spectral frequency" annotation(Dialog(group = "PTO Force Parameters"));
+      
+      // PTO power variables (not currently enabled)
       //Modelica.Units.SI.Power Ppto;
       //Modelica.Blocks.Math.ContinuousMean Ppto_avg;
+      
       
       // Proportional gain parameters
       parameter Real Kpx "Proportional gain for x-axis translation [N/(m/s)]";
@@ -898,38 +903,47 @@ package Hydrodynamic
       parameter Real Kirz "Integral gain for z-axis rotation [N*m/rad]";
       Real Ki[6, 6] "Combined integral gain matrix";
       
+    protected  
+// Frequency dependent added mass at the peak spectral frequency
+      Modelica.Units.SI.Mass Adep_interp = Modelica.Math.Vectors.interpolate(w, Adep, PTO_omega_peak); 
+// Radiation damping at the peak spectral frequency
+      Modelica.Units.SI.TranslationalDampingConstant Bpto = Modelica.Math.Vectors.interpolate(w, Rdamp, PTO_omega_peak);
       
-      // Internal variable
-      Real fpto[6] "Combined PTO force/torque vector [N, N*m]";
-      Real u_theta[6] "Combined displacement vector [m, rad]";
-      Real v_omega[6] "Combined linear and angular velocity vector [m/s, rad/s]";
-      Real bpto;
-      parameter String controllerSelect = "reactive" annotation(
-        Dialog(group = "Controller type select"));
+      // Intermediate calculations
+      Modelica.Units.SI.TranslationalSpringConstant Kpto;
+      Modelica.Units.SI.Mass Mpto;
+      Modelica.Units.SI.TranslationalDampingConstant bpto;
+    
     equation
+      // Setting intermediate PTO parameters (heave excitation and response)
       Kiz = Kpto;
       Kp = diagonal({Kpx, Kpy, Kpz, Kprx, Kpry, Kprz});
       Kpz = bpto;
       Ki = diagonal({Kix, Kiy, Kiz, Kirx, Kiry, Kirz});
-      u_theta = cat(1, u_abs, theta_abs);
-      v_omega = cat(1, v_abs, omega_abs);
-    // Calculate the combined PTO force/torque vector
-      fpto = Kp*v_omega + Ki*u_theta;
-      Mpto = M + amdep;
-    // Use the switch to conditionally output the force and torque
+    
+    
+      // Calculate the combined PTO force/torque vector
+      f = Kp*velocity + Ki*displacement;
+      Mpto = M + Adep_interp; 
+      /* when this parameter was defined (unlike 6D case) the infinite frequency added mass
+      was not subtracted from in the preprocessing, so only need to add the body mass for this computation */
+    
+      // Use the switch to conditionally output the force and torque
       if enablePTOForce then
-        F = -fpto;
+        F = -f;
       else
         F = zeros(6);
       end if;
+      
       if controllerSelect == "passive" then
         Kpto = 0;
-        bpto = (Bpto^2 + (omega_peak*(Mpto) - Khs/omega_peak)^2)^(1/2);
+        bpto = (Bpto^2 + (PTO_omega_peak*(Mpto) - Khs[3,3]/PTO_omega_peak)^2)^(1/2);
+        
       elseif controllerSelect == "reactive" then
-        Kpto = (Mpto)*omega_peak - Khs/omega_peak;
-    // no khs in here
-        bpto = Bpto;
+        Kpto = (Mpto)*PTO_omega_peak - Khs[3,3]/PTO_omega_peak;
+        bpto = Bpto; 
       end if;
+      
       annotation(
         Documentation(info = "<html>
         <p>This block models a 6-dimensional Power Take-Off (PTO) system for both translational and rotational motion.</p>
@@ -954,9 +968,9 @@ package Hydrodynamic
     model HydrostaticForce "Hydrostatic Force and Torque Calculation"
       
       // Inheritance
-      extends Hydrodynamic.Models.positionSensorInput; // velocity input and concatenation
+      extends Hydrodynamic.Models.positionSensorInput; // position input and concatenation
       extends Hydrodynamic.Models.forceTorque; // force declaration and output
-      extends Hydrodynamic.HydroDataImport.hydrostaticData; // hydrodynamic parameters
+      extends Hydrodynamic.HydroDataImport.hydrostaticData; // hydrostatic parameters
       
       // Enable/disable hydrostatic force
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(Dialog(group = "Hydrostatic Force Parameters"));
@@ -1213,7 +1227,6 @@ package Hydrodynamic
       model PiersonMoskowitzWave "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
       
   extends Hydrodynamic.WaveProfile.IrregularWave.IrregularWaveParameters;
-      extends Hydrodynamic.HydroDataImport.ptoData;
       
       equation
       
@@ -5095,23 +5108,42 @@ record filePath
 
     partial model ptoData
     
-    // Does not need inheritance because the instance of the class where it is used will inherit all needed data
-    // through the waveParameter model (needs w and w_peak)
-    
-    
+    // It is able to correctly read the 260x6x6 frequency dependent data, but it crashes Modelica
+    // For now will only use simple 1D input
       extends Hydrodynamic.HydroDataImport.frequencyData;
       extends Hydrodynamic.HydroDataImport.massData;
-      
-      parameter Real Adep[:] = vector(Modelica.Utilities.Streams.readRealMatrix(filename, "hydroCoeff.added_mass", wSize, 1)) "Frequency dependent added mass";
-      parameter Real Rdamp[:] = vector(Modelica.Utilities.Streams.readRealMatrix(filename, "hydroCoeff.radiation_damping", wSize, 1)) "Radiation damping";
+      extends Hydrodynamic.HydroDataImport.multibodyData;
+     
     
     protected
-      parameter String filename = "C:/Users/Thomas/Documents/GitHub/OET_Sys-MoDEL_TH/hydroCoeff.mat"  "Path to the hydroCoeff.mat file" annotation(
-        Dialog(group = "PTO Parameters"));
     
-      //parameter Modelica.Units.SI.Mass Adep[wDim[1], nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.PTO.Adep", wDim[1], nDoF, nDoF) "Added mass at maximum (cut-off) frequency";
+    /* Full 260x6x6 data, but it crashes Modelica
+    
+      // Declare a variable to hold the imported data
+      Real Adep_flat[wDim[1], nDoF * nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.PTO.Adep", wDim[1], nDoF * nDoF); // Holds the flattened matrix (260x36)
+      Real Rdamp_flat[wDim[1], nDoF * nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.PTO.Rdamp", wDim[1], nDoF * nDoF); // Holds the flattened matrix (260x36)
+    
+    
+      // Declare the reshaped variable
+      Real Adep[wDim[1], nDoF, nDoF]; // Reshape back to (260x6x6)
+      Real Rdamp[wDim[1], nDoF, nDoF]; // Reshape back to (260x6x6)
+    
+    equation
+      // Reshape the flattened matrix back into a 3D matrix
+      for i in 1:wDim[1] loop
+        for j in 1:nDoF loop
+          for k in 1:nDoF loop
+            Adep[i, k, j] = Adep_flat[i, (j - 1) * nDoF + k]; // Reshape the data
+            Rdamp[i, k, j] = Rdamp_flat[i, (j - 1) * nDoF + k]; // Reshape the data
+          end for;
+        end for;
+      end for;
       
-      
+    */
+    
+    // 1D PTO data
+      parameter Real Adep[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.PTO1D.added_mass", wDim[1], 1)) "Frequency dependent added mass";
+      parameter Real Rdamp[:] = vector(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.PTO1D.radiation_damping", wDim[1], 1)) "Radiation damping";
     
     
     end ptoData;
