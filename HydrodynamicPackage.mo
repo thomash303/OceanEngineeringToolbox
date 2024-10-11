@@ -858,22 +858,27 @@ package Hydrodynamic
       Modelica.Units.SI.Mass Mpto;
       Modelica.Units.SI.TranslationalDampingConstant bpto;
     equation
-// Setting intermediate PTO parameters (heave excitation and response)
+  // Setting intermediate PTO parameters (heave excitation and response)
       Kiz = Kpto;
       Kp = diagonal({Kpx, Kpy, Kpz, Kprx, Kpry, Kprz});
       Kpz = bpto;
       Ki = diagonal({Kix, Kiy, Kiz, Kirx, Kiry, Kirz});
-// Calculate the combined PTO force/torque vector
-      f = Kp*velocity + Ki*displacement;
-      Mpto = M + Adep_interp;
-/* when this parameter was defined (unlike 6D case) the infinite frequency added mass
-      was not subtracted from in the preprocessing, so only need to add the body mass for this computation */
-// Use the switch to conditionally output the force and torque
+
+      // Use the switch to conditionally output the force and torque
       if enablePTOForce then
-        F = -f;
+       // Calculate the combined PTO force/torque vector
+        f = Kp*velocity + Ki*displacement;
+        Mpto = M + Adep_interp;
+        /* when this parameter was defined (unlike 6D case) the infinite frequency added mass
+        was not subtracted from in the preprocessing, so only need to add the body mass for this computation */
+        
       else
-        F = zeros(6);
+        f = zeros(6);
+        Mpto = 0;
       end if;
+      
+       F = -f;
+      
       if controllerSelect == "passive" then
         Kpto = 0;
         bpto = (Bpto^2 + (PTO_omega_peak*(Mpto) - Khs[3, 3]/PTO_omega_peak)^2)^(1/2);
@@ -914,14 +919,16 @@ package Hydrodynamic
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
         Dialog(group = "Hydrostatic Force Parameters"));
     equation
-// Calculate the  hydrostatic force/torque vector
-      f = Khs*displacement;
 // Use the switch to conditionally output the hydrostatic force torque element
       if enableHydrostaticForce then
-        F = -f;
+        // Calculate the  hydrostatic force/torque vector
+        f = Khs*displacement;
       else
-        F = zeros(6);
+        f = zeros(6);
       end if;
+      
+      F = -f;
+      
       annotation(
         Documentation(info = "<html>
         <p>This block calculates the 6-dimensional hydrostatic force and torque for both translational and rotational motion in a fluid medium.</p>
@@ -964,15 +971,18 @@ package Hydrodynamic
     initial equation
       x = zeros(n_states[2]) "Initialize state vector to zero";
     equation
-// Radiation state space
-      der(x) = A*x + B*velocity;
-      f = C*x + D*velocity;
+    
 // Use the switch to conditionally output the radiation force torque element
       if enableRadiationForce then
-        F = -f;
+       // Radiation state space
+        der(x) = A*x + B*velocity;
+        f = C*x + D*velocity;
       else
-        F = zeros(6);
+        x = zeros(n_states[2]);
+        f = zeros(6);
       end if;
+      
+       F = -f;
     end RadiationForce;
 
     model DampingDragForce "Drag Force and Torque Calculation"
@@ -1001,17 +1011,20 @@ package Hydrodynamic
     protected
       Real c "Combined constant term for drag calculation";
     equation
-// Calculate the combined constant term
-      c = 0.5*rho*Ac;
-// Will have different char areas, so c will need to be a vector
-// Calculate the 6D drag force/torque vector
-      f = c*Cd*velocity.*abs(velocity);
+    
 // Use the switch to conditionally output the damping drag force and torque
       if enableDampingDragForce then
-        F = -f;
+        // Calculate the combined constant term
+        c = 0.5*rho*Ac;
+        // Will have different char areas, so c will need to be a vector
+        // Calculate the 6D drag force/torque vector
+        f = c*Cd*velocity.*abs(velocity);
       else
-        F = zeros(6);
+        c = 0;
+        f = zeros(6);
       end if;
+      
+       F = -f;
       annotation(
         Documentation(info = "<html>
         <p>This block calculates the 6-dimensional drag force and torque for both translational and rotational motion in a fluid medium.</p>
