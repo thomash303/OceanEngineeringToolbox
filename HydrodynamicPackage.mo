@@ -143,6 +143,7 @@ package Hydrodynamic
 
     model OOP_SingleBodyWEC1D "1D Single-Body Wave Energy Converter Model"
       extends Modelica.Icons.Package;
+    
       // World component (no gravity, Z-axis pointing downwards)
       inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
         Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
@@ -153,14 +154,16 @@ package Hydrodynamic
       Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
       // Define hydrodynamic body
-      Hydrodynamic.Forces.HydrodynamicBody hydrodynamicBody( /*enableHydrostaticForce = true, */enablePTOForce = true, enableRadiationForce = true) annotation(
+      Hydrodynamic.Forces.HydrodynamicBody hydrodynamicBody( /*enableHydrostaticForce = true, */enablePTOForce = true, enableRadiationForce = true,FileName=filePath.FileName) annotation(
         Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
       // Define wave and current bus
       WaveProfile.WaveAndCurrentBus waveAndCurrentBus annotation(
         Placement(transformation(origin = {68, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
       // Define wave spectrum
-      WaveProfile.IrregularWave.Bus_PiersonMoskowitzWave bus_PiersonMoskowitzWave annotation(
+      WaveProfile.IrregularWave.Bus_PiersonMoskowitzWave bus_PiersonMoskowitzWave(fileName=filePath.FileName) annotation(
         Placement(transformation(origin = {100, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  Forces.FilePath filePath annotation(
+        Placement(transformation(origin = {132, -18}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
       connect(world.frame_b, prismatic.frame_a) annotation(
@@ -650,6 +653,8 @@ package Hydrodynamic
       //extends Hydrodynamic.HydroDataImport.massData;
       /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
       // BodyShape parameters
+       
+      parameter String FileName;
       
       /* Removing mass definition here and adding it to a custom bodyShape model
       parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
@@ -671,24 +676,24 @@ package Hydrodynamic
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      Hydrodynamic.Forces.BodyShape bodyShape(r = r, r_CM = r_CM, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
+      Hydrodynamic.Forces.Bodies.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=FileName) annotation(
         Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
       // Hydrostatic force parameters
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
         Dialog(group = "Hydrostatic Force Parameters"));
-      Hydrodynamic.Forces.HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce) "Hydrostatic force calculation" annotation(
+      Hydrodynamic.Forces.HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce,fileName=FileName) "Hydrostatic force calculation" annotation(
         Placement(transformation(origin = {16, -20}, extent = {{-10, -10}, {10, 10}})));
       // Radiation force paramters
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
         Dialog(group = "Radiation Force Parameters"));
-      Hydrodynamic.Forces.RadiationForce radiationForce annotation(
+      Hydrodynamic.Forces.RadiationForce radiationForce(fileName=FileName) annotation(
         Placement(transformation(origin = {18, 64}, extent = {{-10, -10}, {10, 10}})));
       // PTO force parameters
       parameter Boolean enablePTOForce = true "Switch to enable/disable PTO force calculation" annotation(
         Dialog(group = "PTO Force Parameters"));
       parameter String controllerSelect = "reactive" "Controller type select" annotation(
         Dialog(group = "PTO Force Parameters"));
-      Hydrodynamic.Forces.PTOForce ptoForce( /*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect) "PTO force calculation" annotation(
+      Hydrodynamic.Forces.PTOForce ptoForce( /*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect,fileName=FileName) "PTO force calculation" annotation(
         Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
       /* 
             parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
@@ -729,7 +734,7 @@ package Hydrodynamic
         Dialog(group = "Damping and Drag Force Parameters"));
       parameter Real Crz = 100 "Rotational drag coefficient for z-axis" annotation(
         Dialog(group = "Damping and Drag Force Parameters"));
-      Hydrodynamic.Forces.DampingDragForce dampingDragForce(Ac = Ac, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDampingDragForce = enableDampingDragForce) "Drag force calculation" annotation(
+      Hydrodynamic.Forces.DampingDragForce dampingDragForce(Ac = Ac, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDampingDragForce = enableDampingDragForce,fileName=FileName) "Drag force calculation" annotation(
         Placement(transformation(origin = {16, 24}, extent = {{-10, -10}, {10, 10}})));
       // Force and torque blocks
       ForceToqueSum forceToqueSum annotation(
@@ -740,7 +745,7 @@ package Hydrodynamic
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_z = true, get_angles = true, get_w = true) annotation(
         Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
     equation
-//Conections
+    //Conections
       connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
       connect(bodyShape.frame_b, frame_b) annotation(
@@ -858,7 +863,7 @@ package Hydrodynamic
       Modelica.Units.SI.Mass Mpto;
       Modelica.Units.SI.TranslationalDampingConstant bpto;
     equation
-  // Setting intermediate PTO parameters (heave excitation and response)
+// Setting intermediate PTO parameters (heave excitation and response)
       Kiz = Kpto;
       Kp = diagonal({Kpx, Kpy, Kpz, Kprx, Kpry, Kprz});
       Kpz = bpto;
@@ -866,7 +871,7 @@ package Hydrodynamic
 
       // Use the switch to conditionally output the force and torque
       if enablePTOForce then
-       // Calculate the combined PTO force/torque vector
+// Calculate the combined PTO force/torque vector
         f = Kp*velocity + Ki*displacement;
         Mpto = M + Adep_interp;
         /* when this parameter was defined (unlike 6D case) the infinite frequency added mass
@@ -921,7 +926,7 @@ package Hydrodynamic
     equation
 // Use the switch to conditionally output the hydrostatic force torque element
       if enableHydrostaticForce then
-        // Calculate the  hydrostatic force/torque vector
+// Calculate the  hydrostatic force/torque vector
         f = Khs*displacement;
       else
         f = zeros(6);
@@ -974,7 +979,7 @@ package Hydrodynamic
     
 // Use the switch to conditionally output the radiation force torque element
       if enableRadiationForce then
-       // Radiation state space
+// Radiation state space
         der(x) = A*x + B*velocity;
         f = C*x + D*velocity;
       else
@@ -1011,13 +1016,12 @@ package Hydrodynamic
     protected
       Real c "Combined constant term for drag calculation";
     equation
-    
-// Use the switch to conditionally output the damping drag force and torque
-      if enableDampingDragForce then
-        // Calculate the combined constant term
+    // Use the switch to conditionally output the damping drag force and torque
+if enableDampingDragForce then
+// Calculate the combined constant term
         c = 0.5*rho*Ac;
-        // Will have different char areas, so c will need to be a vector
-        // Calculate the 6D drag force/torque vector
+// Will have different char areas, so c will need to be a vector
+// Calculate the 6D drag force/torque vector
         f = c*Cd*velocity.*abs(velocity);
       else
         c = 0;
@@ -1199,6 +1203,536 @@ package Hydrodynamic
         Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Text(extent = {{-150, -100}, {150, -70}}, textString = "r=%r"), Rectangle(extent = {{-100, 30}, {101, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Ellipse(extent = {{-60, 60}, {60, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255}), Text(extent = {{-50, 24}, {55, -27}}, textString = "%m"), Text(extent = {{55, 12}, {91, -13}}, textString = "b"), Text(extent = {{-92, 13}, {-56, -12}}, textString = "a")}),
         Diagram(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-100, 9}, {-100, 43}}, color = {128, 128, 128}), Line(points = {{100, 0}, {100, 44}}, color = {128, 128, 128}), Line(points = {{-100, 40}, {90, 40}}, color = {135, 135, 135}), Polygon(points = {{90, 44}, {90, 36}, {100, 40}, {90, 44}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-22, 68}, {20, 40}}, textColor = {128, 128, 128}, textString = "r"), Line(points = {{-100, -10}, {-100, -90}}, color = {128, 128, 128}), Line(points = {{-100, -84}, {-10, -84}}, color = {128, 128, 128}), Polygon(points = {{-10, -80}, {-10, -88}, {0, -84}, {-10, -80}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-82, -66}, {-56, -84}}, textColor = {128, 128, 128}, textString = "r_CM"), Line(points = {{0, -46}, {0, -90}}, color = {128, 128, 128})}));
     end BodyShape;
+
+    package Bodies
+   
+model BodyShape "Rigid body with mass, inertia tensor, different shapes for animation, and two frame connectors (12 potential states)"
+        extends Hydrodynamic.HydroDataImport.massData;
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+          Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+          Placement(transformation(extent = {{84, -16}, {116, 16}})));
+        parameter Boolean animation = true "= true, if animation shall be enabled (show shape between frame_a and frame_b and optionally a sphere at the center of mass)";
+        parameter Boolean animateSphere = true "= true, if mass shall be animated as sphere provided animation=true";
+        parameter Modelica.Units.SI.Position r[3](start = {0, 0, 0}) "Vector from frame_a to frame_b resolved in frame_a";
+        parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+       
+        parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_21(min = -10000000) = 0 "Element (2,1) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_31(min = -10000000) = 0 "Element (3,1) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_32(min = -10000000) = 0 "Element (3,2) of inertia tensor" annotation(
+          Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+          Dialog(tab = "Initialization", showStartAttribute = true));
+        Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+          Dialog(tab = "Initialization", showStartAttribute = true));
+        Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+          Dialog(tab = "Initialization", showStartAttribute = true));
+        parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(tab = "Initialization"));
+        parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+          Dialog(tab = "Initialization"));
+        parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+          Evaluate = true,
+          Dialog(tab = "Initialization"));
+        parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(tab = "Initialization"));
+        parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+          Dialog(tab = "Initialization"));
+        parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+          Evaluate = true,
+          choices(checkBox = true),
+          Dialog(tab = "Initialization"));
+        parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+          Dialog(tab = "Initialization"));
+        parameter Modelica.Mechanics.MultiBody.Types.ShapeType shapeType = "cylinder" "Type of shape" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Units.SI.Position r_shape[3] = {0, 0, 0} "Vector from frame_a to shape origin, resolved in frame_a" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Mechanics.MultiBody.Types.Axis lengthDirection = Modelica.Units.Conversions.to_unit1(r - r_shape) "Vector in length direction of shape, resolved in frame_a" annotation(
+          Evaluate = true,
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Mechanics.MultiBody.Types.Axis widthDirection = {0, 1, 0} "Vector in width direction of shape, resolved in frame_a" annotation(
+          Evaluate = true,
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Units.SI.Length length = Modelica.Math.Vectors.length(r - r_shape) "Length of shape" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Units.SI.Distance width = length/world.defaultWidthFraction "Width of shape" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Units.SI.Distance height = width "Height of shape" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Mechanics.MultiBody.Types.ShapeExtra extra = 0.0 "Additional parameter depending on shapeType (see docu of Visualizers.Advanced.Shape)" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        input Modelica.Mechanics.MultiBody.Types.Color color = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of shape" annotation(
+          Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Modelica.Units.SI.Diameter sphereDiameter = 2*width "Diameter of sphere" annotation(
+          Dialog(tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+        input Modelica.Mechanics.MultiBody.Types.Color sphereColor = color "Color of sphere of mass" annotation(
+          Dialog(colorSelector = true, tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+        input Modelica.Mechanics.MultiBody.Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+          Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+        parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+          Evaluate = true,
+          Dialog(tab = "Advanced"));
+        parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+          Evaluate = true,
+          Dialog(tab = "Advanced"));
+        parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+          Evaluate = true,
+          Dialog(tab = "Advanced", enable = not useQuaternions));
+        Modelica.Mechanics.MultiBody.Parts.FixedTranslation frameTranslation(r = r, animation = false) annotation(
+          Placement(transformation(extent = {{-20, -20}, {20, 20}})));
+        Hydrodynamic.Forces.Bodies.Body_addedMass body(fileName=FileName, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, animation = false, sequence_start = sequence_start, angles_fixed = angles_fixed, angles_start = angles_start, w_0_fixed = w_0_fixed, w_0_start = w_0_start, z_0_fixed = z_0_fixed, z_0_start = z_0_start, useQuaternions = useQuaternions, sequence_angleStates = sequence_angleStates, enforceStates = false) annotation(
+          Placement(transformation(extent = {{-27.3333, -70.3333}, {13, -30}})));
+      protected
+        outer Modelica.Mechanics.MultiBody.World world;
+        Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape1(shapeType = shapeType, color = color, specularCoefficient = specularCoefficient, length = length, width = width, height = height, lengthDirection = lengthDirection, widthDirection = widthDirection, r_shape = r_shape, extra = extra, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+        Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape2(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and animateSphere;
+      equation
+        r_0 = frame_a.r_0;
+        v_0 = der(r_0);
+        a_0 = der(v_0);
+        connect(frame_a, frameTranslation.frame_a) annotation(
+          Line(points = {{-100, 0}, {-20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+        connect(frame_b, frameTranslation.frame_b) annotation(
+          Line(points = {{100, 0}, {20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+        connect(frame_a, body.frame_a) annotation(
+          Line(points = {{-100, 0}, {-60, 0}, {-60, -50.1666}, {-27.3333, -50.1666}}, color = {95, 95, 95}, thickness = 0.5));
+        annotation(
+          Documentation(info = "<html>
+    <p>
+    <strong>Rigid body</strong> with mass and inertia tensor and <strong>two frame connectors</strong>.
+    All parameter vectors have to be resolved in frame_a.
+    The <strong>inertia tensor</strong> has to be defined with respect to a
+    coordinate system that is parallel to frame_a with the
+    origin at the center of mass of the body. The coordinate system <strong>frame_b</strong>
+    is always parallel to <strong>frame_a</strong>.
+    </p>
+    <p>
+    By default, this component is visualized by any <strong>shape</strong> that can be
+    defined with Modelica.Mechanics.MultiBody.Visualizers.FixedShape. This shape is placed
+    between frame_a and frame_b (default: length(shape) = Frames.length(r)).
+    Additionally a <strong>sphere</strong> may be visualized that has
+    its center at the center of mass.
+    Note, that
+    the animation may be switched off via parameter animation = <strong>false</strong>.
+    </p>
+    <p>
+    <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/BodyShape.png\" alt=\"Parts.BodyShape\">
+    </p>
+    
+    <p>
+    The following shapes can be defined via parameter <strong>shapeType</strong>,
+    e.g., shapeType=\"cone\":
+    </p>
+    
+    <p>
+    <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Visualizers/FixedShape.png\" alt=\"Visualizers.FixedShape\">
+    </p>
+    
+    <p>
+    A BodyShape component has potential states. For details of these
+    states and of the \"Advanced\" menu parameters, see model
+    <a href=\"modelica://Modelica.Mechanics.MultiBody.Parts.Body\">MultiBody.Parts.Body</a>.
+    </p>
+    </html>"),
+          Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Text(extent = {{-150, -100}, {150, -70}}, textString = "r=%r"), Rectangle(extent = {{-100, 30}, {101, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Ellipse(extent = {{-60, 60}, {60, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255}), Text(extent = {{-50, 24}, {55, -27}}, textString = "%m"), Text(extent = {{55, 12}, {91, -13}}, textString = "b"), Text(extent = {{-92, 13}, {-56, -12}}, textString = "a")}),
+          Diagram(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-100, 9}, {-100, 43}}, color = {128, 128, 128}), Line(points = {{100, 0}, {100, 44}}, color = {128, 128, 128}), Line(points = {{-100, 40}, {90, 40}}, color = {135, 135, 135}), Polygon(points = {{90, 44}, {90, 36}, {100, 40}, {90, 44}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-22, 68}, {20, 40}}, textColor = {128, 128, 128}, textString = "r"), Line(points = {{-100, -10}, {-100, -90}}, color = {128, 128, 128}), Line(points = {{-100, -84}, {-10, -84}}, color = {128, 128, 128}), Polygon(points = {{-10, -80}, {-10, -88}, {0, -84}, {-10, -80}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-82, -66}, {-56, -84}}, textColor = {128, 128, 128}, textString = "r_CM"), Line(points = {{0, -46}, {0, -90}}, color = {128, 128, 128})}));
+      end BodyShape;
+
+      model Body_addedMass  "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
+      
+        extends Hydrodynamic.HydroDataImport.massData;
+      
+      
+      
+        Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a
+          "Coordinate system fixed at body" annotation (Placement(transformation(
+                extent={{-116,-16},{-84,16}})));
+        parameter Boolean animation=true
+          "= true, if animation shall be enabled (show cylinder and sphere)";
+        parameter Modelica.Units.SI.Position r_CM[3](start={0,0,0})
+          "Vector from frame_a to center of mass, resolved in frame_a";
+        parameter Modelica.Units.SI.Mass m[3,3] = diagonal({M,M,M}) "Mass of rigid body";
+        parameter Modelica.Units.SI.Mass am[3,3] = [50,0,0;0,50,0;0,0,50] "Mass of rigid body";
+        parameter Modelica.Units.SI.Mass am_off[3,3] = [50,0,0;0,50,0;0,0,50] "Mass of rigid body";
+        parameter Modelica.Units.SI.Inertia I_11(min=0) = 0.0005 "Element (1,1) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_22(min=0) = 0.0005 "Element (2,2) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_33(min=0) = 0.0005 "Element (3,3) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_21(min=-10000000) = 0 "Element (2,1) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_31(min=-10000000) = 0 "Element (3,1) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_32(min=-10000000) = 0 "Element (3,2) of inertia tensor"
+          annotation (Dialog(group="Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+        parameter Modelica.Units.SI.Inertia I_am[3,3] = [0.0005,0,0;0,0.0005,0;0,0,0.0005];
+      
+        Modelica.Units.SI.Position r_0[3](start={0,0,0}, each stateSelect=if enforceStates then
+              StateSelect.always else StateSelect.avoid)
+          "Position vector from origin of world frame to origin of frame_a"
+          annotation (Dialog(tab="Initialization",showStartAttribute=true));
+        Modelica.Units.SI.Velocity v_0[3](start={0,0,0}, each stateSelect=if enforceStates then
+              StateSelect.always else StateSelect.avoid)
+          "Absolute velocity of frame_a, resolved in world frame (= der(r_0))"
+          annotation (Dialog(tab="Initialization",showStartAttribute=true));
+        Modelica.Units.SI.Acceleration a_0[3](start={0,0,0})
+          "Absolute acceleration of frame_a resolved in world frame (= der(v_0))"
+          annotation (Dialog(tab="Initialization",showStartAttribute=true));
+      
+        parameter Boolean angles_fixed=false
+          "= true, if angles_start are used as initial values, else as guess values"
+          annotation (
+          Evaluate=true,
+          choices(checkBox=true),
+          Dialog(tab="Initialization"));
+        parameter Modelica.Units.SI.Angle angles_start[3]={0,0,0}
+          "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a"
+          annotation (Dialog(tab="Initialization"));
+        parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_start={1,2,3}
+          "Sequence of rotations to rotate world frame into frame_a at initial time"
+          annotation (Evaluate=true, Dialog(tab="Initialization"));
+      
+        parameter Boolean w_0_fixed=false
+          "= true, if w_0_start are used as initial values, else as guess values"
+          annotation (
+          Evaluate=true,
+          choices(checkBox=true),
+          Dialog(tab="Initialization"));
+        parameter Modelica.Units.SI.AngularVelocity w_0_start[3]={0,0,0}
+          "Initial or guess values of angular velocity of frame_a resolved in world frame"
+          annotation (Dialog(tab="Initialization"));
+      
+        parameter Boolean z_0_fixed=false
+          "= true, if z_0_start are used as initial values, else as guess values"
+          annotation (
+          Evaluate=true,
+          choices(checkBox=true),
+          Dialog(tab="Initialization"));
+        parameter Modelica.Units.SI.AngularAcceleration z_0_start[3]={0,0,0}
+          "Initial values of angular acceleration z_0 = der(w_0)"
+          annotation (Dialog(tab="Initialization"));
+      
+        parameter Modelica.Units.SI.Diameter sphereDiameter=world.defaultBodyDiameter
+          "Diameter of sphere" annotation (Dialog(
+            tab="Animation",
+            group="if animation = true",
+            enable=animation));
+        input Modelica.Mechanics.MultiBody.Types.Color sphereColor=Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor
+          "Color of sphere" annotation (Dialog(
+            colorSelector=true,
+            tab="Animation",
+            group="if animation = true",
+            enable=animation));
+        parameter Modelica.Units.SI.Diameter cylinderDiameter=sphereDiameter/Modelica.Mechanics.MultiBody.Types.Defaults.BodyCylinderDiameterFraction
+          "Diameter of cylinder" annotation (Dialog(
+            tab="Animation",
+            group="if animation = true",
+            enable=animation));
+        input Modelica.Mechanics.MultiBody.Types.Color cylinderColor=sphereColor "Color of cylinder" annotation (
+           Dialog(
+            colorSelector=true,
+            tab="Animation",
+            group="if animation = true",
+            enable=animation));
+        input Modelica.Mechanics.MultiBody.Types.SpecularCoefficient specularCoefficient=world.defaultSpecularCoefficient
+          "Reflection of ambient light (= 0: light is completely absorbed)"
+          annotation (Dialog(
+            tab="Animation",
+            group="if animation = true",
+            enable=animation));
+        parameter Boolean enforceStates=false
+          "= true, if absolute variables of body object shall be used as states (StateSelect.always)"
+          annotation (Evaluate=true, Dialog(tab="Advanced"));
+        parameter Boolean useQuaternions=true
+          "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states"
+          annotation (Evaluate=true, Dialog(tab="Advanced"));
+        parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_angleStates={1,2,3}
+          "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states"
+          annotation (Evaluate=true, Dialog(tab="Advanced", enable=not
+                useQuaternions));
+      
+        final parameter Modelica.Units.SI.Inertia I[3, 3]=[I_11, I_21, I_31; I_21, I_22, I_32;
+            I_31, I_32, I_33] "Inertia tensor";
+        final parameter Modelica.Mechanics.MultiBody.Frames.Orientation R_start=
+            Modelica.Mechanics.MultiBody.Frames.axesRotations(
+              sequence_start,
+              angles_start,
+              zeros(3))
+          "Orientation object from world frame to frame_a at initial time";
+      
+        Modelica.Units.SI.AngularVelocity w_a[3](
+          start=Modelica.Mechanics.MultiBody.Frames.resolve2(R_start, w_0_start),
+          fixed=fill(w_0_fixed, 3),
+          each stateSelect=if enforceStates then (if useQuaternions then
+              StateSelect.always else StateSelect.never) else StateSelect.avoid)
+          "Absolute angular velocity of frame_a resolved in frame_a";
+        Modelica.Units.SI.AngularAcceleration z_a[3](start=Modelica.Mechanics.MultiBody.Frames.resolve2(R_start, z_0_start),
+            fixed=fill(z_0_fixed, 3))
+          "Absolute angular acceleration of frame_a resolved in frame_a";
+        Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+      
+      protected
+        outer Modelica.Mechanics.MultiBody.World world;
+      
+        // Declarations for quaternions (dummies, if quaternions are not used)
+        parameter Modelica.Mechanics.MultiBody.Frames.Quaternions.Orientation Q_start=Modelica.Mechanics.MultiBody.Frames.to_Q(R_start)
+          "Quaternion orientation object from world frame to frame_a at initial time";
+        Modelica.Mechanics.MultiBody.Frames.Quaternions.Orientation Q(start=Q_start, each stateSelect=if
+              enforceStates then (if useQuaternions then StateSelect.prefer else
+              StateSelect.never) else StateSelect.avoid)
+          "Quaternion orientation object from world frame to frame_a (dummy value, if quaternions are not used as states)";
+      
+        // Declaration for 3 angles
+        parameter Modelica.Units.SI.Angle phi_start[3]=if sequence_start[1] ==
+            sequence_angleStates[1] and sequence_start[2] == sequence_angleStates[2]
+             and sequence_start[3] == sequence_angleStates[3] then angles_start
+             else Modelica.Mechanics.MultiBody.Frames.axesRotationsAngles(R_start, sequence_angleStates)
+          "Potential angle states at initial time";
+        Modelica.Units.SI.Angle phi[3](start=phi_start, each stateSelect=if enforceStates then (
+              if useQuaternions then StateSelect.never else StateSelect.always)
+               else StateSelect.avoid)
+          "Dummy or 3 angles to rotate world frame into frame_a of body";
+        Modelica.Units.SI.AngularVelocity phi_d[3](each stateSelect=if enforceStates then (if
+              useQuaternions then StateSelect.never else StateSelect.always) else
+              StateSelect.avoid) "= der(phi)";
+        Modelica.Units.SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
+      
+        // Declarations for animation
+        Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape cylinder(
+          shapeType="cylinder",
+          color=cylinderColor,
+          specularCoefficient=specularCoefficient,
+          length=if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then
+              Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*
+              sphereDiameter then sphereDiameter/2 else 0) else 0,
+          width=cylinderDiameter,
+          height=cylinderDiameter,
+          lengthDirection = to_unit1(r_CM),
+          widthDirection={0,1,0},
+          r=frame_a.r_0,
+          R=frame_a.R) if world.enableAnimation and animation;
+        Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape sphere(
+          shapeType="sphere",
+          color=sphereColor,
+          specularCoefficient=specularCoefficient,
+          length=sphereDiameter,
+          width=sphereDiameter,
+          height=sphereDiameter,
+          lengthDirection={1,0,0},
+          widthDirection={0,1,0},
+          r_shape=r_CM - {1,0,0}*sphereDiameter/2,
+          r=frame_a.r_0,
+          R=frame_a.R) if world.enableAnimation and animation and sphereDiameter >
+          0;
+      initial equation
+        if angles_fixed then
+          // Initialize positional variables
+          if not Connections.isRoot(frame_a.R) then
+            // frame_a.R is computed somewhere else
+            zeros(3) = Modelica.Mechanics.MultiBody.Frames.Orientation.equalityConstraint(frame_a.R, R_start);
+          elseif useQuaternions then
+            // frame_a.R is computed from quaternions Q
+            zeros(3) = Modelica.Mechanics.MultiBody.Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
+          else
+            // frame_a.R is computed from the 3 angles 'phi'
+            phi = phi_start;
+          end if;
+        end if;
+      
+      equation
+        if enforceStates then
+          Connections.root(frame_a.R);
+        else
+          Connections.potentialRoot(frame_a.R);
+        end if;
+        r_0 = frame_a.r_0;
+      
+        if not Connections.isRoot(frame_a.R) then
+          // Body does not have states
+          // Dummies
+          Q = {0,0,0,1};
+          phi = zeros(3);
+          phi_d = zeros(3);
+          phi_dd = zeros(3);
+        elseif useQuaternions then
+          // Use Quaternions as states (with dynamic state selection)
+          frame_a.R = Modelica.Mechanics.MultiBody.Frames.from_Q(Q, Modelica.Mechanics.MultiBody.Frames.Quaternions.angularVelocity2(Q, der(Q)));
+          {0} = Modelica.Mechanics.MultiBody.Frames.Quaternions.orientationConstraint(Q);
+      
+          // Dummies
+          phi = zeros(3);
+          phi_d = zeros(3);
+          phi_dd = zeros(3);
+        else
+          // Use Cardan angles as states
+          phi_d = der(phi);
+          phi_dd = der(phi_d);
+          frame_a.R = Modelica.Mechanics.MultiBody.Frames.axesRotations(
+              sequence_angleStates,
+              phi,
+              phi_d);
+      
+          // Dummies
+          Q = {0,0,0,1};
+        end if;
+      
+        // gravity acceleration at center of mass resolved in world frame
+        g_0 = Modelica.Mechanics.MultiBody.World.gravityAcceleration(frame_a.r_0 + Modelica.Mechanics.MultiBody.Frames.resolve1(frame_a.R,
+          r_CM));
+      
+        // translational kinematic differential equations
+        v_0 = der(frame_a.r_0);
+        a_0 = der(v_0);
+      
+        // rotational kinematic differential equations
+        w_a = Modelica.Mechanics.MultiBody.Frames.angularVelocity2(frame_a.R);
+        z_a = der(w_a);
+      
+        /* Newton/Euler equations with respect to center of mass
+                  a_CM = a_a + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM));
+                  f_CM = m*(a_CM - g_a);
+                  t_CM = I*z_a + cross(w_a, I*w_a);
+             frame_a.f = f_CM
+             frame_a.t = t_CM + cross(r_CM, f_CM);
+          Inserting the first three equations in the last two results in:
+        */
+        frame_a.f = (m+Ainf[1:3,1:3])*(Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) +
+          cross(w_a, cross(w_a, r_CM))) + Ainf[1:3,4:6]*z_a;
+        frame_a.t = (I+Ainf[4:6,4:6])*z_a + cross(w_a, (I+I_am)*w_a) + cross(r_CM, frame_a.f) + Ainf[4:6,1:3]*(Modelica.Mechanics.MultiBody.Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) +
+          cross(w_a, cross(w_a, r_CM)));
+        annotation (Icon(coordinateSystem(
+              preserveAspectRatio=true,
+              extent={{-100,-100},{100,100}}), graphics={
+              Rectangle(
+                extent={{-100,30},{-3,-30}},
+                lineColor={0,24,48},
+                fillPattern=FillPattern.HorizontalCylinder,
+                fillColor={0,127,255},
+                radius=10),
+              Text(
+                extent={{150,-100},{-150,-70}},
+                textString="m=%m"),
+              Text(
+                extent={{-150,110},{150,70}},
+                textString="%name",
+                textColor={0,0,255}),
+              Ellipse(
+                extent={{-20,60},{100,-60}},
+                lineColor={0,24,48},
+                fillPattern=FillPattern.Sphere,
+                fillColor={0,127,255})}), Documentation(info="<html>
+      <p>
+      <strong>Rigid body</strong> with mass and inertia tensor.
+      All parameter vectors have to be resolved in frame_a.
+      The <strong>inertia tensor</strong> has to be defined with respect to a
+      coordinate system that is parallel to frame_a with the
+      origin at the center of mass of the body.
+      </p>
+      <p>
+      By default, this component is visualized by a <strong>cylinder</strong> located
+      between frame_a and the center of mass and by a <strong>sphere</strong> that has
+      its center at the center of mass. If the cylinder length is smaller as
+      the radius of the sphere, e.g., since frame_a is located at the
+      center of mass, the cylinder is not displayed. Note, that
+      the animation may be switched off via parameter animation = <strong>false</strong>.
+      </p>
+      <p>
+      <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/Body.png\" alt=\"Parts.Body\">
+      </p>
+      
+      <p>
+      <strong>States of Body Components</strong>
+      </p>
+      <p>
+      Every body has potential states. If possible a tool will select
+      the states of joints and not the states of bodies because this is
+      usually the most efficient choice. In this case the position, orientation,
+      velocity and angular velocity of frame_a of the body will be computed
+      by the component that is connected to frame_a. However, if a body is moving
+      freely in space, variables of the body have to be used as states. The potential
+      states of the body are:
+      </p>
+      <ul>
+      <li> The <strong>position vector</strong> frame_a.r_0 from the origin of the
+           world frame to the origin of frame_a of the body, resolved in
+           the world frame and the <strong>absolute velocity</strong> v_0 of the origin of
+           frame_a, resolved in the world frame (= der(frame_a.r_0)).
+      </li>
+      <li> If parameter <strong>useQuaternions</strong> in the \"Advanced\" menu
+           is <strong>true</strong> (this is the default), then <strong>4 quaternions</strong>
+           are potential states. Additionally, the coordinates of the
+           absolute angular velocity vector of the
+           body are 3 potential states.<br>
+           If <strong>useQuaternions</strong> in the \"Advanced\" menu
+           is <strong>false</strong>, then <strong>3 angles</strong> and the derivatives of
+           these angles are potential states. The orientation of frame_a
+           is computed by rotating the world frame along the axes defined
+           in parameter vector \"sequence_angleStates\" (default = {1,2,3}, i.e.,
+           the Cardan angle sequence) around the angles used as potential states.
+           For example, the default is to rotate the x-axis of the world frame
+           around angles[1], the new y-axis around angles[2] and the new z-axis
+           around angles[3], arriving at frame_a.
+       </li>
+      </ul>
+      <p>
+      The quaternions have the slight disadvantage that there is a
+      non-linear constraint equation between the 4 quaternions.
+      Therefore, at least one non-linear equation has to be solved
+      during simulation. A tool might, however, analytically solve this
+      simple constraint equation. Using the 3 angles as states has the
+      disadvantage that there is a singular configuration in which a
+      division by zero will occur. If it is possible to determine in advance
+      for an application class that this singular configuration is outside
+      of the operating region, the 3 angles might be used as potential
+      states by setting <strong>useQuaternions</strong> = <strong>false</strong>.
+      </p>
+      <p>
+      In text books about 3-dimensional mechanics often 3 angles and the
+      angular velocity are used as states. This is not the case here, since
+      3 angles and their derivatives are used as potential states
+      (if useQuaternions = false). The reason
+      is that for real-time simulation the discretization formula of the
+      integrator might be \"inlined\" and solved together with the body equations.
+      By appropriate symbolic transformation the performance is
+      drastically increased if angles and their
+      derivatives are used as states, instead of angles and the angular
+      velocity.
+      </p>
+      <p>
+      Whether or not variables of the body are used as states is usually
+      automatically selected by the Modelica translator. If parameter
+      <strong>enforceStates</strong> is set to <strong>true</strong> in the \"Advanced\" menu,
+      then body variables are forced to be used as states according
+      to the setting of parameters \"useQuaternions\" and
+      \"sequence_angleStates\".
+      </p>
+      </html>"));
+      
+
+      end Body_addedMass;
+    
+    end Bodies;
+
+    record FilePath
+    
+       parameter String FileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
+        Dialog(group = "File Path"));
+        
+    end FilePath;
     annotation(
       Documentation(info = "<html>
       <h4>Forces Package for Hydrodynamic Systems</h4>
@@ -1558,6 +2092,7 @@ package Hydrodynamic
       extends Hydrodynamic.Connector.forceandTorque_con;
       extends Hydrodynamic.Models.physicalConstants;
       extends Hydrodynamic.Models.forceTorque;
+      
       // Wave and environmental parameters
       parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
@@ -4804,7 +5339,7 @@ package Hydrodynamic
 
   package HydroDataImport
     record filePath
-      parameter String fileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" annotation(
+      parameter String fileName annotation(
         Dialog(group = "Filepath"));
     end filePath;
 
