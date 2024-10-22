@@ -676,7 +676,7 @@ package Hydrodynamic
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      Hydrodynamic.Forces.Bodies.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=FileName) annotation(
+      Hydrodynamic.Forces.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=FileName) annotation(
         Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
       // Hydrostatic force parameters
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -838,20 +838,20 @@ package Hydrodynamic
       //Modelica.Units.SI.Power Ppto;
       //Modelica.Blocks.Math.ContinuousMean Ppto_avg;
       // Proportional gain parameters
-      parameter Real Kpx "Proportional gain for x-axis translation [N/(m/s)]";
-      parameter Real Kpy "Proportional gain for y-axis translation [N/(m/s)]";
+      parameter Real Kpx = 0"Proportional gain for x-axis translation [N/(m/s)]";
+      parameter Real Kpy = 0"Proportional gain for y-axis translation [N/(m/s)]";
       Real Kpz "Proportional gain for z-axis translation [N/(m/s)]";
-      parameter Real Kprx "Proportional gain for x-axis rotation [N*m/(rad/s)]";
-      parameter Real Kpry "Proportional gain for y-axis rotation [N*m/(rad/s)]";
-      parameter Real Kprz "Proportional gain for z-axis rotation [N*m/(rad/s)]";
+      parameter Real Kprx = 0"Proportional gain for x-axis rotation [N*m/(rad/s)]";
+      parameter Real Kpry = 0"Proportional gain for y-axis rotation [N*m/(rad/s)]";
+      parameter Real Kprz = 0"Proportional gain for z-axis rotation [N*m/(rad/s)]";
       Real Kp[6, 6] "Combined proportional gain matrix";
       // Integral gain parameters
-      parameter Real Kix "Integral gain for x-axis translation [N/m]";
-      parameter Real Kiy "Integral gain for y-axis translation [N/m]";
+      parameter Real Kix = 0"Integral gain for x-axis translation [N/m]";
+      parameter Real Kiy = 0"Integral gain for y-axis translation [N/m]";
       Real Kiz "Integral gain for z-axis translation [N/m]";
-      parameter Real Kirx "Integral gain for x-axis rotation [N*m/rad]";
-      parameter Real Kiry "Integral gain for y-axis rotation [N*m/rad]";
-      parameter Real Kirz "Integral gain for z-axis rotation [N*m/rad]";
+      parameter Real Kirx = 0"Integral gain for x-axis rotation [N*m/rad]";
+      parameter Real Kiry = 0"Integral gain for y-axis rotation [N*m/rad]";
+      parameter Real Kirz = 0 "Integral gain for z-axis rotation [N*m/rad]";
       Real Ki[6, 6] "Combined integral gain matrix";
     protected
       // Frequency dependent added mass at the peak spectral frequency
@@ -2189,6 +2189,7 @@ model BodyShape "Rigid body with mass, inertia tensor, different shapes for anim
           Real new_energy;
         algorithm
 //energy_sum := 0;
+          new_energy := 0;
           Cum_energy[1] := 0;
           omega[1] := omega_min;
           omega[n_omega] := omega_max;
