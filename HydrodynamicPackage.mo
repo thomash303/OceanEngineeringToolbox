@@ -1729,7 +1729,7 @@ model BodyShape "Rigid body with mass, inertia tensor, different shapes for anim
 
     record FilePath
     
-       parameter String FileName = "C:/Users/Thomas/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
+       parameter String FileName = "C:/Users/thogan1/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
         Dialog(group = "File Path"));
         
     end FilePath;
