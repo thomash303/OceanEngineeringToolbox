@@ -228,19 +228,16 @@ package Hydrodynamic
       Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
         Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
       // Define hydrodynamic body
-      Hydrodynamic.Forces.HydrodynamicBody hydrodynamicBody( /*enableHydrostaticForce = true, */enablePTOForce = true, enableRadiationForce = true,FileName=filePath.FileName) annotation(
+      Hydrodynamic.Forces.HydrodynamicBody hydrodynamicBody( /*enableHydrostaticForce = true, */enablePTOForce = true, enableRadiationForce = true) annotation(
         Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
       // Define wave and current bus
       WaveProfile.WaveAndCurrentBus waveAndCurrentBus annotation(
         Placement(transformation(origin = {68, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-      // Define wave spectrum
-      WaveProfile.IrregularWave.Bus_PiersonMoskowitzWave bus_PiersonMoskowitzWave(fileName=filePath.FileName) annotation(
+      // Define wave spect
+      WaveProfile.IrregularWave.Bus_PiersonMoskowitzWave bus_PiersonMoskowitzWave annotation(
         Placement(transformation(origin = {100, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-    Forces.FilePath filePath annotation(
-        Placement(transformation(origin = {132, -18}, extent = {{-10, -10}, {10, 10}})));
-    
-    inner parameter String filenames = "Hey";
-    
+  inner Forces.FilePath filePath annotation(
+        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
       connect(world.frame_b, prismatic.frame_a) annotation(
@@ -733,7 +730,7 @@ package Hydrodynamic
       //extends Hydrodynamic.HydroDataImport.massData;
       /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
       // BodyShape parameters
-      parameter String FileName;
+      outer FilePath filePath;
       
       /* Removing mass definition here and adding it to a custom bodyShape model
       parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
@@ -755,12 +752,12 @@ package Hydrodynamic
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      Hydrodynamic.Forces.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=FileName) annotation(
+      Hydrodynamic.Forces.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=filePath.FileName) annotation(
         Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
       // Hydrostatic force parameters
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
         Dialog(group = "Hydrostatic Force Parameters"));
-      Hydrodynamic.Forces.HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce,fileName=FileName) "Hydrostatic force calculation" annotation(
+      Hydrodynamic.Forces.HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce,fileName=filePath.FileName) "Hydrostatic force calculation" annotation(
         Placement(transformation(origin = {16, -20}, extent = {{-10, -10}, {10, 10}})));
       // Radiation force paramters
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
@@ -770,7 +767,7 @@ package Hydrodynamic
         Dialog(group = "PTO Force Parameters"));
       parameter String controllerSelect = "reactive" "Controller type select" annotation(
         Dialog(group = "PTO Force Parameters"));
-      Hydrodynamic.Forces.PTOForce ptoForce( /*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect,fileName=FileName) "PTO force calculation" annotation(
+      Hydrodynamic.Forces.PTOForce ptoForce( /*omega_peak = omega_peak, Kpx = Kpx, Kpy = Kpy, Kprx = Kprx, Kpry = Kpry, Kprz = Kprz, Kix = Kix, Kiy = Kiy, Kirx = Kirx, Kiry = Kiry, Kirz = Kirz, */enablePTOForce = enablePTOForce, controllerSelect = controllerSelect,fileName=filePath.FileName) "PTO force calculation" annotation(
         Placement(transformation(origin = {16, -46}, extent = {{-10, -10}, {10, 10}})));
       /* 
             parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
@@ -811,7 +808,7 @@ package Hydrodynamic
         Dialog(group = "Damping and Drag Force Parameters"));
       parameter Real Crz = 100 "Rotational drag coefficient for z-axis" annotation(
         Dialog(group = "Damping and Drag Force Parameters"));
-      Hydrodynamic.Forces.DampingDragForce dampingDragForce(Ac = Ac, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDampingDragForce = enableDampingDragForce,fileName=FileName) "Drag force calculation" annotation(
+      Hydrodynamic.Forces.DampingDragForce dampingDragForce(Ac = Ac, Cdx = Cdx, Cdy = Cdy, Cdz = Cdz, Crx = Crx, Cry = Cry, Crz = Crz, enableDampingDragForce = enableDampingDragForce,fileName=filePath.FileName) "Drag force calculation" annotation(
         Placement(transformation(origin = {16, 24}, extent = {{-10, -10}, {10, 10}})));
       // Force and torque blocks
       ForceToqueSum forceToqueSum annotation(
@@ -823,11 +820,9 @@ package Hydrodynamic
         Placement(transformation(origin = {-61, -25}, extent = {{-11, -11}, {11, 11}})));
   Sensor.absoluteSensor.Models.absoluteSensors absoluteSensors1 annotation(
         Placement(transformation(origin = {-50, 24}, extent = {{-10, -10}, {10, 10}})));
-  RadiationForce radiationForce(fileName=FileName) annotation(
+  RadiationForce radiationForce(fileName=filePath.FileName) annotation(
         Placement(transformation(origin = {16, 64}, extent = {{-10, -10}, {10, 10}})));
-  fileReader fileReader1 annotation(
-        Placement(transformation(origin = {70, -46}, extent = {{-10, -10}, {10, 10}})));
-        parameter String fileReaderoutput = fileReader1.filenames;
+    
     equation
 //Conections
       connect(bodyShape.frame_a, frame_a) annotation(
@@ -1808,6 +1803,8 @@ if not Connections.isRoot(frame_a.R) then
       parameter String FileName = "C:/Users/thogan1/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
         Dialog(group = "File Path"));
         
+        annotation (defaultComponentName="filePath",
+        defaultComponentPrefixes="inner");
     end FilePath;
 
     model HydrodynamicBodySensorOutput
@@ -2193,7 +2190,10 @@ if not Connections.isRoot(frame_a.R) then
       end IrregularWaveParameters;
 
       model Bus_PiersonMoskowitzWave "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
-        extends Hydrodynamic.WaveProfile.IrregularWave.Bus_IrregularWaveParameters;
+        extends Hydrodynamic.WaveProfile.IrregularWave.Bus_IrregularWaveParameters(fileName=filePath.FileName);
+        outer FilePath filePath;
+        
+        
       equation
         if frequencySelection == "equalEnergy" then
           S_int = Hydrodynamic.WaveProfile.WaveFunctions.SpectrumFunctions.spectrumGenerator_PM(Hs, omega_int) "Spectral values for frequency components [m^2-s/rad]";
@@ -2252,14 +2252,14 @@ if not Connections.isRoot(frame_a.R) then
         // Random phase shift
         parameter Real rnd_shft[n_omega] = Hydrodynamic.WaveProfile.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega) "Random shifts for frequency selection";
         // Frequency selection and wave spectrum
-        Modelica.Units.SI.AngularFrequency domega[n_omega] "Frequency step size [rad/s]";
+        Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
         Hydrodynamic.Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2 s/rad]";
         Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
         Hydrodynamic.Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2 s/rad]";
       equation
 // Calculate wave parameter
-        domega = Hydrodynamic.WaveProfile.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, S, n_omega);
-        zeta = sqrt(2*S.*domega);
+        domega = Hydrodynamic.WaveProfile.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
+        zeta = sqrt(2*S*domega);
 // Select equal energy or random frequency selection
         if frequencySelection == "equalEnergy" then
           omega_int = Hydrodynamic.WaveProfile.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
@@ -2638,17 +2638,9 @@ if not Connections.isRoot(frame_a.R) then
         package Calculations
           function frequencyStepGen
             input Real omega[n_omega];
-            input Real S[n_omega];
             constant input Integer n_omega;
-            output Real domega[n_omega];
-          protected
-            Real omega_mean;
-          algorithm
-            for i in 2:n_omega loop
-              domega[i] := omega[i] - omega[i - 1];
-            end for;
-            omega_mean := sum(domega)/n_omega;
-            domega[1] := omega_mean;
+            output Real domega = (omega[end] - omega[1])/(n_omega - 1) "Frequency step size";
+          
           end frequencyStepGen;
 
           function integrationFrequencyGen
