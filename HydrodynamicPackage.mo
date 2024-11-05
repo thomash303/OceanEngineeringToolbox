@@ -916,8 +916,9 @@ package Hydrodynamic
       parameter Modelica.Units.SI.AngularFrequency PTO_omega_peak = 0.9423 "Peak spectral frequency" annotation(
         Dialog(group = "PTO Force Parameters"));
       // PTO power variables (not currently enabled)
-      //Modelica.Units.SI.Power Ppto;
-      //Modelica.Blocks.Math.ContinuousMean Ppto_avg;
+      Modelica.Units.SI.Power Ppto[6];
+      Modelica.Blocks.Math.ContinuousMean Mean[6];
+      Modelica.Units.SI.Power Ppto_mean[6];
       // Proportional gain parameters
       parameter Real Kpx = 0"Proportional gain for x-axis translation [N/(m/s)]";
       parameter Real Kpy = 0"Proportional gain for y-axis translation [N/(m/s)]";
@@ -963,6 +964,10 @@ package Hydrodynamic
       end if;
       
        F = -f;
+       Ppto = F.*velocity;
+       
+       Mean.u = Ppto;
+       Ppto_mean = Mean.y;
       
       if controllerSelect == "passive" then
         Kpto = 0;
@@ -971,6 +976,10 @@ package Hydrodynamic
         Kpto = (Mpto)*PTO_omega_peak - Khs[3, 3]/PTO_omega_peak;
         bpto = Bpto;
       end if;
+      
+      
+     // connect(Mean.u,Ppto);
+     // connect(Mean.y,Ppto_mean);
       annotation(
         Documentation(info = "<html>
         <p>This block models a 6-dimensional Power Take-Off (PTO) system for both translational and rotational motion.</p>
