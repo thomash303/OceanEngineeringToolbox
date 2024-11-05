@@ -238,14 +238,13 @@ package Hydrodynamic
         Placement(transformation(origin = {100, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
     Forces.FilePath filePath annotation(
         Placement(transformation(origin = {132, -18}, extent = {{-10, -10}, {10, 10}})));
-  Mooring.LinearMooring linearMooring annotation(
-        Placement(transformation(origin = {4, -50}, extent = {{-10, -10}, {10, 10}})));
+    
+    inner parameter String filenames = "Hey";
+    
     equation
-    // Connections
+// Connections
       connect(world.frame_b, prismatic.frame_a) annotation(
         Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
-      connect(hydrodynamicBody.frame_b, forceAndTorque.frame_b) annotation(
-        Line(points = {{20, -20}, {28, -20}}));
       connect(prismatic.frame_b, hydrodynamicBody.frame_a) annotation(
         Line(points = {{-4, -20}, {0, -20}}, color = {95, 95, 95}));
       connect(waveAndCurrentBus.F, forceAndTorque.force) annotation(
@@ -254,6 +253,8 @@ package Hydrodynamic
         Line(points = {{58, -22}, {50, -22}, {50, -26}}, color = {0, 0, 127}, thickness = 0.5));
       connect(bus_PiersonMoskowitzWave.F, waveAndCurrentBus.Fw) annotation(
         Line(points = {{90, -18}, {80, -18}, {80, -10}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(forceAndTorque.frame_b, hydrodynamicBody.frame_a) annotation(
+        Line(points = {{28, -20}, {26, -20}, {26, -2}, {0, -2}, {0, -20}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -764,8 +765,6 @@ package Hydrodynamic
       // Radiation force paramters
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
         Dialog(group = "Radiation Force Parameters"));
-      Hydrodynamic.Forces.RadiationForce radiationForce(fileName=FileName) annotation(
-        Placement(transformation(origin = {18, 64}, extent = {{-10, -10}, {10, 10}})));
       // PTO force parameters
       parameter Boolean enablePTOForce = true "Switch to enable/disable PTO force calculation" annotation(
         Dialog(group = "PTO Force Parameters"));
@@ -818,52 +817,61 @@ package Hydrodynamic
       ForceToqueSum forceToqueSum annotation(
         Placement(transformation(origin = {50, 0}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
-        Placement(transformation(origin = {82, 0}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
+        Placement(transformation(origin = {82, 0}, extent = {{-10, 10}, {10, -10}})));
       // Absolute sensor
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_z = true, get_angles = true, get_w = true) annotation(
-        Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
+        Placement(transformation(origin = {-61, -25}, extent = {{-11, -11}, {11, 11}})));
+  Sensor.absoluteSensor.Models.absoluteSensors absoluteSensors1 annotation(
+        Placement(transformation(origin = {-50, 24}, extent = {{-10, -10}, {10, 10}})));
+  RadiationForce radiationForce(fileName=FileName) annotation(
+        Placement(transformation(origin = {16, 64}, extent = {{-10, -10}, {10, 10}})));
+  fileReader fileReader1 annotation(
+        Placement(transformation(origin = {70, -46}, extent = {{-10, -10}, {10, 10}})));
+        parameter String fileReaderoutput = fileReader1.filenames;
     equation
 //Conections
       connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
       connect(bodyShape.frame_b, frame_b) annotation(
         Line(points = {{20, -84}, {102, -84}, {102, 0}}, color = {95, 95, 95}));
-      connect(forceAndTorque.frame_b, bodyShape.frame_b) annotation(
-        Line(points = {{92, 0}, {92, -84}, {20, -84}}, color = {95, 95, 95}));
       connect(forceToqueSum.F, forceAndTorque.force) annotation(
         Line(points = {{61, 5}, {64, 5}, {64, 6}, {70, 6}}, color = {0, 0, 127}, thickness = 0.5));
       connect(forceToqueSum.T, forceAndTorque.torque) annotation(
         Line(points = {{61, -5}, {70, -5}, {70, -6}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, dampingDragForce.omega_abs) annotation(
-        Line(points = {{-54, -11}, {-72, -11}, {-72, 16}, {4, 16}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, ptoForce.omega_abs) annotation(
-        Line(points = {{-54, -12}, {-72, -12}, {-72, -54}, {4, -54}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, ptoForce.u_abs) annotation(
-        Line(points = {{-72, -12}, {-72, -38}, {4, -38}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, ptoForce.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-72, -12}, {-72, -44}, {4, -44}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, ptoForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, -48}, {4, -48}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, dampingDragForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, 22}, {4, 22}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, hydrostaticForce.u_abs) annotation(
-        Line(points = {{-72, -12}, {4, -12}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, hydrostaticForce.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-4, -12}, {-4, -18}, {4, -18}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.frame_a, bodyShape.frame_b) annotation(
-        Line(points = {{-72, 2}, {-86, 2}, {-86, -68}, {20, -68}, {20, -84}}, color = {95, 95, 95}));
       connect(dampingDragForce.F, forceToqueSum.Fd) annotation(
         Line(points = {{27, 24}, {30, 24}, {30, -2}, {38, -2}}, color = {0, 0, 127}, thickness = 0.5));
       connect(ptoForce.F, forceToqueSum.Fpto) annotation(
         Line(points = {{28, -46}, {30, -46}, {30, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
       connect(hydrostaticForce.F, forceToqueSum.Fhs) annotation(
         Line(points = {{28, -20}, {30, -20}, {30, 2}, {38, 2}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, radiationForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-70, -12}, {-70, 62}, {6, 62}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, radiationForce.omega_abs) annotation(
-        Line(points = {{-54, -12}, {-48, -12}, {-48, 56}, {6, 56}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(radiationForce.F, forceToqueSum.Fr) annotation(
-        Line(points = {{30, 64}, {38, 64}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{-72, -24}, {-70, -24}, {-70, -84}, {0, -84}}, color = {95, 95, 95}));
+      connect(forceAndTorque.frame_b, bodyShape.frame_a) annotation(
+        Line(points = {{92, 0}, {92, -72}, {-18, -72}, {-18, -84}, {0, -84}}, color = {95, 95, 95}));
+      connect(absoluteSensor.r, absoluteSensors1.u_abs) annotation(
+        Line(points = {{-72, -38}, {-82, -38}, {-82, 34}, {-62, 34}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.angles, absoluteSensors1.theta_abs) annotation(
+        Line(points = {{-58, -38}, {-58, -40}, {-80, -40}, {-80, 30}, {-62, 30}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.v, absoluteSensors1.v_abs) annotation(
+        Line(points = {{-68, -38}, {-68, -42}, {-76, -42}, {-76, 26}, {-62, 26}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.w, absoluteSensors1.omega_abs) annotation(
+        Line(points = {{-54, -38}, {-54, -44}, {-72, -44}, {-72, 22}, {-62, 22}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.a, absoluteSensors1.a_abs) annotation(
+        Line(points = {{-64, -38}, {-62, -38}, {-62, -50}, {-70, -50}, {-70, 18}, {-62, 18}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.z, absoluteSensors1.alpha_abs) annotation(
+        Line(points = {{-50, -38}, {-50, -54}, {-66, -54}, {-66, 14}, {-62, 14}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absoluteSensors1.velocity, radiationForce.velocity) annotation(
+        Line(points = {{-38, 24}, {-20, 24}, {-20, 64}, {4, 64}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absoluteSensors1.velocity, dampingDragForce.velocity) annotation(
+        Line(points = {{-38, 24}, {4, 24}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(radiationForce.F, forceToqueSum.Fr) annotation(
+        Line(points = {{28, 64}, {30, 64}, {30, 8}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absoluteSensors1.displacement, hydrostaticForce.displacement) annotation(
+        Line(points = {{-38, 30}, {-22, 30}, {-22, -14}, {4, -14}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absoluteSensors1.displacement, ptoForce.displacement) annotation(
+        Line(points = {{-38, 30}, {-10, 30}, {-10, -40}, {4, -40}}, color = {0, 0, 127}, thickness = 0.5));
+  connect(absoluteSensors1.velocity, ptoForce.velocity) annotation(
+        Line(points = {{-38, 24}, {-20, 24}, {-20, -46}, {4, -46}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
         Diagram,
         Documentation(info = "<html>
@@ -893,9 +901,9 @@ package Hydrodynamic
     block PTOForce "Power Take-Off (PTO) force"
       /* The code has not been refined, work needs to be done on fully importing the 260x6x6 frequency dependent data, selecting which mode is being excited and which is responding, remove control gains as parameters, and integrate power metrics */
       // Inheritance
-      extends Hydrodynamic.Models.positionSensorInput;
+      extends Hydrodynamic.Sensor.absoluteSensor.Connectors.positionInput_con;
       // position input and concatenation
-      extends Hydrodynamic.Models.velocitySensorInput;
+       extends Hydrodynamic.Sensor.absoluteSensor.Connectors.velocityInput_con;
       // velocity input and concatenation
       extends Hydrodynamic.Models.forceTorque;
       // force declaration and output
@@ -991,7 +999,7 @@ package Hydrodynamic
 
     model HydrostaticForce "Hydrostatic Force and Torque Calculation"
       // Inheritance
-      extends Hydrodynamic.Models.positionSensorInput;
+       extends Hydrodynamic.Sensor.absoluteSensor.Connectors.positionInput_con;
       // position input and concatenation
       extends Hydrodynamic.Models.forceTorque;
       // force declaration and output
@@ -1039,7 +1047,7 @@ package Hydrodynamic
 
     model RadiationForce "Radiation force and torque calculation"
       // Inhertitance
-      extends Hydrodynamic.Models.velocitySensorInput;
+      extends Hydrodynamic.Sensor.absoluteSensor.Connectors.velocityInput_con;
       // velocity input and concatenation
       extends Hydrodynamic.Models.forceTorque;
       // force declaration and output
@@ -1070,7 +1078,7 @@ package Hydrodynamic
       // This simply acts as a placeholder and is not yet operational
       // All rotational damping and drag elements will be zero due to the irrotational assumption in linear wave theory
       // Inheritance
-      extends Hydrodynamic.Models.velocitySensorInput;
+      extends Hydrodynamic.Sensor.absoluteSensor.Connectors.velocityInput_con;
       // velocity input and concatenation
       extends Hydrodynamic.Models.forceTorque;
       // force declaration and output
@@ -1795,16 +1803,15 @@ if not Connections.isRoot(frame_a.R) then
     
     end Bodies;
 
-    record FilePath
+    model FilePath // ideally would be a record, but has to be model to use inner
     
-       parameter String FileName = "C:/Users/thogan1/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
+      parameter String FileName = "C:/Users/thogan1/Documents/GitHub/OET_6DoF/hydroCoeff_6DoF.mat" "File path to data structure" annotation(
         Dialog(group = "File Path"));
         
     end FilePath;
 
     model HydrodynamicBodySensorOutput
-    
-      // Inheritance
+    // Inheritance
       extends Hydrodynamic.Connector.inputOutput_con;
       //extends Hydrodynamic.HydroDataImport.massData;
       /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
@@ -1900,7 +1907,7 @@ if not Connections.isRoot(frame_a.R) then
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_z = true, get_angles = true, get_w = true) annotation(
         Placement(transformation(origin = {-61, 1}, extent = {{-11, -11}, {11, 11}})));
     equation
-    //Conections
+//Conections
       connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
       connect(bodyShape.frame_b, frame_b) annotation(
@@ -1911,22 +1918,6 @@ if not Connections.isRoot(frame_a.R) then
         Line(points = {{61, 5}, {64, 5}, {64, 6}, {70, 6}}, color = {0, 0, 127}, thickness = 0.5));
       connect(forceToqueSum.T, forceAndTorque.torque) annotation(
         Line(points = {{61, -5}, {70, -5}, {70, -6}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, dampingDragForce.omega_abs) annotation(
-        Line(points = {{-54, -11}, {-72, -11}, {-72, 16}, {4, 16}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, ptoForce.omega_abs) annotation(
-        Line(points = {{-54, -12}, {-72, -12}, {-72, -54}, {4, -54}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, ptoForce.u_abs) annotation(
-        Line(points = {{-72, -12}, {-72, -38}, {4, -38}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, ptoForce.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-72, -12}, {-72, -44}, {4, -44}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, ptoForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, -48}, {4, -48}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, dampingDragForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-72, -12}, {-72, 22}, {4, 22}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.r, hydrostaticForce.u_abs) annotation(
-        Line(points = {{-72, -12}, {4, -12}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.angles, hydrostaticForce.theta_abs) annotation(
-        Line(points = {{-58, -12}, {-4, -12}, {-4, -18}, {4, -18}}, color = {0, 0, 127}, thickness = 0.5));
       connect(absoluteSensor.frame_a, bodyShape.frame_b) annotation(
         Line(points = {{-72, 2}, {-86, 2}, {-86, -68}, {20, -68}, {20, -84}}, color = {95, 95, 95}));
       connect(dampingDragForce.F, forceToqueSum.Fd) annotation(
@@ -1935,10 +1926,6 @@ if not Connections.isRoot(frame_a.R) then
         Line(points = {{28, -46}, {30, -46}, {30, -8}, {38, -8}}, color = {0, 0, 127}, thickness = 0.5));
       connect(hydrostaticForce.F, forceToqueSum.Fhs) annotation(
         Line(points = {{28, -20}, {30, -20}, {30, 2}, {38, 2}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.v, radiationForce.v_abs) annotation(
-        Line(points = {{-68, -12}, {-70, -12}, {-70, 62}, {6, 62}}, color = {0, 0, 127}, thickness = 0.5));
-      connect(absoluteSensor.w, radiationForce.omega_abs) annotation(
-        Line(points = {{-54, -12}, {-48, -12}, {-48, 56}, {6, 56}}, color = {0, 0, 127}, thickness = 0.5));
       connect(radiationForce.F, forceToqueSum.Fr) annotation(
         Line(points = {{30, 64}, {38, 64}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
@@ -3048,6 +3035,9 @@ if not Connections.isRoot(frame_a.R) then
         <p>Use this connector in systems that require the modeling of velocity effects, such as in dynamic simulations, motion analysis, or control systems for mechanical components.</p>
         </html>"));
     end absoluteAcceleration_con;
+
+    connector absolutePositionOutput_con
+    end absolutePositionOutput_con;
     annotation(
       Documentation(info = "<html>
       <h4>Connector Package Overview</h4>
@@ -5522,6 +5512,83 @@ if not Connections.isRoot(frame_a.R) then
   end Functions;
 
   package Connectors
+  
+
+    package Sensor
+    
+  connector absolutePositionSensor_con
+  
+    Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(
+      Placement(transformation(origin = {-120, 100}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 82}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(
+      Placement(transformation(origin = {-120, 60}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 28}, extent = {{-20, -20}, {20, 20}})));
+    annotation(
+      Documentation(info = "<html>
+      <p><strong>absolutePosition_con Connector</strong></p>
+      <p>This connector is used to specify the absolute position and orientation of a component in a 3-dimensional space. It provides input ports for defining linear and angular displacements.</p>
+      <p><strong>Ports:</strong></p>
+      <ul>
+        <li><strong>u_abs:</strong> A 3-dimensional vector representing linear displacement in meters. This vector describes the position of the component in space relative to a reference point.</li>
+        <li><strong>theta_abs:</strong> A 3-dimensional vector representing angular displacement in radians. This vector describes the orientation of the component around each axis.</li>
+      </ul>
+      <p><strong>Usage:</strong></p>
+      <p>Utilize this connector in models where precise positioning and orientation of components are required, such as in robotic arms, mechanical linkages, or spatial transformations.</p>
+      </html>"));
+  end absolutePositionSensor_con;
+  
+  connector positionOutput_con
+  
+  
+      Modelica.Blocks.Interfaces.RealOutput displacement[6] "Total displacement vector [m, rad]" annotation(
+      Placement(transformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
+  
+  end positionOutput_con;
+  
+  connector positionInput_con
+  
+  protected
+      Modelica.Blocks.Interfaces.RealInput displacement[6] "Total displacement vector [m, rad]" annotation(
+      Placement(transformation(origin = {-120, 50}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 82}, extent = {{-20, -20}, {20, 20}})));
+      
+  end positionInput_con;
+  
+  connector absoluteVelocitySensor_con
+   
+    Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+      Placement(transformation(origin = {-120, 20}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 82}, extent = {{-20, -20}, {20, 20}})));
+    Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad]" annotation(
+      Placement(transformation(origin = {-120, -20}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 28}, extent = {{-20, -20}, {20, 20}})));
+    annotation(
+      Documentation(info = "<html>
+      <p><strong>absolutePosition_con Connector</strong></p>
+      <p>This connector is used to specify the absolute position and orientation of a component in a 3-dimensional space. It provides input ports for defining linear and angular displacements.</p>
+      <p><strong>Ports:</strong></p>
+      <ul>
+        <li><strong>u_abs:</strong> A 3-dimensional vector representing linear displacement in meters. This vector describes the position of the component in space relative to a reference point.</li>
+        <li><strong>theta_abs:</strong> A 3-dimensional vector representing angular displacement in radians. This vector describes the orientation of the component around each axis.</li>
+      </ul>
+      <p><strong>Usage:</strong></p>
+      <p>Utilize this connector in models where precise positioning and orientation of components are required, such as in robotic arms, mechanical linkages, or spatial transformations.</p>
+      </html>"));
+  end absoluteVelocitySensor_con;
+  
+  connector velocityOutput_con
+  
+  
+      Modelica.Blocks.Interfaces.RealOutput displacement[6] "Total velocityt vector [m/s, rad/s]" annotation(
+      Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
+  
+  end velocityOutput_con;
+  
+  connector velocityInput_con
+  
+  protected
+      Modelica.Blocks.Interfaces.RealInput velocity[6] "Total velocity vector [m/s, rad/s]" annotation(
+      Placement(transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-118, 82}, extent = {{-20, -20}, {20, 20}})));
+      
+  end velocityInput_con;
+    end Sensor;
+  
   end Connectors;
 
   package Models
@@ -5567,6 +5634,24 @@ if not Connections.isRoot(frame_a.R) then
 // Combine linear and angular accelerations into a single vector
       velocity = cat(1, a_abs, alpha_abs);
     end accelerationSensorInput;
+
+    model sensorInput
+     extends Hydrodynamic.Connector.absolutePosition_con;
+     extends Hydrodynamic.Connector.absoluteVelocity_con;
+     extends Hydrodynamic.Connector.absoluteAcceleration_con;
+
+    end sensorInput;
+    
+    model absolutePositionSensor
+    // Inheritance
+    extends Hydrodynamic.Connectors.Sensor.absolutePositionSensor_con;
+    extends Hydrodynamic.Connectors.Sensor.positionOutput_con;
+  
+  equation
+// Combine linear and angular displacements into a single vector
+    displacement = cat(1, u_abs, theta_abs);
+  end absolutePositionSensor;
+  
   end Models;
 
   package Units
@@ -5701,11 +5786,163 @@ if not Connections.isRoot(frame_a.R) then
 
     model LinearMooringForce
     // Use this so the linear mooring is embedded with the force torque element. Will first need to apply sensors to frame A
-    // and force and torque output from frame B
+      // and force and torque output from frame B
     equation
 
     end LinearMooringForce;
   end Mooring;
+
+  package Sensor
+  package absoluteSensor
+    package Models
+      model absolutePositionSensor
+        // Inheritance
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.absolutePositionSensor_con;
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.positionOutput_con;
+      
+        equation
+// Combine linear and angular displacements into a single vector
+        displacement = cat(1, u_abs, theta_abs);
+      end absolutePositionSensor;
+      
+        model absoluteVelocitySensor
+        // Inheritance
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.absoluteVelocitySensor_con;
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.velocityOutput_con;
+      
+        equation
+// Combine linear and angular displacements into a single vector
+        velocity = cat(1, v_abs, omega_abs);
+      end absoluteVelocitySensor;
+      
+      model absoluteAccelerationSensor
+        // Inheritance
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.absoluteAccelerationSensor_con;
+        extends Hydrodynamic.Sensor.absoluteSensor.Connectors.accelerationOutput_con;
+      
+        equation
+// Combine linear and angular displacements into a single vector
+        acceleration = cat(1, a_abs, alpha_abs);
+      end absoluteAccelerationSensor;
+        
+      model absoluteSensors
+        extends Hydrodynamic.Sensor.absoluteSensor.Models.absolutePositionSensor;
+        extends Hydrodynamic.Sensor.absoluteSensor.Models.absoluteVelocitySensor;
+        extends Hydrodynamic.Sensor.absoluteSensor.Models.absoluteAccelerationSensor;
+      
+      end absoluteSensors;
+    
+    end Models;
+    
+      package Connectors
+      connector absolutePositionSensor_con
+      
+      Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(
+        Placement(transformation(origin = {-115, 100}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, 100}, extent = {{-15, -15}, {15, 15}})));
+      Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(
+        Placement(transformation(origin = {-115, 60}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, 60}, extent = {{-15, -15}, {15, 15}})));
+      annotation(
+        Documentation(info = "<html>
+        <p><strong>absolutePosition_con Connector</strong></p>
+        <p>This connector is used to specify the absolute position and orientation of a component in a 3-dimensional space. It provides input ports for defining linear and angular displacements.</p>
+        <p><strong>Ports:</strong></p>
+        <ul>
+          <li><strong>u_abs:</strong> A 3-dimensional vector representing linear displacement in meters. This vector describes the position of the component in space relative to a reference point.</li>
+          <li><strong>theta_abs:</strong> A 3-dimensional vector representing angular displacement in radians. This vector describes the orientation of the component around each axis.</li>
+        </ul>
+        <p><strong>Usage:</strong></p>
+        <p>Utilize this connector in models where precise positioning and orientation of components are required, such as in robotic arms, mechanical linkages, or spatial transformations.</p>
+        </html>"));
+      end absolutePositionSensor_con;
+      
+      connector positionOutput_con
+      
+      
+        Modelica.Blocks.Interfaces.RealOutput displacement[6] "Total displacement vector [m, rad]" annotation(
+        Placement(transformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, 50}, extent = {{-10, -10}, {10, 10}})));
+      
+      end positionOutput_con;
+      
+      connector positionInput_con
+      
+        Modelica.Blocks.Interfaces.RealInput displacement[6] "Total displacement vector [m, rad]" annotation(
+        Placement(transformation(origin = {-120, 50}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 50}, extent = {{-20, -20}, {20, 20}})));
+        
+      end positionInput_con;
+      
+      connector absoluteVelocitySensor_con
+      
+      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+        Placement(transformation(origin = {-115, 20}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, 20}, extent = {{-15, -15}, {15, 15}})));
+      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
+        Placement(transformation(origin = {-115, -20}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, -20}, extent = {{-15, -15}, {15, 15}})));
+      annotation(
+        Documentation(info = "<html>
+        <p><strong>absolutePosition_con Connector</strong></p>
+        <p>This connector is used to specify the absolute position and orientation of a component in a 3-dimensional space. It provides input ports for defining linear and angular displacements.</p>
+        <p><strong>Ports:</strong></p>
+        <ul>
+          <li><strong>u_abs:</strong> A 3-dimensional vector representing linear displacement in meters. This vector describes the position of the component in space relative to a reference point.</li>
+          <li><strong>theta_abs:</strong> A 3-dimensional vector representing angular displacement in radians. This vector describes the orientation of the component around each axis.</li>
+        </ul>
+        <p><strong>Usage:</strong></p>
+        <p>Utilize this connector in models where precise positioning and orientation of components are required, such as in robotic arms, mechanical linkages, or spatial transformations.</p>
+        </html>"));
+      end absoluteVelocitySensor_con;
+      
+      connector velocityOutput_con
+      
+      
+        Modelica.Blocks.Interfaces.RealOutput velocity[6] "Total velocity vector [m/s, rad/s]" annotation(
+        Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
+      
+      end velocityOutput_con;
+      
+      connector velocityInput_con
+      
+        Modelica.Blocks.Interfaces.RealInput velocity[6] "Total velocity vector [m/s, rad/s]" annotation(
+        Placement(transformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, 0}, extent = {{-20, -20}, {20, 20}})));
+        
+      end velocityInput_con;
+      
+      connector absoluteAccelerationSensor_con
+      
+      Modelica.Blocks.Interfaces.RealInput a_abs[3] "Linear acceleration vector [m/s^2]" annotation(
+        Placement(transformation(origin = {-115, -60}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, -60}, extent = {{-15, -15}, {15, 15}})));
+      Modelica.Blocks.Interfaces.RealInput alpha_abs[3] "Angular velocity vector [rad/s^2]" annotation(
+        Placement(transformation(origin = {-115, -100}, extent = {{-15, -15}, {15, 15}}), iconTransformation(origin = {-115, -100}, extent = {{-15, -15}, {15, 15}})));
+      annotation(
+        Documentation(info = "<html>
+        <p><strong>absolutePosition_con Connector</strong></p>
+        <p>This connector is used to specify the absolute position and orientation of a component in a 3-dimensional space. It provides input ports for defining linear and angular displacements.</p>
+        <p><strong>Ports:</strong></p>
+        <ul>
+          <li><strong>u_abs:</strong> A 3-dimensional vector representing linear displacement in meters. This vector describes the position of the component in space relative to a reference point.</li>
+          <li><strong>theta_abs:</strong> A 3-dimensional vector representing angular displacement in radians. This vector describes the orientation of the component around each axis.</li>
+        </ul>
+        <p><strong>Usage:</strong></p>
+        <p>Utilize this connector in models where precise positioning and orientation of components are required, such as in robotic arms, mechanical linkages, or spatial transformations.</p>
+        </html>"));
+      end absoluteAccelerationSensor_con;
+      
+      connector accelerationOutput_con
+      
+      
+        Modelica.Blocks.Interfaces.RealOutput acceleration[6] "Total acceleration vector [m/s^2, rad/s^2]" annotation(
+        Placement(transformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {110, -50}, extent = {{-10, -10}, {10, 10}})));
+      
+      end accelerationOutput_con;
+      
+      connector accelerationInput_con
+      
+        Modelica.Blocks.Interfaces.RealInput acceleration[6] "Total acceleration vector [m/s^2, rad/s^2]" annotation(
+        Placement(transformation(origin = {-120, -50}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-120, -50}, extent = {{-20, -20}, {20, 20}})));
+        
+      end accelerationInput_con;
+      
+      end Connectors;
+  end absoluteSensor;
+  end Sensor;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle
     {0, 0, 0}, fillPattern = // Light gray fill
