@@ -7,7 +7,7 @@ clc
 %   Structure:      'hydroCoeff.mat'
 
 % File directory
-filename = 'C:\Users\Thomas\Documents\GitHub\OET_6DoF\rm3.h5';
+filename = 'C:\Users\thogan1\Documents\GitHub\OET_6DoF\rm3.h5';
 
 % Simulation parameters
 hydroCoeff.parameters.rho = h5read(filename,'/simulation_parameters/rho');  % Density of water
@@ -82,4 +82,4 @@ hydroCoeff.PTO.Rdamp = hydroCoeff.PTO.Rdamp*hydroCoeff.parameters.rho.*hydroCoef
 hydroCoeff.PTO.Adep = reshape(hydroCoeff.PTO.Adep,size(hydroCoeff.PTO.Adep,1),[],1); % Reshaping to a 260x36
 hydroCoeff.PTO.Rdamp = reshape(hydroCoeff.PTO.Rdamp,size(hydroCoeff.PTO.Rdamp,1),[],1); % Reshaping to a 260x36v
 
-save('hydroCoeff_6DoF.mat','hydroCoeff')
+save('hydroCoeff_6DoF_multibody.mat','hydroCoeff')
