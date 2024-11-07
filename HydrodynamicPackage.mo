@@ -15,7 +15,7 @@ package Hydrodynamic
         Placement(transformation(origin = {-14, -20}, extent = {{-10, -10}, {10, 10}})));
       // Hydrodynamic body component
       // Wave profile component
-      Forces.HydrodynamicBlock6D hydrodynamicBlock6D(enablePTOForce = true, enableDragForce = false, enableRadiationForce = true, enableHydrostaticForce = true) annotation(
+      Forces.HydrodynamicBlock6D hydrodynamicBlock6D(enablePTOForce = true, enableDragForce = false, enableRadiationForce = true, enableHydrostaticForce = true, M = 9) annotation(
         Placement(transformation(origin = {12, -20}, extent = {{-10, -10}, {10, 10}})));
       WaveProfile.IrregularWave.PiersonMoskowitzWave piersonMoskowitzWave annotation(
         Placement(transformation(origin = {70, -20}, extent = {{-10, 10}, {10, -10}}, rotation = -180)));
@@ -219,7 +219,7 @@ package Hydrodynamic
     model OOP_SingleBodyWECMooring
       extends Modelica.Icons.Package;
     // World component (no gravity, Z-axis pointing downwards)
-      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, enableAnimation = true) "World coordinate system without gravity" annotation(
         Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
       // Prismatic joint constraining motion in heave
       Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}) "Prismatic joint allowing vertical motion" annotation(
@@ -303,38 +303,21 @@ package Hydrodynamic
     Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}) "Prismatic joint allowing vertical motion" annotation(
       Placement(transformation(origin = {-14, -20}, extent = {{-10, -10}, {10, 10}})));
     // Force and torque element (adapt wave output to a force and apply to the body)
-    Modelica.Mechanics.MultiBody.Forces.WorldForceAndTorque forceAndTorque annotation(
-      Placement(transformation(origin = {38, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 180)));
-    // Define hydrodynamic body
-    Hydrodynamic.Hydro.HydrodynamicBody hydrodynamicBody( /*enableHydrostaticForce = true, */enablePTOForce = true, enableRadiationForce = true) annotation(
+      // Define hydrodynamic body
+    Hydrodynamic.Hydro.HydrodynamicBody hydrodynamicBody(enableHydrostaticForce = true, BodyIndex = 1, enableRadiationForce = true)  annotation(
       Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
-    // Define wave and current bus
-    WaveProfile.WaveAndCurrentBus waveAndCurrentBus annotation(
-      Placement(transformation(origin = {68, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-    // Define wave spect
-    WaveProfile.IrregularWave.Bus_PiersonMoskowitzWave bus_PiersonMoskowitzWave annotation(
-      Placement(transformation(origin = {100, -18}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-  inner Forces.FilePath filePath annotation(
+    
+  inner Hydro.FilePath filePath annotation(
       Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
-        Placement(transformation(origin = {38, -48}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.HydrodynamicBody hydrodynamicBody1(BodyIndex = 2)  annotation(
+        Placement(transformation(origin = {70, -46}, extent = {{-10, -10}, {10, 10}})));
   equation
 // Connections
-    connect(world.frame_b, prismatic.frame_a) annotation(
-      Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
-    connect(prismatic.frame_b, hydrodynamicBody.frame_a) annotation(
-      Line(points = {{-4, -20}, {0, -20}}, color = {95, 95, 95}));
-    connect(waveAndCurrentBus.F, forceAndTorque.force) annotation(
-      Line(points = {{58, -12}, {50, -12}, {50, -14}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(waveAndCurrentBus.T, forceAndTorque.torque) annotation(
-      Line(points = {{58, -22}, {50, -22}, {50, -26}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(bus_PiersonMoskowitzWave.F, waveAndCurrentBus.Fw) annotation(
-      Line(points = {{90, -18}, {80, -18}, {80, -10}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(forceAndTorque.frame_b, hydrodynamicBody.frame_a) annotation(
-      Line(points = {{28, -20}, {26, -20}, {26, -2}, {0, -2}, {0, -20}}, color = {95, 95, 95}));
-  connect(hydrodynamicBody.frame_b, prismatic1.frame_a) annotation(
-        Line(points = {{20, -20}, {28, -20}, {28, -48}}, color = {95, 95, 95}));
-    annotation(
+      connect(world.frame_b, prismatic.frame_a) annotation(
+        Line(points = {{-30, -20}, {-24, -20}}, color = {95, 95, 95}));
+      connect(prismatic.frame_b, hydrodynamicBody.frame_a) annotation(
+        Line(points = {{-4, -20}, {0, -20}}, color = {95, 95, 95}));
+      annotation(
       Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
       Documentation(info = "<html>
         <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
@@ -813,7 +796,7 @@ package Hydrodynamic
       //extends Hydrodynamic.HydroDataImport.massData;
       /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
       // BodyShape parameters
-      outer FilePath filePath;
+      outer Hydrodynamic.Forces.FilePath filePath;
       
       /* Removing mass definition here and adding it to a custom bodyShape model
       parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
@@ -901,13 +884,13 @@ package Hydrodynamic
       // Absolute sensor
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_z = true, get_angles = true, get_w = true) annotation(
         Placement(transformation(origin = {-61, -25}, extent = {{-11, -11}, {11, 11}})));
-  Sensor.absoluteSensor.Models.absoluteSensors absoluteSensors1 annotation(
+    Sensor.absoluteSensor.Models.absoluteSensors absoluteSensors1 annotation(
         Placement(transformation(origin = {-50, 24}, extent = {{-10, -10}, {10, 10}})));
-  RadiationForce radiationForce(fileName=filePath.FileName) annotation(
+    RadiationForce radiationForce(fileName=filePath.FileName) annotation(
         Placement(transformation(origin = {16, 64}, extent = {{-10, -10}, {10, 10}})));
     
     equation
-//Conections
+    //Conections
       connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-102, -84}, {-102, 0}}, color = {95, 95, 95}));
       connect(bodyShape.frame_b, frame_b) annotation(
@@ -938,17 +921,17 @@ package Hydrodynamic
         Line(points = {{-64, -38}, {-62, -38}, {-62, -50}, {-70, -50}, {-70, 18}, {-62, 18}}, color = {0, 0, 127}, thickness = 0.5));
       connect(absoluteSensor.z, absoluteSensors1.alpha_abs) annotation(
         Line(points = {{-50, -38}, {-50, -54}, {-66, -54}, {-66, 14}, {-62, 14}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensors1.velocity, radiationForce.velocity) annotation(
+    connect(absoluteSensors1.velocity, radiationForce.velocity) annotation(
         Line(points = {{-38, 24}, {-20, 24}, {-20, 64}, {4, 64}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensors1.velocity, dampingDragForce.velocity) annotation(
+    connect(absoluteSensors1.velocity, dampingDragForce.velocity) annotation(
         Line(points = {{-38, 24}, {4, 24}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(radiationForce.F, forceToqueSum.Fr) annotation(
+    connect(radiationForce.F, forceToqueSum.Fr) annotation(
         Line(points = {{28, 64}, {30, 64}, {30, 8}, {38, 8}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensors1.displacement, hydrostaticForce.displacement) annotation(
+    connect(absoluteSensors1.displacement, hydrostaticForce.displacement) annotation(
         Line(points = {{-38, 30}, {-22, 30}, {-22, -14}, {4, -14}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensors1.displacement, ptoForce.displacement) annotation(
+    connect(absoluteSensors1.displacement, ptoForce.displacement) annotation(
         Line(points = {{-38, 30}, {-10, 30}, {-10, -40}, {4, -40}}, color = {0, 0, 127}, thickness = 0.5));
-  connect(absoluteSensors1.velocity, ptoForce.velocity) annotation(
+    connect(absoluteSensors1.velocity, ptoForce.velocity) annotation(
         Line(points = {{-38, 24}, {-20, 24}, {-20, -46}, {4, -46}}, color = {0, 0, 127}, thickness = 0.5));
       annotation(
         Diagram,
@@ -6042,25 +6025,25 @@ if not Connections.isRoot(frame_a.R) then
       
       parameter Modelica.Units.SI.Mass M = M_full[1,bodyIndex]"Total mass of the body (including ballast)";
       
-      parameter Modelica.Units.SI.Mass Ainf[bodyDOF,nDoF] = Ainf_full[bodyDOF*(bodyIndex-1)+1:bodyDOF*bodyIndex,:] "Added mass at maximum (cut-off) frequency";
+      parameter Modelica.Units.SI.Mass Ainf[bodyDoF,nDoF] = Ainf_full[bodyDoF*(bodyIndex-1)+1:bodyDoF*bodyIndex,:] "Added mass at maximum (cut-off) frequency";
     end massData;
     
     partial model hydrostaticData
       extends DataImport.multibodyData;
     protected
-      parameter Modelica.Units.SI.TranslationalSpringConstant Khs_full[bodyDOF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.hydroCoefficients.Khs", bodyDOF, nDoF) "Hydrostatic stiffness for all bodies";
+      parameter Modelica.Units.SI.TranslationalSpringConstant Khs_full[bodyDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydroCoeff.hydroCoefficients.Khs", bodyDoF, nDoF) "Hydrostatic stiffness for all bodies";
       
-      parameter Modelica.Units.SI.TranslationalSpringConstant Khs[bodyDOF, bodyDOF] = Khs_full[:,bodyDOF*(bodyIndex-1)+1:bodyDOF*bodyIndex] "Hydrostatic stiffness";
+      parameter Modelica.Units.SI.TranslationalSpringConstant Khs[bodyDoF, bodyDoF] = Khs_full[:,bodyDoF*(bodyIndex-1)+1:bodyDoF*bodyIndex] "Hydrostatic stiffness";
     
     end hydrostaticData;
     
     partial model multibodyData
       extends DataImport.filePath;
     protected
-      parameter Real nbodies_read = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.bodies.nDOF", 1, 1)) "Number of bodies";
+      parameter Real nbodies_read = scalar(Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.bodies.Nb", 1, 1)) "Number of bodies";
       parameter Integer nbodies = integer(nbodies_read) "Number of bodies";
-      parameter Integer bodyDOF = 6 "Degrees-of-Freedom per body"; // assuming all bodies are 6 DoF
-      parameter Integer nDoF = nbodies*bodyDOF "Total Degrees-of-Freedom";
+      parameter Integer bodyDoF = 6 "Degrees-of-Freedom per body"; // assuming all bodies are 6 DoF
+      parameter Integer nDoF = nbodies*bodyDoF "Total Degrees-of-Freedom";
     end multibodyData;
     
     partial model frequencyData
@@ -6084,9 +6067,9 @@ if not Connections.isRoot(frame_a.R) then
       parameter Real F_excRe_full[nDoF, wDim[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.excitation.spectralDecomp.re", nDoF, wDim[1]) "Real part of excitation force coefficients for all bodies";
       parameter Real F_excIm_full[nDoF, wDim[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.excitation.spectralDecomp.im", nDoF, wDim[1]) "Imaginary part of excitation force coefficients for all bodies";
       
-      parameter Real F_excRe[bodyDoF,wDim[1]] = F_excRe_full[bodyDOF(bodyIndex-1)+1:bodyDOF*bodyIndex,:] "Real part of excitation force coefficients";
+      parameter Real F_excRe[bodyDoF,wDim[1]] = F_excRe_full[bodyDoF*(bodyIndex-1)+1:bodyDoF*bodyIndex,:] "Real part of excitation force coefficients";
       
-       parameter Real F_excIm[bodyDoF,wDim[1]] = F_excIm_full[bodyDOF(bodyIndex-1)+1:bodyDOF*bodyIndex,:] "Imaginary part of excitation force coefficients";
+       parameter Real F_excIm[bodyDoF,wDim[1]] = F_excIm_full[bodyDoF*(bodyIndex-1)+1:bodyDoF*bodyIndex,:] "Imaginary part of excitation force coefficients";
       
       
     end excitationData;
@@ -6096,33 +6079,33 @@ if not Connections.isRoot(frame_a.R) then
     protected
       parameter Real n_stateSpace[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.order", nDoF, nDoF) "State-space approximation for each mode"; // probably don't need this
       parameter Integer n_state[2] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydro.coefficients.radiation.stateSpace.A") "Number of states for all bodies";
-       parameter Integer n_states_full[nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrder") "Number of states for all bodies";
+       parameter Real n_states_full_read[1,nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrder",1,nbodies) "Number of states for all bodies";
+       parameter Integer n_states_full[1,nbodies] = integer(n_states_full_read);
       parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
       parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
       parameter Real C_full[nDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.C", nDoF, n_state[1]) "Output matrix for all bodies";
       parameter Real D_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.D", nDoF, nDoF) "Feedforward matrix for all bodies";
       
-      parameter Integer n_states = n_states_full[bodyIndex] "Number of states";
+      parameter Integer n_states = n_states_full[1,bodyIndex] "Number of states";
       
-      Real A "State matrix";
+      Real A[n_states,n_states] "State matrix";
       
-      Real B "Input matrix";
+      Real B[n_states,nDoF] "Input matrix";
       
-      Real C "Output matrix";
+      Real C[nDoF,n_states] "Output matrix";
       
-      Real D "Feedforward matrix";
+      Real D[nDoF,nDoF] "Feedforward matrix";
       
-      Real stateStart;
+      Integer stateStart(start=0);
       
     algorithm
-      stateStart := 0;
       
       for i in 1:n_states loop
         if i == n_states then
           break;
         end if;
         
-        stateStart := stateStart + n_states_full[i];
+        stateStart := stateStart + n_states_full[1,i];
       end for;
       
       A := A_full[stateStart+1:stateStart+n_states,stateStart+1:stateStart+n_states];
@@ -6140,8 +6123,9 @@ if not Connections.isRoot(frame_a.R) then
     extends Hydrodynamic.Connector.inputOutput_con;
     //extends Hydrodynamic.HydroDataImport.massData;
       /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
-    // BodyShape parameters
+      // BodyShape parameters
     outer Hydrodynamic.Hydro.FilePath filePath;
+  
     
     parameter Integer BodyIndex"Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
       Dialog(group = "Hydro Data"));
@@ -6166,7 +6150,7 @@ if not Connections.isRoot(frame_a.R) then
       Dialog(group = "Body"));
     parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
       Dialog(group = "Body"));
-    Hydrodynamic.Forces.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=filePath.FileName) annotation(
+    Hydrodynamic.Hydro.BodyShape bodyShape(r = r, r_CM = {0, 0, -0.72}, /*m = m,*/ I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32,fileName=filePath.FileName) annotation(
       Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
     // Hydrostatic force parameters
     parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -6314,7 +6298,7 @@ if not Connections.isRoot(frame_a.R) then
     initial equation
       x = zeros(n_states) "Initialize state vector to zero";
     equation
-    // Use the switch to conditionally output the radiation force torque element
+// Use the switch to conditionally output the radiation force torque element
       if enableRadiationForce then
 // Radiation state space
         der(x) = A*x + B*velocity;
@@ -6339,7 +6323,7 @@ if not Connections.isRoot(frame_a.R) then
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
         Dialog(group = "Hydrostatic Force Parameters"));
     equation
-    // Use the switch to conditionally output the hydrostatic force torque element
+// Use the switch to conditionally output the hydrostatic force torque element
       if enableHydrostaticForce then
 // Calculate the  hydrostatic force/torque vector
         f = Khs*displacement;
@@ -6459,9 +6443,734 @@ if enableDampingDragForce then
       F = f[1:3];
       T = f[4:6];
     end ForceToqueSum;
+    
+    model BodyShape "Rigid body with mass, inertia tensor, different shapes for animation, and two frame connectors (12 potential states)"
+    
+      extends DataImport.massData;
+    
+    
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{84, -16}, {116, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show shape between frame_a and frame_b and optionally a sphere at the center of mass)";
+      parameter Boolean animateSphere = true "= true, if mass shall be animated as sphere provided animation=true";
+      parameter Modelica.Units.SI.Position r[3](start = {0, 0, 0}) "Vector from frame_a to frame_b resolved in frame_a";
+      parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) = M + Ainf[3,3] "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -10000000) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -10000000) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -10000000) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Mechanics.MultiBody.Types.ShapeType shapeType = "cylinder" "Type of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Position r_shape[3] = {0, 0, 0} "Vector from frame_a to shape origin, resolved in frame_a" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.Axis lengthDirection = Modelica.Units.Conversions.to_unit1(r - r_shape) "Vector in length direction of shape, resolved in frame_a" annotation(
+        Evaluate = true,
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.Axis widthDirection = {0, 1, 0} "Vector in width direction of shape, resolved in frame_a" annotation(
+        Evaluate = true,
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Length length = Modelica.Math.Vectors.length(r - r_shape) "Length of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Distance width = length/world.defaultWidthFraction "Width of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Distance height = width "Height of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.ShapeExtra extra = 0.0 "Additional parameter depending on shapeType (see docu of Visualizers.Advanced.Shape)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Modelica.Mechanics.MultiBody.Types.Color color = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of shape" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = 2*width "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+      input Modelica.Mechanics.MultiBody.Types.Color sphereColor = color "Color of sphere of mass" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+      input Modelica.Mechanics.MultiBody.Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation frameTranslation(r = r, animation = false) annotation(
+        Placement(transformation(extent = {{-20, -20}, {20, 20}})));
+      Modelica.Mechanics.MultiBody.Parts.Body body(r_CM = r_CM, m = m, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, animation = false, sequence_start = sequence_start, angles_fixed = angles_fixed, angles_start = angles_start, w_0_fixed = w_0_fixed, w_0_start = w_0_start, z_0_fixed = z_0_fixed, z_0_start = z_0_start, useQuaternions = useQuaternions, sequence_angleStates = sequence_angleStates, enforceStates = false) annotation(
+        Placement(transformation(extent = {{-27.3333, -70.3333}, {13, -30}})));
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape1(shapeType = shapeType, color = color, specularCoefficient = specularCoefficient, length = length, width = width, height = height, lengthDirection = lengthDirection, widthDirection = widthDirection, r_shape = r_shape, extra = extra, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape2(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and animateSphere;
+    equation
+      r_0 = frame_a.r_0;
+      v_0 = der(r_0);
+      a_0 = der(v_0);
+      connect(frame_a, frameTranslation.frame_a) annotation(
+        Line(points = {{-100, 0}, {-20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+      connect(frame_b, frameTranslation.frame_b) annotation(
+        Line(points = {{100, 0}, {20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+      connect(frame_a, body.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}, {-60, -50.1666}, {-27.3333, -50.1666}}, color = {95, 95, 95}, thickness = 0.5));
+      annotation(
+        Documentation(info = "<html>
+        <p>
+        <strong>Rigid body</strong> with mass and inertia tensor and <strong>two frame connectors</strong>.
+        All parameter vectors have to be resolved in frame_a.
+        The <strong>inertia tensor</strong> has to be defined with respect to a
+        coordinate system that is parallel to frame_a with the
+        origin at the center of mass of the body. The coordinate system <strong>frame_b</strong>
+        is always parallel to <strong>frame_a</strong>.
+        </p>
+        <p>
+        By default, this component is visualized by any <strong>shape</strong> that can be
+        defined with Modelica.Mechanics.MultiBody.Visualizers.FixedShape. This shape is placed
+        between frame_a and frame_b (default: length(shape) = Frames.length(r)).
+        Additionally a <strong>sphere</strong> may be visualized that has
+        its center at the center of mass.
+        Note, that
+        the animation may be switched off via parameter animation = <strong>false</strong>.
+        </p>
+        <p>
+        <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/BodyShape.png\" alt=\"Parts.BodyShape\">
+        </p>
+        
+        <p>
+        The following shapes can be defined via parameter <strong>shapeType</strong>,
+        e.g., shapeType=\"cone\":
+        </p>
+        
+        <p>
+        <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Visualizers/FixedShape.png\" alt=\"Visualizers.FixedShape\">
+        </p>
+        
+        <p>
+        A BodyShape component has potential states. For details of these
+        states and of the \"Advanced\" menu parameters, see model
+        <a href=\"modelica://Modelica.Mechanics.MultiBody.Parts.Body\">MultiBody.Parts.Body</a>.
+        </p>
+        </html>"),
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Text(extent = {{-150, -100}, {150, -70}}, textString = "r=%r"), Rectangle(extent = {{-100, 30}, {101, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Ellipse(extent = {{-60, 60}, {60, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255}), Text(extent = {{-50, 24}, {55, -27}}, textString = "%m"), Text(extent = {{55, 12}, {91, -13}}, textString = "b"), Text(extent = {{-92, 13}, {-56, -12}}, textString = "a")}),
+        Diagram(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-100, 9}, {-100, 43}}, color = {128, 128, 128}), Line(points = {{100, 0}, {100, 44}}, color = {128, 128, 128}), Line(points = {{-100, 40}, {90, 40}}, color = {135, 135, 135}), Polygon(points = {{90, 44}, {90, 36}, {100, 40}, {90, 44}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-22, 68}, {20, 40}}, textColor = {128, 128, 128}, textString = "r"), Line(points = {{-100, -10}, {-100, -90}}, color = {128, 128, 128}), Line(points = {{-100, -84}, {-10, -84}}, color = {128, 128, 128}), Polygon(points = {{-10, -80}, {-10, -88}, {0, -84}, {-10, -80}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-82, -66}, {-56, -84}}, textColor = {128, 128, 128}, textString = "r_CM"), Line(points = {{0, -46}, {0, -90}}, color = {128, 128, 128})}));
+    end BodyShape;
   
   
   end Hydro;
+
+  package Wave
+    partial model waveParameters "Top-level wave parameter class"
+      // Inheritance
+      extends DataImport.physicalConstantData;
+      extends DataImport.excitationData;
+      extends Models.physicalConstants;
+      extends Models.forceTorque;
+      // Wave and environmental parameters
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      // Simulation parameters
+      parameter Integer n_omega = 100 "Number of frequency components" annotation(
+        Dialog(group = "Simulation Parameters"));
+      parameter Modelica.Units.SI.Time Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+    protected
+      // Derived parameters
+      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
+      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component [m]";
+      Modelica.Units.SI.Time Tp[n_omega] "Wave period components [s]";
+      Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component [1/m]";
+      Real ExcCoeffRe[nDoF, n_omega] "Real component of excitation coefficient for frequency components";
+      Real ExcCoeffIm[nDoF, n_omega] "Imaginary component of excitation coefficient for frequency components";
+      //Real F_exc[nDoF] "6D excitation force [N]";
+      parameter Real epsilon[n_omega] "Wave components phase shift";
+    equation
+    // Calculate wave parameters
+      Tp = 2*pi./omega;
+      k = WaveProfile.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
+    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+      for i in 1:nDoF loop
+        for j in 1:n_omega loop
+          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], omega[j])*rho*g;
+          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], omega[j])*rho*g;
+        end for;
+      end for;
+    // Calculate sea surface elevation (SSE) as the sum of all wave components
+      SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+    // Calculate the excitation force
+      for i in 1:nDoF loop
+    // Calculate and apply ramping to the excitation force
+        if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+          f[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
+        else
+    // Apply full excitation force after the ramping period
+          f[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - 2*pi*epsilon)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - 2*pi*epsilon)));
+        end if;
+      end for;
+    // Assign excitation force to output
+      F = f;
+      annotation(
+        Documentation(info = "<html>
+              <p>This model implements the linear Airy wave theory to calculate wave elevation profiles and associated excitation forces.</p>
+              <p>Key features:</p>
+              <ul>
+                <li>Calculates sea surface elevation (SSE) based on wave parameters</li>
+                <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+                <li>Applies a ramping function to the excitation force during the initial phase</li>
+                <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+              </ul>
+              <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+            </html>"),
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Linear Wave 2 ", fontName = "Arial")}),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end waveParameters;
+    
+    package RegularWave
+      /* Package for regular wave elevation profile and excitation force calculations */
+    
+      model LinearWave "Implementation of linear Airy wave model"
+        // Inherit from waveParameters class, modifying the number of frequency components
+        extends Hydrodynamic.Wave.waveParameters(n_omega = 1, epsilon = fill(0, n_omega));
+      equation
+    // Calculate wave amplityde
+        zeta[n_omega] = Hs/2 "Wave amplitude [m]";
+    // Assign peak amplitude to the scalar frequency
+        omega[n_omega] = omega_peak;
+        annotation(
+          Documentation(info = "<html>
+            <p>This model implements the linear Airy wave theory to calculate wave elevation profiles and associated excitation forces.</p>
+            <p>Key features:</p>
+            <ul>
+              <li>Calculates sea surface elevation (SSE) based on wave parameters</li>
+              <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+              <li>Applies a ramping function to the excitation force during the initial phase</li>
+              <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+            </ul>
+            <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+          </html>"),
+          Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = "Linear Wave", fontName = "Arial")}),
+          experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+      end LinearWave;
+      annotation(
+        Documentation(info = "<html>
+          <p>This package contains models for generating regular wave profiles and calculating associated excitation forces.</p>
+          <p>The package currently includes:</p>
+          <ul>
+            <li>LinearWave: A model implementing the linear Airy wave theory</li>
+          </ul>
+        </html>"),
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-90, -70}, {90, -90}}, lineColor = {0, 0, 255}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, textString = "Regular Wave")}));
+    end RegularWave;
+    
+    package WaveFunctions
+      package EqualEnergyFrequencyFunctions
+        function equalEnergyFrequencySelector
+          // Can lead to errors if n_omega and n_omega_int are not selected properly, need to make more rubust
+          input Real omega_min "Minimum frequency [rad/s]";
+          input Real omega_max "Maximum frequency [rad/s]";
+          constant input Integer n_omega "Number of frequency compenents defining the spectrum";
+          constant input Integer n_omega_int "Number of steps for integrating the spectrum";
+          input Real omega_int[n_omega_int] "Integration frquencies";
+          input Real S_int[n_omega_int] "Energy Spectrum";
+          output Real omega[n_omega] "Output vector of selected frequency components [rad/s]";
+          output Real S[n_omega];
+          //output Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+          //output Real eng_check[n_omega];
+          //output Real energy_sum;
+          //output Real mean_energy;
+          //output Real new_energy;
+        protected
+          Real domega = (omega_max - omega_min)/(n_omega_int - 1) "Omega int frequency step";
+          Real Cum_energy[n_omega_int] "Vector of cumulative spectrum interval areas";
+          Real tot_energy "Total energy in the spectrum";
+          Real energy "Element to iterate current area off of";
+          //Real mean_energy;
+          Real tolerance "Tolerance for area";
+          //Real current_energy_diff, next_energy_diff;
+          //Integer k = 1;
+          Real mean_energy;
+          Real new_energy;
+        algorithm
+    //energy_sum := 0;
+          new_energy := 0;
+          Cum_energy[1] := 0;
+          omega[1] := omega_min;
+          omega[n_omega] := omega_max;
+          S[1] := S_int[1];
+          S[n_omega] := S_int[n_omega_int];
+          for i in 2:n_omega_int loop
+            energy := Hydrodynamic.Internal.Functions.trapIntegration(S_int[i - 1], S_int[i], domega);
+            Cum_energy[i] := Cum_energy[i - 1] + energy;
+          end for;
+          tot_energy := Cum_energy[end];
+          mean_energy := tot_energy/(n_omega - 1);
+          tolerance := mean_energy/5;
+          for i in 2:(n_omega - 1) loop
+    // This is really sensitive to integration step size, need to make more robust
+    /* for j in k:(n_omega_int-1) loop
+                current_energy_diff := abs(Cum_energy[j] - Cum_energy[k] - mean_energy);
+                next_energy_diff := abs(Cum_energy[j+1] - Cum_energy[k] - mean_energy);
+              
+                if  Cum_energy[j] - Cum_energy[k] >= mean_energy or current_energy_diff <= tolerance then 
+                  omega[i] := omega_int[j];
+                  S[i] := S_int[j];
+                  eng_check[i] := Cum_energy[j] - Cum_energy[k];
+                  energy_sum := energy_sum + eng_check[i];
+                  k := j;
+                  break;
+                end if;
+                
+              end for; */
+    //for j in k:(n_omega_int-1) loop
+            new_energy := new_energy + mean_energy;
+            omega[i] := Modelica.Math.Vectors.interpolate(Cum_energy, omega_int, new_energy);
+            S[i] := Modelica.Math.Vectors.interpolate(omega_int, S_int, omega[i]);
+    //end for; */
+          end for;
+        end equalEnergyFrequencySelector;
+      end EqualEnergyFrequencyFunctions;
+    
+      package RandomFrequencyFunctions
+        function randomNumberGen "Function to generate random numbers using XOR shift algorithm"
+          /* Produces a vector of random numbers based on local and global seeds
+                                                             This function utilizes the Xorshift64star algorithm for efficient random number generation */
+          input Integer ls = 614657 "Local seed for random number generation";
+          input Integer gs = 30020 "Global seed for random number generation";
+          constant input Integer n = 100 "Number of random numbers to generate";
+          output Real r64[n] "Vector of generated random numbers";
+        protected
+          Integer state64[2](each start = 0, each fixed = true) "State vector for XOR shift algorithm";
+        algorithm
+          state64[1] := 0;
+          state64[2] := 0;
+          for i in 1:n loop
+            if i == 1 then
+              state64 := Modelica.Math.Random.Generators.Xorshift64star.initialState(ls, gs);
+              r64[i] := 0;
+            else
+              (r64[i], state64) := Modelica.Math.Random.Generators.Xorshift64star.random((state64));
+            end if;
+          end for;
+          annotation(
+            Documentation(info = "<html>
+            <p>Syntax: r64 = randomNumberGen(ls, gs, n)</p>
+            <p>Description: This function generates a vector of random numbers using the Xorshift64star algorithm, which is known for its efficiency and good statistical properties.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>ls</code>: Local seed for random number generation (default: 614657)</li>
+              <li><code>gs</code>: Global seed for random number generation (default: 30020)</li>
+              <li><code>n</code>: Number of random numbers to generate (default: 100)</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>r64</code>: Vector of generated random numbers</li>
+            </ul>
+            <p>Algorithm: The function uses the Xorshift64star algorithm to generate random numbers based on the provided seeds.</p>
+          </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "RNG", textStyle = {TextStyle.Bold})}));
+        end randomNumberGen;
+    
+        function randomFrequencySelector "Function to randomly select frequency components within a specified range"
+          /* Uses a random phase vector to perturb frequencies
+                                                             This function ensures a good distribution of frequencies for irregular wave generation */
+          constant input Real omega_min "Minimum frequency [rad/s]";
+          constant input Real omega_max "Maximum frequency [rad/s]";
+          constant input Real epsilon[:] "Random phase vector for frequency perturbation";
+          output Real omega[size(epsilon, 1)] "Output vector of selected frequency components [rad/s]";
+        protected
+          parameter Real ref_omega[size(epsilon, 1)] = omega_min:(omega_max - omega_min)/(size(epsilon, 1) - 1):omega_max "Reference frequency vector [rad/s]";
+        algorithm
+          omega[1] := omega_min;
+          for i in 2:size(epsilon, 1) - 1 loop
+            omega[i] := ref_omega[i] + epsilon[i]*omega_min;
+          end for;
+          omega[size(epsilon, 1)] := omega_max;
+          annotation(
+            Documentation(info = "<html>
+            <p>Syntax: omega = frequencySelector(omega_min, omega_max, epsilon)</p>
+            <p>Description: This function selects frequency components within a specified range, using a random phase vector to perturb the frequencies. This ensures a good distribution of frequencies for irregular wave generation.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>omega_min</code>: Minimum frequency [rad/s]</li>
+              <li><code>omega_max</code>: Maximum frequency [rad/s]</li>
+              <li><code>epsilon</code>: Random phase vector for frequency perturbation</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>omega</code>: Output vector of selected frequency components [rad/s]</li>
+            </ul>
+            <p>Algorithm: The function creates a reference frequency vector and then perturbs it using the random phase vector, ensuring the first and last frequencies are exactly omega_min and omega_max.</p>
+          </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "ω(ε)", textStyle = {TextStyle.Bold})}));
+        end randomFrequencySelector;
+      end RandomFrequencyFunctions;
+    
+      package SpectrumFunctions
+        function spectrumGenerator_PM "Function to generate Pierson-Moskowitz spectrum"
+          /* Calculates spectral values for given frequencies based on significant wave height
+                                                             This function implements the Pierson-Moskowitz spectrum, suitable for fully developed seas */
+          input Real Hs = 1 "Significant wave height [m]";
+          input Real omega[:] "Array of frequency components [rad/s]";
+          output Real spec[size(omega, 1)] "Array of spectral values for input frequencies [m^2s]";
+        protected
+          constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+          constant Real g = Modelica.Constants.g_n "Gravitational acceleration [m/s^2]";
+        algorithm
+          for i in 1:size(omega, 1) loop
+            spec[i] := 0.0081*g^2/omega[i]^5*exp(-0.0358*(g/(Hs*omega[i]^2))^2);
+          end for;
+          annotation(
+            Documentation(info = "<html>
+            <p>Syntax: spec = spectrumGenerator_PM(Hs, omega)</p>
+            <p>Description: This function generates the Pierson-Moskowitz spectrum, which is suitable for fully developed seas. It calculates spectral values for given frequencies based on the significant wave height.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>Hs</code>: Significant wave height [m] (default: 1)</li>
+              <li><code>omega</code>: Array of frequency components [rad/s]</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>spec</code>: Array of spectral values for input frequencies [m^2s]</li>
+            </ul>
+            <p>Algorithm: The function calculates spectral values using the Pierson-Moskowitz formula: S(ω) = 0.0081*g^2/ω^5 * exp(-0.0358*(g/(Hs*ω^2))^2)</p>
+          </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "PM", textStyle = {TextStyle.Bold})}));
+        end spectrumGenerator_PM;
+    
+        function spectrumGenerator_BRT "Function to generate Bretschneider spectrum"
+          /* Calculates spectral values based on significant wave height and peak frequency
+                                                             This function implements the Bretschneider spectrum, a two-parameter spectrum for fetch-limited seas */
+          input Real Hs = 1 "Significant wave height [m]";
+          input Real omega[:] "Array of frequency components [rad/s]";
+          input Real omega_peak = 0.9423 "Peak spectral frequency [rad/s]";
+          output Real spec[size(omega, 1)] "Array of spectral values for input frequencies [m^2s]";
+        protected
+          constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+          constant Real g = Modelica.Constants.g_n "Gravitational acceleration [m/s^2]";
+        algorithm
+          for i in 1:size(omega, 1) loop
+            spec[i] := 1.9635*Hs^2*omega_peak^4/omega[i]^5*exp(-1.25*((omega_peak/omega[i])^4));
+          end for;
+          annotation(
+            Documentation(info = "<html>
+            <p>Syntax: spec = spectrumGenerator_BRT(Hs, omega, omega_peak)</p>
+            <p>Description: This function generates the Bretschneider spectrum, which is a two-parameter spectrum suitable for fetch-limited seas. It calculates spectral values based on significant wave height and peak frequency.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>Hs</code>: Significant wave height [m] (default: 1)</li>
+              <li><code>omega</code>: Array of frequency components [rad/s]</li>
+              <li><code>omega_peak</code>: Peak spectral frequency [rad/s] (default: 0.9423)</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>spec</code>: Array of spectral values for input frequencies [m^2s]</li>
+            </ul>
+            <p>Algorithm: The function calculates spectral values using the Bretschneider formula: S(ω) = 1.9635*Hs^2*ω_peak^4/ω^5 * exp(-1.25*((ω_peak/ω)^4))</p>
+          </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "BRT", textStyle = {TextStyle.Bold})}));
+        end spectrumGenerator_BRT;
+    
+        function spectrumGenerator_JONSWAP "Function to generate JONSWAP (Joint North Sea Wave Project) spectrum"
+          /* Calculates spectral values based on significant wave height, peak frequency, and spectral width parameters
+                                                             This function implements the JONSWAP spectrum, suitable for developing seas with fetch limitations */
+          input Real Hs = 1 "Significant wave height [m]";
+          input Real omega[:] "Array of frequency components [rad/s]";
+          input Real omega_peak = 0.9423 "Peak spectral frequency [rad/s]";
+          input Real spectralWidth_min "Minimum spectral width parameter";
+          input Real spectralWidth_max "Maximum spectral width parameter";
+          output Real spec[size(omega, 1)] "Array of spectral values for input frequencies [m^2s]";
+        protected
+          constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+          constant Real g = Modelica.Constants.g_n "Gravitational acceleration [m/s^2]";
+          constant Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum";
+          Real sigma "Spectral width parameter";
+          Real b "Exponent for peak enhancement factor";
+        algorithm
+          for i in 1:size(omega, 1) loop
+            if omega[i] > omega_peak then
+              sigma := spectralWidth_max;
+            else
+              sigma := spectralWidth_min;
+            end if;
+            b := exp(-0.5*(((omega[i] - omega_peak)/(sigma*omega_peak))^2));
+            spec[i] := 0.0081*g^2/omega[i]^5*exp(-1.25*((omega_peak/omega[i])^4))*gamma^b;
+          end for;
+          annotation(
+            Documentation(info = "<html>
+            <p>Syntax: spec = spectrumGenerator_JONSWAP(Hs, omega, omega_peak, spectralWidth_min, spectralWidth_max)</p>
+            <p>Description: This function generates the JONSWAP (Joint North Sea Wave Project) spectrum, which is suitable for developing seas with fetch limitations. It calculates spectral values based on significant wave height, peak frequency, and spectral width parameters.</p>
+            <p>Inputs:</p>
+            <ul>
+              <li><code>Hs</code>: Significant wave height [m] (default: 1)</li>
+              <li><code>omega</code>: Array of frequency components [rad/s]</li>
+              <li><code>omega_peak</code>: Peak spectral frequency [rad/s] (default: 0.9423)</li>
+              <li><code>spectralWidth_min</code>: Minimum spectral width parameter</li>
+              <li><code>spectralWidth_max</code>: Maximum spectral width parameter</li>
+            </ul>
+            <p>Outputs:</p>
+            <ul>
+              <li><code>spec</code>: Array of spectral values for input frequencies [m^2s]</li>
+            </ul>
+            <p>Algorithm: The function calculates spectral values using the JONSWAP formula, which is an extension of the Pierson-Moskowitz spectrum with additional parameters to account for fetch-limited seas.</p>
+          </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "JONSWAP", textStyle = {TextStyle.Bold})}));
+        end spectrumGenerator_JONSWAP;
+    
+        package Calculations
+          function frequencyStepGen
+            input Real omega[n_omega];
+            constant input Integer n_omega;
+            output Real domega = (omega[end] - omega[1])/(n_omega - 1) "Frequency step size";
+          
+          end frequencyStepGen;
+    
+          function integrationFrequencyGen
+            input Real omega_min "Minimum frequency [rad/s]";
+            input Real omega_max "Maximum frequency [rad/s]";
+            constant input Integer n_omega_int "Number of frequency compenents defining the spectrum";
+            output Real omega_int[n_omega_int];
+            // = omega_min:domega_int:omega_max "Frequencies for spectrum generation and integration";
+          protected
+            Real domega_int = (omega_max - omega_min)/(n_omega_int - 1) "Frequency step size";
+          algorithm
+            for i in 1:n_omega_int loop
+              omega_int[i] := omega_min + (i - 1)*(omega_max - omega_min)/(n_omega_int - 1);
+            end for;
+          end integrationFrequencyGen;
+    
+          function trapezoidalIntegration
+            input Real y1;
+            input Real y2;
+            input Real domega;
+            output Real Area;
+          algorithm
+            Area := 0.5*domega*(y1 + y2);
+          end trapezoidalIntegration;
+        end Calculations;
+      end SpectrumFunctions;
+    
+      package WaveParameterFunctions
+        function waveNumber "Function to iteratively compute the wave number from frequency components"
+          /* Uses the dispersion relationship for water waves to calculate wave numbers
+                                                               This function implements an iterative method to solve the implicit dispersion equation */
+          input Real d "Water depth [m]";
+          input Real omega[:] "Array of wave frequency components [rad/s]";
+          output Real k[size(omega, 1)] "Array of wave number components [rad/m]";
+        protected
+          constant Real g = Modelica.Constants.g_n "Gravitational acceleration [m/s^2]";
+          constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+          parameter Integer n = size(omega, 1) "Number of frequency components";
+          Real T[size(omega, 1)] "Array of wave period components [s]";
+          Real L0[size(omega, 1)] "Array of deepwater wavelength components [m]";
+          Real L1(start = 0, fixed = true) "Temporary variable for wavelength iteration [m]";
+          Real L1c(start = 0, fixed = true) "Temporary variable for wavelength iteration comparison [m]";
+          Real L[size(omega, 1)] "Array of iterated wavelength components [m]";
+        algorithm
+          T := 2*pi./omega;
+          L0 := g*T.^2/(2*pi);
+          for i in 1:size(omega, 1) loop
+            L1 := L0[i];
+            L1c := 0;
+            while abs(L1c - L1) > 0.001 loop // could also be a return
+              L1c := L1;
+              L[i] := g*T[i]^2/(2*pi)*tanh(2*pi/L1*d);
+              L1 := L[i];
+            end while;
+          end for;
+          k := 2*pi./L;
+          annotation(
+            Documentation(info = "<html>
+              <p>Syntax: k = waveNumber(d, omega)</p>
+              <p>Description: This function calculates wave numbers for given frequencies and water depth using the dispersion relationship for water waves. It employs an iterative method to solve the implicit dispersion equation.</p>
+              <p>Inputs:</p>
+              <ul>
+                <li><code>d</code>: Water depth [m]</li>
+                <li><code>omega</code>: Array of wave frequency components [rad/s]</li>
+              </ul>
+              <p>Outputs:</p>
+              <ul>
+                <li><code>k</code>: Array of wave number components [rad/m]</li>
+              </ul>
+              <p>Algorithm:</p>
+              <ol>
+                <li>Calculate wave periods from frequencies</li>
+                <li>Calculate deepwater wavelengths</li>
+                <li>Iterate to solve the dispersion equation for each frequency component</li>
+                <li>Convert wavelengths to wave numbers</li>
+              </ol>
+            </html>"),
+            Icon(graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, lineColor = {0, 0, 255}, fillColor = {255, 255, 255}, fillPattern = FillPattern.Solid), Text(extent = {{-90, 50}, {90, -50}}, textString = "k(ω)", textStyle = {TextStyle.Bold}), Line(points = {{-80, -80}, {80, 80}}, color = {0, 0, 255}, thickness = 0.5)}),
+            Diagram(graphics = {Text(extent = {{-100, 80}, {100, 40}}, textString = "Wave Number Calculation"), Line(points = {{-80, 0}, {80, 0}}, color = {0, 0, 255}), Line(points = {{0, -80}, {0, 80}}, color = {0, 0, 255}), Text(extent = {{-60, -20}, {60, -60}}, textString = "k = 2π/L")}),
+            experiment(StopTime = 1.0, Tolerance = 1e-06));
+        end waveNumber;
+      end WaveParameterFunctions;
+    end WaveFunctions;
+    
+    package IrregularWave
+      /* Package for irregular wave elevation profile and excitation force calculations */
+      extends Modelica.Icons.Package;
+    
+      model PiersonMoskowitzWave "Implementation of Pierson-Moskowitz (PM) wave spectrum for irregular wave generation"
+        extends Wave.IrregularWave.irregularWaveParameters(fileName=filePath.FileName);
+        outer FilePath filePath;
+        
+        
+      equation
+        if frequencySelection == "equalEnergy" then
+          S_int = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator_PM(Hs, omega_int) "Spectral values for frequency components [m^2-s/rad]";
+        elseif frequencySelection == "random" then
+          S = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator_PM(Hs, omega) "Spectral values for frequency components [m^2-s/rad]";
+        end if;
+        annotation(
+          Documentation(info = "<html>
+            <h4>Pierson-Moskowitz Wave Spectrum Model</h4>
+            <p>This model implements the Pierson-Moskowitz (PM) wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+            <p>Key features:</p>
+            <ul>
+              <li>Generates a wave spectrum based on the PM formulation</li>
+              <li>Discretizes the spectrum into multiple frequency components</li>
+              <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
+              <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+              <li>Applies a ramping function to the excitation force during the initial phase</li>
+              <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+            </ul>
+            <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+            <h4>Usage Notes:</h4>
+            <ul>
+              <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
+              <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
+              <li>Random seeds can be changed to generate different realizations of the same sea state</li>
+            </ul>
+          </html>"),
+          Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Pierson Moskowitz ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
+          experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+      end PiersonMoskowitzWave;
+    
+      partial model irregularWaveParameters "Irregular wave parameter class"
+        // Inhertiance from the top-level wave parameter class, modifying the phase shift components
+        extends Wave.waveParameters(epsilon = WaveProfile.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega));
+        // Irregular wave spectrum parameters
+        parameter String frequencySelection = "random" annotation(
+          Dialog(group = "Wave Spectrum Parameters"),
+          choices(choice = "random", choice = "equalEnergy"));
+        parameter Modelica.Units.SI.AngularFrequency omega_min = 0.03141 "Lowest frequency component [rad/s]" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omega_max = 3.141 "Highest frequency component [rad/s]" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        // Random freqeuncy selection paramters (will be disabled if user opts to use equal energy method)
+        parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        // Equal Energy Parameters
+        parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(
+          Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+      protected
+        // Random phase shift
+        parameter Real rnd_shft[n_omega] = WaveProfile.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega) "Random shifts for frequency selection";
+        // Frequency selection and wave spectrum
+        Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+        Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2 s/rad]";
+        Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
+        Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2 s/rad]";
+      equation
+    // Calculate wave parameter
+        domega = WaveProfile.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
+        zeta = sqrt(2*S*domega);
+    // Select equal energy or random frequency selection
+        if frequencySelection == "equalEnergy" then
+          omega_int = Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
+          (omega, S) = Wave.WaveFunctions.EqualEnergyFrequencyFunctions.equalEnergyFrequencySelector(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
+        elseif frequencySelection == "random" then
+          omega = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omega_min, omega_max, rnd_shft) "Selected frequency components [rad/s]";
+          omega_int = zeros(n_omega_int);
+          S_int = zeros(n_omega_int);
+        end if;
+        annotation(
+          Documentation(info = "<html>
+            <p><b>Bretschneider Wave Spectrum Model</b></p>
+            <p>This model implements the Bretschneider wave spectrum to generate irregular waves and calculate associated excitation forces.</p>
+            <p><b>Key features:</b></p>
+            <ul>
+              <li>Generates a wave spectrum based on the Bretschneider formulation</li>
+              <li>Discretizes the spectrum into multiple frequency components</li>
+              <li>Calculates sea surface elevation (SSE) based on superposition of wave components</li>
+              <li>Computes excitation force using interpolated coefficients from hydrodynamic data</li>
+              <li>Applies a ramping function to the excitation force during the initial phase</li>
+              <li>Outputs the excitation force as a 3D vector (vertical component only)</li>
+            </ul>
+            <p>The model requires hydrodynamic coefficient data to be provided in a .mat file.</p>
+            <p><b>Usage Notes:</b></p>
+            <ul>
+              <li>Adjust the spectrum parameters (Hs, omega_peak, etc.) to model different sea states</li>
+              <li>The number of frequency components (n_omega) affects the smoothness of the generated waves</li>
+              <li>Random seeds can be changed to generate different realizations of the same sea state</li>
+            </ul>
+          </html>"),
+          Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-100, 50}, {100, -150}}, textString = " Bretschneider ", fontName = "Arial")}, coordinateSystem(initialScale = 0.1)),
+          experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+      end irregularWaveParameters;
+      annotation(
+        Documentation(info = "<html>
+      <p><strong>IrregularWave Package</strong></p>
+      <p>This package provides models for generating irregular wave profiles and calculating associated excitation forces using various wave spectra commonly used in ocean engineering and naval architecture.</p>
+      <p><em>Included Models:</em></p>
+      <ul>
+        <p><strong>PiersonMoskowitzWave:</strong> Implements the Pierson-Moskowitz spectrum, suitable for fully developed seas.</p>
+        <p><strong>BretschneiderWave:</strong> Implements the Bretschneider spectrum, a two-parameter spectrum also known as the modified Pierson-Moskowitz spectrum.</p>
+        <p><strong>JonswapWave:</strong> Implements the JONSWAP (Joint North Sea Wave Project) spectrum, particularly useful for modeling developing seas and storm conditions.</p>
+      </ul>
+      <p>Each model provides options for customizing sea state parameters and offers both wave elevation profiles and excitation force calculations.</p>
+    </html>"),
+        Icon(graphics = {Line(points = {{-80, 0}, {-60, 20}, {-40, -20}, {-20, 10}, {0, -10}, {20, 30}, {40, -30}, {60, 15}, {80, -15}}, color = {0, 0, 255}, thickness = 2, smooth = Smooth.Bezier), Text(extent = {{-90, -70}, {90, -90}}, lineColor = {0, 0, 255}, fillColor = {0, 0, 255}, fillPattern = FillPattern.Solid, textString = "Irregular Wave")}));
+    end IrregularWave;
+  end Wave;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle
     {0, 0, 0}, fillPattern = // Light gray fill
