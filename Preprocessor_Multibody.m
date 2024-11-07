@@ -27,8 +27,11 @@ hydro.parameters.Nh = length(hydro.parameters.heading);
 % Depth
 hydro.parameters.depth = h5read(filename,'/simulation_parameters/water_depth');
 if hydro.parameters.depth == 'infinite'
-    hydro.parameters.depth = Inf;
+    hydro.parameters.depth = 150; 
 end
+% should move back to Inf, but issues regarding importing strings in
+% Modelica, assuming 150 is infinite depth here
+
 % Frequency (and corresponding period) components
 hydro.parameters.w = h5read(filename,'/simulation_parameters/w')';
 hydro.parameters.T = h5read(filename,'/simulation_parameters/T')';
