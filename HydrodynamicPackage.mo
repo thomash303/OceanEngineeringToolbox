@@ -484,20 +484,20 @@ package OET
       parameter Real n_states_full_read_Uncoupled[1,nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled", 1, nbodies) "Number of states for all bodies uncoupled";
      parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
      parameter Integer n_states_full_Uncoupled[1,nbodies] = integer(n_states_full_read_Uncoupled);
-      //parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
-      //parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
-      //parameter Real C_full[nDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.C", nDoF, n_state[1]) "Output matrix for all bodies";
-      //parameter Real D_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.D", nDoF, nDoF) "Feedforward matrix for all bodies";
+      parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
+      parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
+      parameter Real C_full[nDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.C", nDoF, n_state[1]) "Output matrix for all bodies";
+      parameter Real D_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.D", nDoF, nDoF) "Feedforward matrix for all bodies";
       parameter Integer n_states = integer(n_states_full_read[1, bodyIndex]) "Number of states";
       parameter Integer n_states_Uncoupled = integer(n_states_full_read_Uncoupled[1, bodyIndex]) "Number of states";
-      //Real A[n_states_Uncoupled, n_states_Uncoupled] = A_full[stateStart + 1:stateStart + n_states_Uncoupled, stateStart + 1:stateStart + n_states_Uncoupled];
-      Real A[n_states_Uncoupled, n_states_Uncoupled] = zeros(n_states_Uncoupled,n_states_Uncoupled) "State matrix";
-      //Real B[n_states_Uncoupled, bodyDoF] = B_full[stateStart + 1:stateStart + n_states_Uncoupled, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Input matrix";
-      Real B[n_states_Uncoupled, bodyDoF] = zeros(n_states_Uncoupled, bodyDoF) "Input matrix";
-      //Real C[bodyDoF, n_states_Uncoupled] = C_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, stateStart + 1:stateStart + n_states_Uncoupled] "Output matrix";
-      Real C[bodyDoF, n_states_Uncoupled] = zeros(bodyDoF, n_states_Uncoupled) "Output matrix";
-      //Real D[bodyDoF, bodyDoF] = D_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Feedforward matrix";
-      Real D[bodyDoF, bodyDoF] = zeros(bodyDoF, bodyDoF) "Feedforward matrix";
+      Real A[n_states_Uncoupled, n_states_Uncoupled] = A_full[stateStart + 1:stateStart + n_states_Uncoupled, stateStart + 1:stateStart + n_states_Uncoupled];
+      //Real A[n_states_Uncoupled, n_states_Uncoupled] = zeros(n_states_Uncoupled,n_states_Uncoupled) "State matrix";
+      Real B[n_states_Uncoupled, bodyDoF] = B_full[stateStart + 1:stateStart + n_states_Uncoupled, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Input matrix";
+      //Real B[n_states_Uncoupled, bodyDoF] = zeros(n_states_Uncoupled, bodyDoF) "Input matrix";
+      Real C[bodyDoF, n_states_Uncoupled] = C_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, stateStart + 1:stateStart + n_states_Uncoupled] "Output matrix";
+      //Real C[bodyDoF, n_states_Uncoupled] = zeros(bodyDoF, n_states_Uncoupled) "Output matrix";
+      Real D[bodyDoF, bodyDoF] = D_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Feedforward matrix";
+      //Real D[bodyDoF, bodyDoF] = zeros(bodyDoF, bodyDoF) "Feedforward matrix";
       parameter Real one[1,1] = fill(1,1,1);
       parameter Real stateStartInter[(nbodies+1),1] = cat(1,one,transpose(n_states_full_read_Uncoupled)) "Intermediate vector";
       parameter Integer stateStart = integer(sum(stateStartInter[1:bodyIndex]));
@@ -1012,19 +1012,22 @@ package OET
     // Enable/disable radiation force
     parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(HideResult = true,
       Dialog(group = "Radiation Force Parameters"));
+  
   protected
     Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector [m/s, rad/s]";
     Modelica.Units.SI.Force f_element[3];
     Modelica.Units.SI.Torque t_element[3];
     Real x[n_states_Uncoupled] "Dummy variable state vector";
-    Real velocityDummy[bodyDoF];
+    Real velocityDummy[bodyDoF] = velocity;
   initial equation
     x = zeros(n_states_Uncoupled) "Initialize state vector to zero";
   equation
+  
   // Use the switch to conditionally output the hydrostatic force torque element
     if enableRadiationForce then
   // Calculate the hydrostatic force/torque vector
       der(x) = A*x + B*velocityDummy;
+      //der(x) = B*velocityDummy;
       F = C*x + D*velocityDummy;
     else
       x = zeros(n_states_Uncoupled);
