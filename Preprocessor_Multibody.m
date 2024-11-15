@@ -91,6 +91,7 @@ for i = 1:hydro.bodies.Nb
     try hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/radiation_damping/state_space/it'])); end
     % Number of states per body
     hydro.coefficients.radiation.stateSpace.bodyOrder(i)=sum(sum(hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i,:)));
+    hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled(i)=sum(sum(hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i,hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i)));
     hydro.coefficients.radiation.stateSpace.bodyOrderTotal = hydro.coefficients.radiation.stateSpace.bodyOrder(i) +     hydro.coefficients.radiation.stateSpace.bodyOrderTotal;
     % SS approximation R2
     try hydro.coefficients.radiation.stateSpace.R2(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/radiation_damping/state_space/r2t'])); end
@@ -140,5 +141,13 @@ hydro.coefficients.Khs = reshape(hydro.coefficients.Khs,hydro.bodies.dof(1),hydr
 
 % will need to subdivide matrix into submatrix corresponding to each body
 % body 1 ss_O(1:6,1:12), will make legit algorithm (best to do in Modelica
+
+% General single PTO and mooring matrices
+
+hydro.pto.linear.cpto = diag([0,0,3000,0,0,0]);
+hydro.pto.linear.kpto = diag([0,0,-40000,0,0,0]);
+
+hydro.mooring.linear.cm = diag([50,60,3000,500,40,60]);
+hydro.mooring.linear.km = diag([100,400,5000,300,200,100]);
 
 save('hydroCoeff_6DoF_multibody.mat','hydro')
