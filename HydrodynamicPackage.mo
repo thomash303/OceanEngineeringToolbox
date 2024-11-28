@@ -16,16 +16,14 @@ package OET
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(n_omega = 100) annotation(
         Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody(BodyIndex = 1)  annotation(
+  Hydro.HydrodynamicBody hydrodynamicBody(BodyIndex = 2)  annotation(
         Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody1(BodyIndex = 2)  annotation(
+  Hydro.HydrodynamicBody hydrodynamicBody1(BodyIndex = 1)  annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
   PTO.LinearPTO linearPTO annotation(
         Placement(transformation(origin = {38, -40}, extent = {{-10, -10}, {10, 10}})));
   Mooring.LinearMooring linearMooring  annotation(
         Placement(transformation(origin = {-24, -46}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
-        Placement(transformation(origin = {-16, 2}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1})  annotation(
         Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
     equation
@@ -36,13 +34,9 @@ package OET
         Line(points = {{60, -16}, {60, -30}, {48, -30}, {48, -40}}, color = {95, 95, 95}));
       connect(linearMooring.frame_a, hydrodynamicBody.frame_a) annotation(
         Line(points = {{-34, -46}, {0, -46}, {0, -12}}, color = {95, 95, 95}));
-  connect(prismatic.frame_b, hydrodynamicBody.frame_a) annotation(
-        Line(points = {{-6, 2}, {0, 2}, {0, -12}}, color = {95, 95, 95}));
-  connect(prismatic.frame_a, world.frame_b) annotation(
-        Line(points = {{-26, 2}, {-30, 2}, {-30, -20}}, color = {95, 95, 95}));
-  connect(prismatic1.frame_b, hydrodynamicBody1.frame_a) annotation(
+      connect(prismatic1.frame_b, hydrodynamicBody1.frame_a) annotation(
         Line(points = {{52, 2}, {60, 2}, {60, -16}}, color = {95, 95, 95}));
-  connect(prismatic1.frame_a, hydrodynamicBody.frame_b) annotation(
+      connect(prismatic1.frame_a, hydrodynamicBody.frame_b) annotation(
         Line(points = {{32, 2}, {20, 2}, {20, -12}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
@@ -95,12 +89,12 @@ package OET
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(n_omega = 100) annotation(
         Placement(transformation(origin = {102, -12}, extent = {{-10, -10}, {10, 10}})));
-    Hydro.HydrodynamicBodyB2B hydrodynamicBody(BodyIndex = 1)  annotation(
+    Hydro.HydrodynamicBodyB2B spar(BodyIndex = 2)  annotation(
         Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
-    Hydro.HydrodynamicBodyB2B hydrodynamicBody1(BodyIndex = 2)  annotation(
+    Hydro.HydrodynamicBodyB2B float(BodyIndex = 1)  annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
     PTO.LinearPTO linearPTO annotation(
-        Placement(transformation(origin = {38, -40}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {38, -44}, extent = {{-10, -10}, {10, 10}})));
     Mooring.LinearMooring linearMooring  annotation(
         Placement(transformation(origin = {-24, -46}, extent = {{-10, -10}, {10, 10}})));
     Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
@@ -110,20 +104,20 @@ package OET
   inner Hydro.CouplingB2B couplingB2B annotation(
         Placement(transformation(origin = {92, -40}, extent = {{-10, -10}, {10, 10}})));
     equation
-    // Connections
-      connect(hydrodynamicBody.frame_b, linearPTO.frame_a) annotation(
-        Line(points = {{20, -12}, {28, -12}, {28, -40}}, color = {95, 95, 95}));
-      connect(hydrodynamicBody1.frame_a, linearPTO.frame_b) annotation(
-        Line(points = {{60, -16}, {60, -30}, {48, -30}, {48, -40}}, color = {95, 95, 95}));
-      connect(linearMooring.frame_a, hydrodynamicBody.frame_a) annotation(
+// Connections
+      connect(spar.frame_b, linearPTO.frame_a) annotation(
+        Line(points = {{20, -12}, {20, -14}, {28, -14}, {28, -44}}, color = {95, 95, 95}));
+      connect(float.frame_a, linearPTO.frame_b) annotation(
+        Line(points = {{60, -16}, {60, -30}, {48, -30}, {48, -44}}, color = {95, 95, 95}));
+      connect(linearMooring.frame_a, spar.frame_a) annotation(
         Line(points = {{-34, -46}, {0, -46}, {0, -12}}, color = {95, 95, 95}));
-    connect(prismatic.frame_b, hydrodynamicBody.frame_a) annotation(
+    connect(prismatic.frame_b, spar.frame_a) annotation(
         Line(points = {{-6, 2}, {0, 2}, {0, -12}}, color = {95, 95, 95}));
     connect(prismatic.frame_a, world.frame_b) annotation(
         Line(points = {{-26, 2}, {-30, 2}, {-30, -20}}, color = {95, 95, 95}));
-    connect(prismatic1.frame_b, hydrodynamicBody1.frame_a) annotation(
+    connect(prismatic1.frame_b, float.frame_a) annotation(
         Line(points = {{52, 2}, {60, 2}, {60, -16}}, color = {95, 95, 95}));
-    connect(prismatic1.frame_a, hydrodynamicBody.frame_b) annotation(
+    connect(prismatic1.frame_a, spar.frame_b) annotation(
         Line(points = {{32, 2}, {20, 2}, {20, -12}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
@@ -503,12 +497,12 @@ package OET
       // probably don't need this
       parameter Integer n_state[2] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydro.coefficients.radiation.stateSpace.A") "Number of states for all bodies";
       parameter Real n_states_full_read[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrder", 1, nbodies) "Number of states for all bodies";
-      parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
+      //parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
       parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
       parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
       parameter Real C_full[nDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.C", nDoF, n_state[1]) "Output matrix for all bodies";
       parameter Real D_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.D", nDoF, nDoF) "Feedforward matrix for all bodies";
-      parameter Integer n_states = n_states_full[1, bodyIndex] "Number of states";
+      parameter Integer n_states = integer(n_states_full_read[1, bodyIndex]) "Number of states";
       Real A[n_states, n_states] = A_full[stateStart + 1:stateStart + n_states, stateStart + 1:stateStart + n_states] "State matrix";
       Real B[n_states, nDoF] = B_full[stateStart + 1:stateStart + n_states, :] "Input matrix";
       Real C[bodyDoF, n_states] = C_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, stateStart + 1:stateStart + n_states] "Output matrix";
@@ -557,7 +551,7 @@ package OET
       parameter Real n_states_full_read[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrder", 1, nbodies) "Number of states for all bodies";
       parameter Real n_states_full_read_Uncoupled[1,nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled", 1, nbodies) "Number of states for all bodies uncoupled";
      //parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
-     //parameter Integer n_states_full_Uncoupled[1,nbodies] = integer(n_states_full_read_Uncoupled);
+      //parameter Integer n_states_full_Uncoupled[1,nbodies] = integer(n_states_full_read_Uncoupled);
       parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
       parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
       parameter Real C_full[nDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.C", nDoF, n_state[1]) "Output matrix for all bodies";
@@ -668,7 +662,7 @@ package OET
     Radiation radiation(fileName = filePath.FileName, bodyIndex=BodyIndex) annotation(
         Placement(transformation(origin = {48, -26}, extent = {{-10, -10}, {10, 10}})));
     equation
-    //Conections
+//Conections
       connect(excitation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{-2, -10}, {0, -10}, {0, -84}}, color = {95, 95, 95}));
     connect(hydrostatic.frame_a, bodyShape.frame_a) annotation(
@@ -684,7 +678,10 @@ package OET
     connect(radiation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{38, -26}, {-46, -26}, {-46, -84}, {0, -84}}, color = {95, 95, 95}));
      annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
+              extent={{-150,145},{150,105}},
+              textString="%name",
+              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
         Diagram);
     end HydrodynamicBody;
 
@@ -713,10 +710,9 @@ package OET
     initial equation
       x = zeros(n_states) "Initialize state vector to zero";
     equation
-      for i in 0:bodyDoF loop
-        velocityVector[bodyIndex + i] = velocity[i];
+      for i in 1:bodyDoF loop
+        velocityVector[bodyDoF*(bodyIndex-1) + i] = velocity[i];
       end for;
-    
 // Use the switch to conditionally output the radiation force torque element
       if enableRadiationForce then
 // Radiation state space
@@ -868,7 +864,8 @@ package OET
         Dialog(group = "File Path"));
       annotation(
         defaultComponentName = "filePath",
-        defaultComponentPrefixes = "inner");
+        defaultComponentPrefixes = "inner",
+        missingInnerMessage="No \"filepath\" component is defined. Drag the OET.Hydro.FilePath model into the top level of your model.");
     end FilePath;
 
     model ForceToqueSum
@@ -1057,7 +1054,7 @@ package OET
     model DampingDrag
       //parameter String filePath; // dont need as is
       //parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
-        //Dialog(group = "Hydro Data"));
+      //Dialog(group = "Hydro Data"));
       parameter Boolean enableDampingDragForce = true "Switch to enable/disable damping/drag force calculation" annotation(
         Dialog(group = "Damping/Drag Force Parameters"));
       // Frame_a connector
@@ -1106,12 +1103,11 @@ package OET
   initial equation
     x = zeros(n_states_Uncoupled) "Initialize state vector to zero";
   equation
-  
   // Use the switch to conditionally output the hydrostatic force torque element
-    if enableRadiationForce then
-  // Calculate the hydrostatic force/torque vector
+if enableRadiationForce then
+// Calculate the hydrostatic force/torque vector
       der(x) = A*x + B*velocity;
-      //der(x) = B*velocityDummy;
+//der(x) = B*velocityDummy;
       F = C*x + D*velocity;
     else
       x = zeros(n_states_Uncoupled);
@@ -1159,9 +1155,13 @@ package OET
       
       outer OET.Hydro.FilePath filePath;
       Real velocityCoupled[12] "Vector containing velocities of all hydrodynamic bodies";
+    
+      redeclare parameter String fileName = filePath.FileName;
+    
   annotation(
         defaultComponentName = "coupledB2B",
-        defaultComponentPrefixes = "inner");
+        defaultComponentPrefixes = "inner",
+        missingInnerMessage="No \"coupledB2B\" component is defined. Drag the OET.Hydro.CoupledB2B model into the top level of your model.");
     end CouplingB2B;
     
     model RadiationB2B
@@ -1285,7 +1285,7 @@ package OET
       RadiationB2B radiation(fileName = filePath.FileName, bodyIndex = BodyIndex,velocityVector = couplingB2B.velocityCoupled) annotation(
         Placement(transformation(origin = {48, -26}, extent = {{-10, -10}, {10, 10}})));
     equation
-    //Conections
+//Conections
       connect(excitation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{-2, -10}, {0, -10}, {0, -84}}, color = {95, 95, 95}));
       connect(hydrostatic.frame_a, bodyShape.frame_a) annotation(
@@ -1301,7 +1301,10 @@ package OET
       connect(radiation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{38, -26}, {-46, -26}, {-46, -84}, {0, -84}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
+              extent={{-150,145},{150,105}},
+              textString="%name",
+              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
         Diagram);
     end HydrodynamicBodyB2B;
   end Hydro;
@@ -2030,6 +2033,7 @@ package OET
       annotation(
         defaultComponentName = "environment",
         defaultComponentPrefixes = "inner",
+        missingInnerMessage="No \"environemnt\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Environment")}),
         Diagram);
     end Environment;
@@ -2062,9 +2066,9 @@ package OET
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
     equation
-    // Use the switch to conditionally output the hydrostatic force torque element
+// Use the switch to conditionally output the hydrostatic force torque element
       if enableLinearMooringForce then
-    // Calculate the linear mooring force/torque vector
+// Calculate the linear mooring force/torque vector
         F = Cm*velocity + Km*displacement;
       else
         F = zeros(6);
@@ -2101,7 +2105,10 @@ package OET
       connect(absoluteSensor.frame_a, frame_a) annotation(
         Line(points = {{-14, 54}, {-100, 54}, {-100, 0}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear Mooring")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
+              extent={{-150,145},{150,105}},
+              textString="%name",
+              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear Mooring")}),
         Diagram);
     end LinearMooring;
   end Mooring;
@@ -2147,9 +2154,9 @@ package OET
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
     equation
-    // Use the switch to conditionally output the damping drag force and torque
+// Use the switch to conditionally output the damping drag force and torque
       if enableLinearPTOForce then
-        // Calculate the PTO force/torque vector
+// Calculate the PTO force/torque vector
         F = Cpto*(velocity1 - velocity2) + Kpto*(displacement1 - displacement2);
       else
         F = zeros(6);
@@ -2203,7 +2210,10 @@ package OET
       connect(linearPTOForce.frame_b, frame_b) annotation(
         Line(points = {{16, 0}, {100, 0}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear PTO")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
+              extent={{-150,145},{150,105}},
+              textString="%name",
+              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear PTO")}),
         Diagram);
     end LinearPTO;
   end PTO;
