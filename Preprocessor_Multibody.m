@@ -76,7 +76,7 @@ for i = 1:hydro.bodies.Nb
     hydro.coefficients.excitation.spectralDecomp.im(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = permute(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/im']),[3,1,2]);
     
     % For excitation IRF (not relevant now, but will be required eventually)
-    hydro.coefficients.excitation.convolution.K(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/f']));
+    hydro.coefficients.excitation.convolution.K(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = permute(reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/f'])),[1,3,2]);
     hydro.coefficients.excitation.convolution.ex_t(1,:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/t'])); % Assumes all bodies have same time vector
     hydro.coefficients.excitation.convolution.ex_w(1,:) = h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/w']); % Assumes all bodies have same interpolated frequencies
 

@@ -16,15 +16,15 @@ package OET
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(n_omega = 100) annotation(
         Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody(BodyIndex = 2)  annotation(
+      Hydro.HydrodynamicBody hydrodynamicBody(BodyIndex = 2, enableRadiationForce = true) annotation(
         Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody1(BodyIndex = 1)  annotation(
+      Hydro.HydrodynamicBody hydrodynamicBody1(BodyIndex = 1, enableRadiationForce = true) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-  PTO.LinearPTO linearPTO annotation(
+      PTO.LinearPTO linearPTO annotation(
         Placement(transformation(origin = {38, -40}, extent = {{-10, -10}, {10, 10}})));
-  Mooring.LinearMooring linearMooring  annotation(
+      Mooring.LinearMooring linearMooring annotation(
         Placement(transformation(origin = {-24, -46}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1})  annotation(
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
         Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
@@ -76,7 +76,7 @@ package OET
         Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
         experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
     end multibodyWEC;
-    
+
     model multibodyCoupledWEC
       extends Modelica.Icons.Package;
       // World component (no gravity, Z-axis pointing downwards)
@@ -89,19 +89,19 @@ package OET
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(n_omega = 100) annotation(
         Placement(transformation(origin = {102, -12}, extent = {{-10, -10}, {10, 10}})));
-    Hydro.HydrodynamicBodyB2B spar(BodyIndex = 2)  annotation(
+      Hydro.HydrodynamicBodyB2B spar(BodyIndex = 2) annotation(
         Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
-    Hydro.HydrodynamicBodyB2B float(BodyIndex = 1)  annotation(
+      Hydro.HydrodynamicBodyB2B float(BodyIndex = 1) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-    PTO.LinearPTO linearPTO annotation(
+      PTO.LinearPTO linearPTO annotation(
         Placement(transformation(origin = {38, -44}, extent = {{-10, -10}, {10, 10}})));
-    Mooring.LinearMooring linearMooring  annotation(
+      Mooring.LinearMooring linearMooring annotation(
         Placement(transformation(origin = {-24, -46}, extent = {{-10, -10}, {10, 10}})));
-    Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}) annotation(
         Placement(transformation(origin = {-16, 2}, extent = {{-10, -10}, {10, 10}})));
-    Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1})  annotation(
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
         Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
-  inner Hydro.CouplingB2B couplingB2B annotation(
+      inner Hydro.CouplingB2B couplingB2B annotation(
         Placement(transformation(origin = {92, -40}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
@@ -111,13 +111,13 @@ package OET
         Line(points = {{60, -16}, {60, -30}, {48, -30}, {48, -44}}, color = {95, 95, 95}));
       connect(linearMooring.frame_a, spar.frame_a) annotation(
         Line(points = {{-34, -46}, {0, -46}, {0, -12}}, color = {95, 95, 95}));
-    connect(prismatic.frame_b, spar.frame_a) annotation(
+      connect(prismatic.frame_b, spar.frame_a) annotation(
         Line(points = {{-6, 2}, {0, 2}, {0, -12}}, color = {95, 95, 95}));
-    connect(prismatic.frame_a, world.frame_b) annotation(
+      connect(prismatic.frame_a, world.frame_b) annotation(
         Line(points = {{-26, 2}, {-30, 2}, {-30, -20}}, color = {95, 95, 95}));
-    connect(prismatic1.frame_b, float.frame_a) annotation(
+      connect(prismatic1.frame_b, float.frame_a) annotation(
         Line(points = {{52, 2}, {60, 2}, {60, -16}}, color = {95, 95, 95}));
-    connect(prismatic1.frame_a, spar.frame_b) annotation(
+      connect(prismatic1.frame_a, spar.frame_b) annotation(
         Line(points = {{32, 2}, {20, 2}, {20, -12}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
@@ -246,7 +246,7 @@ package OET
   end Units;
 
   package Internal
-  package absoluteSensor
+    package absoluteSensor
       package Models
         partial model absolutePositionSensor
           // Define connector to read translational and rotational positions
@@ -429,6 +429,47 @@ package OET
         frame_b.t = F[4:6];
       end forceTorqueTwoFrame;
     end Force;
+
+    connector Frame_c "Coordinate system fixed to the component with one cut-force and cut-torque (filled rectangular icon)"
+      extends Modelica.Mechanics.MultiBody.Interfaces.Frame;
+      annotation(
+        defaultComponentName = "frame_c",
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.16), graphics = {Rectangle(extent = {{-10, 10}, {10, -10}}, lineColor = {95, 95, 95}, lineThickness = 0.5), Rectangle(extent = {{-30, 100}, {30, -100}}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Diagram(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}, initialScale = 0.16), graphics = {Text(extent = {{-140, -50}, {140, -90}}, textString = "%name", rotation = 90), Rectangle(extent = {{-12, 40}, {12, -40}}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+<p>
+Basic definition of a coordinate system that is fixed to a mechanical
+component. In the origin of the coordinate system the cut-force
+and the cut-torque is acting.
+This component has a filled rectangular icon.
+</p>
+</html>"));
+    end Frame_c;
+
+    partial model PartialThreeFrames "Base model for components providing two frame connectors + outer world + assert to guarantee that the component is connected"
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system a fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system b fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{84, -16}, {116, 16}})));
+      OET.Internal.Frame_c frame_c "Coordinate system c fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{84, -16}, {116, 16}}, rotation = 90)));
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+    equation
+      assert(cardinality(frame_a) > 0, "Connector frame_a of component is not connected");
+      assert(cardinality(frame_b) > 0, "Connector frame_b of component is not connected");
+      assert(cardinality(frame_c) > 0, "Connector frame_c of component is not connected");
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-136, -25}, {-100, -50}}, textColor = {128, 128, 128}, textString = "a"), Text(extent = {{100, -25}, {136, -50}}, textColor = {128, 128, 128}, textString = "b"), Text(extent = {{-18, 110}, {18, 135}}, textColor = {128, 128, 128}, textString = "c")}),
+        Documentation(info = "<html>
+    <p>
+    This partial model provides two frame connectors, access to the world
+    object and an assert to check that both frame connectors are connected.
+    Therefore, inherit from this partial model if the two frame connectors are
+    needed and if the two frame connectors should be connected for a correct model.
+    </p>
+    </html>"));
+    end PartialThreeFrames;
   end Internal;
 
   package DataImport
@@ -463,7 +504,7 @@ package OET
       parameter Integer nbodies = integer(nbodies_read) "Number of bodies";
       parameter Integer bodyDoF = 6 "Degrees-of-Freedom per body";
       // assuming all bodies are 6 DoF
-      parameter Integer nDoF = nbodies*bodyDoF "Total Degrees-of-Freedom";     
+      parameter Integer nDoF = nbodies*bodyDoF "Total Degrees-of-Freedom";
     end multibodyData;
 
     partial model frequencyData
@@ -507,11 +548,9 @@ package OET
       Real B[n_states, nDoF] = B_full[stateStart + 1:stateStart + n_states, :] "Input matrix";
       Real C[bodyDoF, n_states] = C_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, stateStart + 1:stateStart + n_states] "Output matrix";
       Real D[bodyDoF, nDoF] = D_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, :] "Feedforward matrix";
-      
-      parameter Real one[1,1] = fill(1,1,1);
-      parameter Real stateStartInter[(nbodies+1),1] = cat(1,one,transpose(n_states_full_read)) "Intermediate vector";
+      parameter Real one[1, 1] = fill(1, 1, 1);
+      parameter Real stateStartInter[(nbodies + 1), 1] = cat(1, one, transpose(n_states_full_read)) "Intermediate vector";
       parameter Integer stateStart = integer(sum(stateStartInter[1:bodyIndex]));
-    
     end radiationDataB2B;
 
     partial model waveData
@@ -525,21 +564,17 @@ package OET
     end waveData;
 
     partial model linearPTOData
-    
       extends DataImport.multibodyData;
     protected
       parameter Modelica.Units.SI.TranslationalSpringConstant Kpto[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.pto.linear.kpto", bodyDoF, bodyDoF) "PTO stiffness";
       parameter Modelica.Units.SI.TranslationalDampingConstant Cpto[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.pto.linear.cpto", bodyDoF, bodyDoF) "PTO damping";
-    
     end linearPTOData;
 
     partial model linearMooringData
       extends OET.DataImport.multibodyData;
-      
-      protected
+    protected
       parameter Modelica.Units.SI.TranslationalSpringConstant Km[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.mooring.linear.km", bodyDoF, bodyDoF) "Mooring stiffness";
       parameter Modelica.Units.SI.TranslationalDampingConstant Cm[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.mooring.linear.cm", bodyDoF, bodyDoF) "Mooring damping";
-    
     end linearMooringData;
 
     partial model radiationData
@@ -549,8 +584,8 @@ package OET
       // probably don't need this
       parameter Integer n_state[2] = Modelica.Utilities.Streams.readMatrixSize(fileName, "hydro.coefficients.radiation.stateSpace.A") "Number of states for all bodies";
       parameter Real n_states_full_read[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrder", 1, nbodies) "Number of states for all bodies";
-      parameter Real n_states_full_read_Uncoupled[1,nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled", 1, nbodies) "Number of states for all bodies uncoupled";
-     //parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
+      parameter Real n_states_full_read_Uncoupled[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled", 1, nbodies) "Number of states for all bodies uncoupled";
+      //parameter Integer n_states_full[1, nbodies] = integer(n_states_full_read);
       //parameter Integer n_states_full_Uncoupled[1,nbodies] = integer(n_states_full_read_Uncoupled);
       parameter Real A_full[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.A", n_state[1], n_state[1]) "State matrix for all bodies";
       parameter Real B_full[n_state[1], nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.stateSpace.B", n_state[1], nDoF) "Input matrix for all bodies";
@@ -566,11 +601,20 @@ package OET
       //Real C[bodyDoF, n_states_Uncoupled] = zeros(bodyDoF, n_states_Uncoupled) "Output matrix";
       Real D[bodyDoF, bodyDoF] = D_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Feedforward matrix";
       //Real D[bodyDoF, bodyDoF] = zeros(bodyDoF, bodyDoF) "Feedforward matrix";
-      parameter Real one[1,1] = fill(1,1,1);
-      parameter Real stateStartInter[(nbodies+1),1] = cat(1,one,transpose(n_states_full_read_Uncoupled)) "Intermediate vector";
+      parameter Real one[1, 1] = fill(1, 1, 1);
+      parameter Real stateStartInter[(nbodies + 1), 1] = cat(1, one, transpose(n_states_full_read_Uncoupled)) "Intermediate vector";
       parameter Integer stateStart = integer(sum(stateStartInter[1:bodyIndex]));
-    
     end radiationData;
+    
+    partial model massData_am
+    extends DataImport.multibodyData;
+  protected
+    parameter Modelica.Units.SI.Mass M_full[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.bodies.m", 1, nbodies) "Total mass of the body (including ballast) for all bodies";
+    parameter Modelica.Units.SI.Mass Ainf_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.Ainf", nDoF, nDoF) "Added mass at maximum (cut-off) frequency for all bodies";
+    parameter Modelica.Units.SI.Mass M = M_full[1, bodyIndex] "Total mass of the body (including ballast)";
+    parameter Modelica.Units.SI.Mass Ainf[bodyDoF, nDoF] = Ainf_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, :] "Added mass at maximum (cut-off) frequency";
+  end massData_am;
+  
   end DataImport;
 
   package Hydro
@@ -584,9 +628,9 @@ package OET
       parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
         Dialog(group = "Hydro Data"));
       /* Removing mass definition here and adding it to a custom bodyShape model
-                            parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
-                              Dialog(group = "Body")); /*
-                            /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+                                        parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                          Dialog(group = "Body")); /*
+                                        /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
       parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
@@ -603,115 +647,114 @@ package OET
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      OET.Hydro.BodyShape bodyShape(r = r, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName) annotation(
+      OET.Hydro.BodyShape bodyShape(r = r, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName, useQuaternions = false) annotation(
         Placement(transformation(origin = {10, -84}, extent = {{-10, -10}, {10, 10}})));
       // Hydrostatic force parameters
-      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(choices(checkBox = true),
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        choices(checkBox = true),
         Dialog(group = "Hydrostatic Force Parameters"));
       // Radiation force paramters
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
         Dialog(group = "Radiation Force Parameters"));
       /* 
-                                  parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-                                  parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
-                                    Dialog(group = "PTO Parameters"));
-      
-                               */
-                               /*
-    // Damping coefficients
-      parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
-      parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
-      
-      // Drag coefficients
-      parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
-      parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
-      */
-      Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex=BodyIndex) annotation(
+                                              parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                                              parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                Dialog(group = "PTO Parameters"));
+                  
+                                           */
+      /*
+                // Damping coefficients
+                  parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                  parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                  parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                  parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                  parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                  parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                  
+                  // Drag coefficients
+                  parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                  parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                  parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                  parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                  parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                  parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                  */
+      Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {4, 36}, extent = {{-10, -10}, {10, 10}})));
-    Excitation excitation(fileName = filePath.FileName, bodyIndex=BodyIndex) annotation(
+      Excitation excitation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {8, -10}, extent = {{-10, -10}, {10, 10}})));
-    Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world)  annotation(
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
         Placement(transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}})));
-    DampingDrag dampingDrag annotation(
+      DampingDrag dampingDrag annotation(
         Placement(transformation(origin = {74, 52}, extent = {{-10, -10}, {10, 10}})));
-    Radiation radiation(fileName = filePath.FileName, bodyIndex=BodyIndex) annotation(
+      Radiation radiation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {48, -26}, extent = {{-10, -10}, {10, 10}})));
     equation
 //Conections
       connect(excitation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{-2, -10}, {0, -10}, {0, -84}}, color = {95, 95, 95}));
-    connect(hydrostatic.frame_a, bodyShape.frame_a) annotation(
+      connect(hydrostatic.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{-6, 36}, {-16, 36}, {-16, -84}, {0, -84}}, color = {95, 95, 95}));
-    connect(bodyShape.frame_b, frame_b) annotation(
+      connect(bodyShape.frame_b, frame_b) annotation(
         Line(points = {{20, -84}, {62, -84}, {62, 0}, {102, 0}}, color = {95, 95, 95}));
-    connect(bodyShape.frame_a, frame_a) annotation(
+      connect(bodyShape.frame_a, frame_a) annotation(
         Line(points = {{0, -84}, {-76, -84}, {-76, 0}, {-102, 0}}, color = {95, 95, 95}));
-    connect(absoluteSensor.frame_a, frame_a) annotation(
+      connect(absoluteSensor.frame_a, frame_a) annotation(
         Line(points = {{-64, 60}, {-102, 60}, {-102, 0}}, color = {95, 95, 95}));
-    connect(dampingDrag.frame_a, bodyShape.frame_a) annotation(
+      connect(dampingDrag.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{64, 52}, {-28, 52}, {-28, -84}, {0, -84}}, color = {95, 95, 95}));
-    connect(radiation.frame_a, bodyShape.frame_a) annotation(
+      connect(radiation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{38, -26}, {-46, -26}, {-46, -84}, {0, -84}}, color = {95, 95, 95}));
-     annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
-              extent={{-150,145},{150,105}},
-              textString="%name",
-              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
         Diagram);
     end HydrodynamicBody;
 
     model RadiationForceB2B "Radiation force and torque calculation"
-     // Import hydro coefficients
+      // Import hydro coefficients
       extends DataImport.radiationDataB2B;
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Velocity connectors
-      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
       // Enable/disable radiation force
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(HideResult = true,
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Radiation Force Parameters"));
       Real velocityVector[nDoF];
     protected
       Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector [m/s, rad/s]";
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
-    
       Real x[n_states] "Dummy variable state vector";
-    
     initial equation
       x = zeros(n_states) "Initialize state vector to zero";
     equation
       for i in 1:bodyDoF loop
-        velocityVector[bodyDoF*(bodyIndex-1) + i] = velocity[i];
+        velocityVector[bodyDoF*(bodyIndex - 1) + i] = velocity[i];
       end for;
 // Use the switch to conditionally output the radiation force torque element
       if enableRadiationForce then
@@ -734,13 +777,16 @@ package OET
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Position connectors
-      Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(
+        HideResult = true,
         Placement(visible = true, transformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
       // Enable/disable hydrostatic force
-      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(HideResult = true,
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Hydrostatic Force Parameters"));
     protected
       Real displacement[6] = cat(1, u_abs, theta_abs) "Combined displacement vector [m, rad]";
@@ -764,28 +810,43 @@ package OET
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Velocity connectors
-      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       // Enable/disable dampingdrag force
-      parameter Boolean enableDampingDragForce = true "Switch to enable/disable damping drag force calculation" annotation(HideResult = true,
+      parameter Boolean enableDampingDragForce = true "Switch to enable/disable damping drag force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Damping Drag Force Parameters"));
       // Damping coefficients
-      parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
-      parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+      parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(
+        HideResult = true);
       parameter Real Cv[6, 6] = diagonal({Cvtx, Cvty, Cvtz, Cvrx, Cvry, Cvrz}) "Combined damping coefficient matrix";
       // Drag coefficients
-      parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
-      parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
-      parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
-      parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+      parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(
+        HideResult = true);
+      parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(
+        HideResult = true);
       parameter Real Cd[6, 6] = diagonal({Cdtx, Cdty, Cdtz, Cdrx, Cdry, Cdrz}) "Combined drag coefficient matrix";
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
     protected
@@ -802,12 +863,12 @@ package OET
       end if;
       frame_a.f = f_element;
       frame_a.t = t_element;
-       annotation(
+      annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Damping/Drag Force")}));
     end DampingDragForce;
 
     model Excitation
-  extends DataImport.excitationData;
+      extends DataImport.excitationData;
       extends Models.physicalConstants;
       extends DataImport.physicalConstantData;
       // Simulation parameters w/ implicit connections
@@ -856,7 +917,7 @@ package OET
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
         Diagram);
-  end Excitation;
+    end Excitation;
 
     model FilePath
       // ideally would be a record, but has to be model to use inner
@@ -865,7 +926,7 @@ package OET
       annotation(
         defaultComponentName = "filePath",
         defaultComponentPrefixes = "inner",
-        missingInnerMessage="No \"filepath\" component is defined. Drag the OET.Hydro.FilePath model into the top level of your model.");
+        missingInnerMessage = "No \"filepath\" component is defined. Drag the OET.Hydro.FilePath model into the top level of your model.");
     end FilePath;
 
     model ForceToqueSum
@@ -1025,15 +1086,20 @@ package OET
     end BodyShape;
 
     model Hydrostatic
-      parameter String fileName annotation(HideResult = true);
-      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(HideResult = true,
+      parameter String fileName annotation(
+        HideResult = true);
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        HideResult = true,
         Dialog(group = "Hydro Data"));
-      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(HideResult = true,
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Hydrostatic Force Parameters"));
       // Frame_a connector
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        HideResult = true,
         Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
       HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce, fileName = fileName, bodyIndex = bodyIndex) annotation(
         Placement(transformation(origin = {2, 0}, extent = {{-18, -18}, {18, 18}})));
@@ -1058,11 +1124,13 @@ package OET
       parameter Boolean enableDampingDragForce = true "Switch to enable/disable damping/drag force calculation" annotation(
         Dialog(group = "Damping/Drag Force Parameters"));
       // Frame_a connector
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
       DampingDragForce dampingDragForce(enableDampingDragForce = enableDampingDragForce) annotation(
         Placement(transformation(origin = {1, -1}, extent = {{-13, -13}, {13, 13}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        HideResult = true,
         Placement(transformation(origin = {0, 64}, extent = {{-12, -12}, {12, 12}})));
     equation
       connect(absoluteSensor.frame_a, frame_a) annotation(
@@ -1076,107 +1144,110 @@ package OET
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Damping/Drag")}),
         Diagram);
-    
     end DampingDrag;
-    
-  model RadiationForce "Radiation force and torque calculation"
-    // Import hydro coefficients
-    extends DataImport.radiationData;
-    // Inherit frame_a
-    extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
-    // Velocity connectors
-    Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
-      Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-    Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
-      Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-    Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
-    // Enable/disable radiation force
-    parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(HideResult = true,
-      Dialog(group = "Radiation Force Parameters"));
-  
-  protected
-    Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector [m/s, rad/s]";
-    Modelica.Units.SI.Force f_element[3];
-    Modelica.Units.SI.Torque t_element[3];
-    Real x[n_states_Uncoupled] "Dummy variable state vector";
-    //Real velocityDummy[bodyDoF] = velocity;
-  initial equation
-    x = zeros(n_states_Uncoupled) "Initialize state vector to zero";
-  equation
-  // Use the switch to conditionally output the hydrostatic force torque element
-if enableRadiationForce then
-// Calculate the hydrostatic force/torque vector
-      der(x) = A*x + B*velocity;
-//der(x) = B*velocityDummy;
-      F = C*x + D*velocity;
-    else
-      x = zeros(n_states_Uncoupled);
-      F = zeros(6);
-    end if;
-    frame_a.f = f_element;
-    frame_a.t = t_element;
-    annotation(
-      Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation Force")}));
-   
-  end RadiationForce;
-  
-  model Radiation
-  
-    parameter String fileName annotation(HideResult = true);
-    parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(HideResult = true,
-      Dialog(group = "Hydro Data"));
-    parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(HideResult = true,
-      Dialog(group = "Radiation Force Parameters"));
-    // Frame_a connector
-    Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true,
-      Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-    Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(HideResult = true,
-      Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
-    RadiationForce radiationForce(enableRadiationForce = enableRadiationForce, fileName = fileName, bodyIndex = bodyIndex) annotation(
-      Placement(transformation(origin = {2, 0}, extent = {{-18, -18}, {18, 18}})));
-  equation
-    connect(absoluteSensor.frame_a, frame_a) annotation(
-      Line(points = {{-14, 54}, {-100, 54}, {-100, 0}}, color = {95, 95, 95}));
-    connect(absoluteSensor.v, radiationForce.v_abs) annotation(
-      Line(points = {{-14, 36}, {-16, 36}, {-16, 21}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(absoluteSensor.w, radiationForce.omega_abs) annotation(
-      Line(points = {{4, 36}, {-9, 36}, {-9, 21}}, color = {0, 0, 127}, thickness = 0.5));
-    connect(radiationForce.frame_a, frame_a) annotation(
-      Line(points = {{-16, 0}, {-100, 0}}, color = {95, 95, 95}));
-    annotation(
-      Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation")}),
-      Diagram);
-  
-  end Radiation;
 
-    model CouplingB2B
-    
-      extends OET.DataImport.multibodyData;
-      
-      outer OET.Hydro.FilePath filePath;
-      Real velocityCoupled[12] "Vector containing velocities of all hydrodynamic bodies";
-    
-      redeclare parameter String fileName = filePath.FileName;
-    
-  annotation(
-        defaultComponentName = "coupledB2B",
-        defaultComponentPrefixes = "inner",
-        missingInnerMessage="No \"coupledB2B\" component is defined. Drag the OET.Hydro.CoupledB2B model into the top level of your model.");
-    end CouplingB2B;
-    
-    model RadiationB2B
-    
-      
-      parameter String fileName annotation(HideResult = true);
-      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(HideResult = true,
+    model RadiationForce "Radiation force and torque calculation"
+      // Import hydro coefficients
+      extends DataImport.radiationData;
+      // Inherit frame_a
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
+      // Velocity connectors
+      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
+        Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
+      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
+        Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
+      Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
+      // Enable/disable radiation force
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
+        HideResult = true,
+        Dialog(group = "Radiation Force Parameters"));
+    protected
+      Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector [m/s, rad/s]";
+      Modelica.Units.SI.Force f_element[3];
+      Modelica.Units.SI.Torque t_element[3];
+      Real x[n_states_Uncoupled] "Dummy variable state vector";
+      //Real velocityDummy[bodyDoF] = velocity;
+    initial equation
+      x = zeros(n_states_Uncoupled) "Initialize state vector to zero";
+    equation
+// Use the switch to conditionally output the hydrostatic force torque element
+      if enableRadiationForce then
+// Calculate the hydrostatic force/torque vector
+        der(x) = A*x + B*velocity;
+//der(x) = B*velocityDummy;
+        F = C*x + D*velocity;
+      else
+        x = zeros(n_states_Uncoupled);
+        F = zeros(6);
+      end if;
+      frame_a.f = f_element;
+      frame_a.t = t_element;
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation Force")}));
+    end RadiationForce;
+
+    model Radiation
+      parameter String fileName annotation(
+        HideResult = true);
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        HideResult = true,
         Dialog(group = "Hydro Data"));
-      Real velocityVector[12]; //will need to generalize
-      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(HideResult = true,
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Radiation Force Parameters"));
       // Frame_a connector
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        HideResult = true,
+        Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
+      RadiationForce radiationForce(enableRadiationForce = enableRadiationForce, fileName = fileName, bodyIndex = bodyIndex) annotation(
+        Placement(transformation(origin = {2, 0}, extent = {{-18, -18}, {18, 18}})));
+    equation
+      connect(absoluteSensor.frame_a, frame_a) annotation(
+        Line(points = {{-14, 54}, {-100, 54}, {-100, 0}}, color = {95, 95, 95}));
+      connect(absoluteSensor.v, radiationForce.v_abs) annotation(
+        Line(points = {{-14, 36}, {-16, 36}, {-16, 21}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(absoluteSensor.w, radiationForce.omega_abs) annotation(
+        Line(points = {{4, 36}, {-9, 36}, {-9, 21}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(radiationForce.frame_a, frame_a) annotation(
+        Line(points = {{-16, 0}, {-100, 0}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation")}),
+        Diagram);
+    end Radiation;
+
+    model CouplingB2B
+      extends OET.DataImport.multibodyData;
+      outer OET.Hydro.FilePath filePath;
+      Real velocityCoupled[12] "Vector containing velocities of all hydrodynamic bodies";
+      redeclare parameter String fileName = filePath.FileName;
+      annotation(
+        defaultComponentName = "coupledB2B",
+        defaultComponentPrefixes = "inner",
+        missingInnerMessage = "No \"coupledB2B\" component is defined. Drag the OET.Hydro.CoupledB2B model into the top level of your model.");
+    end CouplingB2B;
+
+    model RadiationB2B
+      parameter String fileName annotation(
+        HideResult = true);
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        HideResult = true,
+        Dialog(group = "Hydro Data"));
+      Real velocityVector[12];
+      //will need to generalize
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
+        HideResult = true,
+        Dialog(group = "Radiation Force Parameters"));
+      // Frame_a connector
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        HideResult = true,
         Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
       RadiationForceB2B radiationForce(enableRadiationForce = enableRadiationForce, fileName = fileName, bodyIndex = bodyIndex, velocityVector = velocityVector) annotation(
         Placement(transformation(origin = {2, 0}, extent = {{-18, -18}, {18, 18}})));
@@ -1192,9 +1263,8 @@ if enableRadiationForce then
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation")}),
         Diagram);
-    
     end RadiationB2B;
-    
+
     model HydrodynamicBodyB2B "6-Dimensional Hydrodynamic Forces and Moments Calculation"
       // Inheritance
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
@@ -1206,9 +1276,9 @@ if enableRadiationForce then
       parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
         Dialog(group = "Hydro Data"));
       /* Removing mass definition here and adding it to a custom bodyShape model
-                                  parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
-                                    Dialog(group = "Body")); /*
-                                  /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+                                              parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                                Dialog(group = "Body")); /*
+                                              /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
       parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
@@ -1235,45 +1305,45 @@ if enableRadiationForce then
       parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
         Dialog(group = "Radiation Force Parameters"));
       /* 
-                                        parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-                                        parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
-                                          Dialog(group = "PTO Parameters"));
-            
-                                     */
+                                                    parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                        
+                                                 */
       /*
-          // Damping coefficients
-            parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
-            parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
-            parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
-            parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
-            parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
-            parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
-            
-            // Drag coefficients
-            parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
-            parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
-            parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
-            parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
-            parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
-            parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
-            */
+                      // Damping coefficients
+                        parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        
+                        // Drag coefficients
+                        parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        */
       Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {4, 36}, extent = {{-10, -10}, {10, 10}})));
       Excitation excitation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
@@ -1282,7 +1352,7 @@ if enableRadiationForce then
         Placement(transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}})));
       DampingDrag dampingDrag annotation(
         Placement(transformation(origin = {74, 52}, extent = {{-10, -10}, {10, 10}})));
-      RadiationB2B radiation(fileName = filePath.FileName, bodyIndex = BodyIndex,velocityVector = couplingB2B.velocityCoupled) annotation(
+      RadiationB2B radiation(fileName = filePath.FileName, bodyIndex = BodyIndex, velocityVector = couplingB2B.velocityCoupled) annotation(
         Placement(transformation(origin = {48, -26}, extent = {{-10, -10}, {10, 10}})));
     equation
 //Conections
@@ -1301,12 +1371,286 @@ if enableRadiationForce then
       connect(radiation.frame_a, bodyShape.frame_a) annotation(
         Line(points = {{38, -26}, {-46, -26}, {-46, -84}, {0, -84}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
-              extent={{-150,145},{150,105}},
-              textString="%name",
-              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
         Diagram);
     end HydrodynamicBodyB2B;
+
+    model BodyCM
+      extends OET.Internal.PartialThreeFrames;
+      parameter Boolean animationEnable = false;
+      //parameter String fileName = "float.stl";
+      //parameter String filePath = "c:Users/"; // re add in shapetype
+      parameter Real ra_CM[3] = {0, 0, 0};
+      parameter Real rCM_b[3] = {0, 0, 0};
+      parameter Real ra_b[3] = ra_CM + rCM_b;
+      parameter Real m = 1000;
+      Experimental.Body_cm body(m=m) annotation(
+        Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = ra_CM) annotation(
+        Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = rCM_b) annotation(
+        Placement(transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(length = 1, width = 1, height = 1, animation = animationEnable) annotation(
+        Placement(transformation(origin = {40, -36}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+        Placement(transformation(origin = {50, 52}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(body.frame_a, frame_c) annotation(
+        Line(points = {{0, -34}, {0, 100}}, color = {95, 95, 95}));
+      connect(fixedTranslation1.frame_a, body.frame_a) annotation(
+        Line(points = {{50, 0}, {0, 0}, {0, -34}}, color = {95, 95, 95}));
+      connect(fixedTranslation.frame_b, body.frame_a) annotation(
+        Line(points = {{-40, 0}, {0, 0}, {0, -34}}, color = {95, 95, 95}));
+      connect(fixedTranslation1.frame_b, frame_b) annotation(
+        Line(points = {{70, 0}, {100, 0}}, color = {95, 95, 95}));
+      connect(fixedTranslation.frame_a, frame_a) annotation(
+        Line(points = {{-60, 0}, {-100, 0}}, color = {95, 95, 95}));
+      connect(fixedShape.frame_a, body.frame_a) annotation(
+        Line(points = {{30, -36}, {0, -36}, {0, -34}}, color = {95, 95, 95}));
+  connect(absoluteSensor.frame_a, body.frame_a) annotation(
+        Line(points = {{40, 52}, {0, 52}, {0, -34}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Body")}),
+        Diagram);
+    end BodyCM;
+
+    model Body "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
+      import Modelica.Mechanics.MultiBody.Types;
+      import Modelica.Mechanics.MultiBody.Frames;
+      import Modelica.Units.Conversions.to_unit1;
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show cylinder and sphere)";
+      parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -Modelica.C.inf) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -Modelica.C.inf) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -Modelica.C.inf) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = world.defaultBodyDiameter "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color sphereColor = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of sphere" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter cylinderDiameter = sphereDiameter/Types.Defaults.BodyCylinderDiameterFraction "Diameter of cylinder" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color cylinderColor = sphereColor "Color of cylinder" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      final parameter Modelica.Units.SI.Inertia I[3, 3] = [I_11, I_21, I_31; I_21, I_22, I_32; I_31, I_32, I_33] "Inertia tensor";
+      final parameter Frames.Orientation R_start = Modelica.Mechanics.MultiBody.Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
+      Modelica.Units.SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
+      Modelica.Units.SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
+      Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      // Declarations for quaternions (dummies, if quaternions are not used)
+      parameter Frames.Quaternions.Orientation Q_start = Frames.to_Q(R_start) "Quaternion orientation object from world frame to frame_a at initial time";
+      Frames.Quaternions.Orientation Q(start = Q_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.prefer else StateSelect.never) else StateSelect.avoid) "Quaternion orientation object from world frame to frame_a (dummy value, if quaternions are not used as states)";
+      // Declaration for 3 angles
+      parameter Modelica.Units.SI.Angle phi_start[3] = if sequence_start[1] == sequence_angleStates[1] and sequence_start[2] == sequence_angleStates[2] and sequence_start[3] == sequence_angleStates[3] then angles_start else Frames.axesRotationsAngles(R_start, sequence_angleStates) "Potential angle states at initial time";
+      Modelica.Units.SI.Angle phi[3](start = phi_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "Dummy or 3 angles to rotate world frame into frame_a of body";
+      Modelica.Units.SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
+      Modelica.Units.SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
+      // Declarations for animation
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
+    initial equation
+      if angles_fixed then
+// Initialize positional variables
+        if not Connections.isRoot(frame_a.R) then
+// frame_a.R is computed somewhere else
+          zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
+        elseif useQuaternions then
+// frame_a.R is computed from quaternions Q
+          zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
+        else
+// frame_a.R is computed from the 3 angles 'phi'
+          phi = phi_start;
+        end if;
+      end if;
+    equation
+      if enforceStates then
+        Connections.root(frame_a.R);
+      else
+        Connections.potentialRoot(frame_a.R);
+      end if;
+      r_0 = frame_a.r_0;
+      if not Connections.isRoot(frame_a.R) then
+// Body does not have states
+// Dummies
+        Q = {0, 0, 0, 1};
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      elseif useQuaternions then
+// Use Quaternions as states (with dynamic state selection)
+        frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
+        {0} = Frames.Quaternions.orientationConstraint(Q);
+// Dummies
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      else
+// Use Cardan angles as states
+        phi_d = der(phi);
+        phi_dd = der(phi_d);
+        frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
+// Dummies
+        Q = {0, 0, 0, 1};
+      end if;
+// gravity acceleration at center of mass resolved in world frame
+      g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
+// translational kinematic differential equations
+      v_0 = der(frame_a.r_0);
+      a_0 = der(v_0);
+// rotational kinematic differential equations
+      w_a = Frames.angularVelocity2(frame_a.R);
+      z_a = der(w_a);
+/* Newton/Euler equations with respect to center of mass
+                a_CM = a_a + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM));
+                f_CM = m*(a_CM - g_a);
+                t_CM = I*z_a + cross(w_a, I*w_a);
+           frame_a.f = f_CM
+           frame_a.t = t_CM + cross(r_CM, f_CM);
+        Inserting the first three equations in the last two results in:
+      */
+      frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
+      frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f);
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
+        Documentation(info = "<html>
+    <p>
+    <strong>Rigid body</strong> with mass and inertia tensor.
+    All parameter vectors have to be resolved in frame_a.
+    The <strong>inertia tensor</strong> has to be defined with respect to a
+    coordinate system that is parallel to frame_a with the
+    origin at the center of mass of the body.
+    </p>
+    <p>
+    By default, this component is visualized by a <strong>cylinder</strong> located
+    between frame_a and the center of mass and by a <strong>sphere</strong> that has
+    its center at the center of mass. If the cylinder length is smaller as
+    the radius of the sphere, e.g., since frame_a is located at the
+    center of mass, the cylinder is not displayed. Note, that
+    the animation may be switched off via parameter animation = <strong>false</strong>.
+    </p>
+    <p>
+    <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/Body.png\" alt=\"Parts.Body\">
+    </p>
+    
+    <p>
+    <strong>States of Body Components</strong>
+    </p>
+    <p>
+    Every body has potential states. If possible a tool will select
+    the states of joints and not the states of bodies because this is
+    usually the most efficient choice. In this case the position, orientation,
+    velocity and angular velocity of frame_a of the body will be computed
+    by the component that is connected to frame_a. However, if a body is moving
+    freely in space, variables of the body have to be used as states. The potential
+    states of the body are:
+    </p>
+    <ul>
+    <li> The <strong>position vector</strong> frame_a.r_0 from the origin of the
+         world frame to the origin of frame_a of the body, resolved in
+         the world frame and the <strong>absolute velocity</strong> v_0 of the origin of
+         frame_a, resolved in the world frame (= der(frame_a.r_0)).
+    </li>
+    <li> If parameter <strong>useQuaternions</strong> in the \"Advanced\" menu
+         is <strong>true</strong> (this is the default), then <strong>4 quaternions</strong>
+         are potential states. Additionally, the coordinates of the
+         absolute angular velocity vector of the
+         body are 3 potential states.<br>
+         If <strong>useQuaternions</strong> in the \"Advanced\" menu
+         is <strong>false</strong>, then <strong>3 angles</strong> and the derivatives of
+         these angles are potential states. The orientation of frame_a
+         is computed by rotating the world frame along the axes defined
+         in parameter vector \"sequence_angleStates\" (default = {1,2,3}, i.e.,
+         the Cardan angle sequence) around the angles used as potential states.
+         For example, the default is to rotate the x-axis of the world frame
+         around angles[1], the new y-axis around angles[2] and the new z-axis
+         around angles[3], arriving at frame_a.
+     </li>
+    </ul>
+    <p>
+    The quaternions have the slight disadvantage that there is a
+    non-linear constraint equation between the 4 quaternions.
+    Therefore, at least one non-linear equation has to be solved
+    during simulation. A tool might, however, analytically solve this
+    simple constraint equation. Using the 3 angles as states has the
+    disadvantage that there is a singular configuration in which a
+    division by zero will occur. If it is possible to determine in advance
+    for an application class that this singular configuration is outside
+    of the operating region, the 3 angles might be used as potential
+    states by setting <strong>useQuaternions</strong> = <strong>false</strong>.
+    </p>
+    <p>
+    In text books about 3-dimensional mechanics often 3 angles and the
+    angular velocity are used as states. This is not the case here, since
+    3 angles and their derivatives are used as potential states
+    (if useQuaternions = false). The reason
+    is that for real-time simulation the discretization formula of the
+    integrator might be \"inlined\" and solved together with the body equations.
+    By appropriate symbolic transformation the performance is
+    drastically increased if angles and their
+    derivatives are used as states, instead of angles and the angular
+    velocity.
+    </p>
+    <p>
+    Whether or not variables of the body are used as states is usually
+    automatically selected by the Modelica translator. If parameter
+    <strong>enforceStates</strong> is set to <strong>true</strong> in the \"Advanced\" menu,
+    then body variables are forced to be used as states according
+    to the setting of parameters \"useQuaternions\" and
+    \"sequence_angleStates\".
+    </p>
+    </html>"));
+    end Body;
   end Hydro;
 
   package Wave
@@ -1331,9 +1675,9 @@ if enableRadiationForce then
         Dialog(group = "Wave Spectrum Parameters"));
       Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
       /*
-                              parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
-                                Dialog(group = "Wave Spectrum Parameters")); // Removing because now reading
-                                */
+                                          parameter Modelica.Units.SI.Length d = 100 "Water depth [m]" annotation(
+                                            Dialog(group = "Wave Spectrum Parameters")); // Removing because now reading
+                                            */
       parameter Modelica.Units.SI.Time Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
         Dialog(group = "Simulation Parameters"));
       Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
@@ -1341,13 +1685,16 @@ if enableRadiationForce then
       parameter Real epsilon[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
     protected
       // Derived parameters
-      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(HideResult = true,
+      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+        HideResult = true,
         Dialog(group = "Random Frequency Selection"));
       // readd , enable = frequencySelection == "random"
-      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(HideResult = true,
+      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+        HideResult = true,
         Dialog(group = "Random Frequency Selection"));
       // readd , enable = frequencySelection == "random"
-      Modelica.Units.SI.Time Tp[n_omega] "Wave period components [s]" annotation(HideResult = true);
+      Modelica.Units.SI.Time Tp[n_omega] "Wave period components [s]" annotation(
+        HideResult = true);
       Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component [1/m]";
       //Real F_exc[nDoF] "6D excitation force [N]";
     equation
@@ -1480,7 +1827,7 @@ if enableRadiationForce then
       package RandomFrequencyFunctions
         function randomNumberGen "Function to generate random numbers using XOR shift algorithm"
           /* Produces a vector of random numbers based on local and global seeds
-                                                                                                     This function utilizes the Xorshift64star algorithm for efficient random number generation */
+                                                                                                                         This function utilizes the Xorshift64star algorithm for efficient random number generation */
           input Integer ls "Local seed for random number generation";
           input Integer gs "Global seed for random number generation";
           constant input Integer n "Number of random numbers to generate";
@@ -1523,7 +1870,7 @@ if enableRadiationForce then
 
         function randomFrequencySelector "Function to randomly select frequency components within a specified range"
           /* Uses a random phase vector to perturb frequencies
-                                                                                                     This function ensures a good distribution of frequencies for irregular wave generation */
+                                                                                                                         This function ensures a good distribution of frequencies for irregular wave generation */
           parameter input Real omega_min "Minimum frequency [rad/s]";
           parameter input Real omega_max "Maximum frequency [rad/s]";
           parameter input Real epsilon[:] "Random phase vector for frequency perturbation";
@@ -1561,7 +1908,7 @@ if enableRadiationForce then
       package SpectrumFunctions
         function spectrumGenerator_PiersonMoskowitz "Function to generate Pierson-Moskowitz spectrum"
           /* Calculates spectral values for given frequencies based on significant wave height
-                                                                                                     This function implements the Pierson-Moskowitz spectrum, suitable for fully developed seas */
+                                                                                                                         This function implements the Pierson-Moskowitz spectrum, suitable for fully developed seas */
           extends OET.Wave.WaveFunctions.SpectrumFunctions.spectrumIO(omega_peak = 0);
         algorithm
           for i in 1:n_omega loop
@@ -1587,7 +1934,7 @@ if enableRadiationForce then
 
         function spectrumGenerator_Bretschneider "Function to generate Bretschneider spectrum"
           /* Calculates spectral values based on significant wave height and peak frequency
-                                                                                                     This function implements the Bretschneider spectrum, a two-parameter spectrum for fetch-limited seas */
+                                                                                                                         This function implements the Bretschneider spectrum, a two-parameter spectrum for fetch-limited seas */
           extends OET.Wave.WaveFunctions.SpectrumFunctions.spectrumIO;
         algorithm
           for i in 1:n_omega loop
@@ -1614,7 +1961,7 @@ if enableRadiationForce then
 
         function spectrumGenerator_JONSWAP "Function to generate JONSWAP (Joint North Sea Wave Project) spectrum"
           /* Calculates spectral values based on significant wave height, peak frequency, and spectral width parameters
-                                                                                                     This function implements the JONSWAP spectrum, suitable for developing seas with fetch limitations */
+                                                                                                                         This function implements the JONSWAP spectrum, suitable for developing seas with fetch limitations */
           extends OET.Wave.WaveFunctions.SpectrumFunctions.spectrumIO;
           input Real spectralWidth_min "Minimum spectral width parameter";
           input Real spectralWidth_max "Maximum spectral width parameter";
@@ -1718,7 +2065,7 @@ if enableRadiationForce then
       package WaveParameterFunctions
         function waveNumber "Function to iteratively compute the wave number from frequency components"
           /* Uses the dispersion relationship for water waves to calculate wave numbers
-                                                                                                       This function implements an iterative method to solve the implicit dispersion equation */
+                                                                                                                           This function implements an iterative method to solve the implicit dispersion equation */
           input Real d "Water depth [m]";
           input Real omega[:] "Array of wave frequency components [rad/s]";
           output Real k[size(omega, 1)] "Array of wave number components [rad/m]";
@@ -1988,14 +2335,18 @@ if enableRadiationForce then
         choices(choice = "random", choice = "equalEnergy"));
       parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-      parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
       // Random freqeuncy selection paramters (will be disabled if user opts to use equal energy method)
-      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(HideResult = true,
+      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+        HideResult = true,
         Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
-      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(HideResult = true,
+      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+        HideResult = true,
         Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
       // Equal Energy Parameters
-      parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(HideResult = true,
+      parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(
+        HideResult = true,
         Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
       inner Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
     protected
@@ -2033,12 +2384,12 @@ if enableRadiationForce then
       annotation(
         defaultComponentName = "environment",
         defaultComponentPrefixes = "inner",
-        missingInnerMessage="No \"environemnt\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
+        missingInnerMessage = "No \"environemnt\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Environment")}),
         Diagram);
     end Environment;
 
-    type waveSelectorOptions = enumeration(Linear,Bretschneider,PiersonMoskowitz,JONSWAP);
+    type waveSelectorOptions = enumeration(Linear, Bretschneider, PiersonMoskowitz, JONSWAP);
   end Wave;
 
   package Mooring
@@ -2048,16 +2399,21 @@ if enableRadiationForce then
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Position connectors
-      Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput u_abs[3] "Linear displacement vector [m]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput theta_abs[3] "Angular displacement vector [rad]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       // Velocity connectors
-      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-        parameter Boolean enableLinearMooringForce = true "Switch to enable/disable linear mooring force calculation" annotation(HideResult = true,
+      parameter Boolean enableLinearMooringForce = true "Switch to enable/disable linear mooring force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Linear Mooring Force Parameters"));
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
     protected
@@ -2073,7 +2429,6 @@ if enableRadiationForce then
       else
         F = zeros(6);
       end if;
-    
       frame_a.f = f_element;
       frame_a.t = t_element;
       annotation(
@@ -2085,9 +2440,11 @@ if enableRadiationForce then
       parameter Boolean enableLinearMooringForce = true "Switch to enable/disable linear mooring force calculation" annotation(
         Dialog(group = "Linear Mooring Force Parameters"));
       // Frame_a connector
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_w = true, get_v = true) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_w = true, get_v = true) annotation(
+        HideResult = true,
         Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
       LinearMooringForce linearMooringForce(enableLinearMooringForce = enableLinearMooringForce, fileName = filePath.FileName) annotation(
         Placement(transformation(origin = {2, -10}, extent = {{-18, -18}, {18, 18}})));
@@ -2105,10 +2462,7 @@ if enableRadiationForce then
       connect(absoluteSensor.frame_a, frame_a) annotation(
         Line(points = {{-14, 54}, {-100, 54}, {-100, 0}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
-              extent={{-150,145},{150,105}},
-              textString="%name",
-              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear Mooring")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear Mooring")}),
         Diagram);
     end LinearMooring;
   end Mooring;
@@ -2121,28 +2475,37 @@ if enableRadiationForce then
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
       // Body 1
       // Position connectors
-      Modelica.Blocks.Interfaces.RealInput u_abs1[3] "Linear displacement vector [m]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput u_abs1[3] "Linear displacement vector [m]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-100, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput theta_abs1[3] "Angular displacement vector [rad]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput theta_abs1[3] "Angular displacement vector [rad]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-60, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       // Velocity connectors
-      Modelica.Blocks.Interfaces.RealInput v_abs1[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput v_abs1[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-      Modelica.Blocks.Interfaces.RealInput omega_abs1[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput omega_abs1[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       // Body 2
       // Position connectors
-      Modelica.Blocks.Interfaces.RealInput u_abs2[3] "Linear displacement vector [m]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput u_abs2[3] "Linear displacement vector [m]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {100, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90), iconTransformation(origin = {100, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90)));
-      Modelica.Blocks.Interfaces.RealInput theta_abs2[3] "Angular displacement vector [rad]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput theta_abs2[3] "Angular displacement vector [rad]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {60, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90), iconTransformation(origin = {60, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90)));
       // Velocity connectors
-      Modelica.Blocks.Interfaces.RealInput v_abs2[3] "Linear velocity vector [m/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput v_abs2[3] "Linear velocity vector [m/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {20, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90), iconTransformation(origin = {20, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90)));
-      Modelica.Blocks.Interfaces.RealInput omega_abs2[3] "Angular velocity vector [rad/s]" annotation(HideResult = true,
+      Modelica.Blocks.Interfaces.RealInput omega_abs2[3] "Angular velocity vector [rad/s]" annotation(
+        HideResult = true,
         Placement(transformation(origin = {-20, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90), iconTransformation(origin = {-20, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 90)));
       // Enable/disable dampingdrag force
-      parameter Boolean enableLinearPTOForce = true "Switch to enable/disable linear PTO force calculation" annotation(HideResult = true,
+      parameter Boolean enableLinearPTOForce = true "Switch to enable/disable linear PTO force calculation" annotation(
+        HideResult = true,
         Dialog(group = "Linear PTO Force Parameters"));
       // I should eventually inherit these
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
@@ -2174,13 +2537,17 @@ if enableRadiationForce then
       parameter Boolean enableLinearPTOForce = true "Switch to enable/disable Linear PTO force calculation" annotation(
         Dialog(group = "Linear PTO Force Parameters"));
       // Frame_ and frame_b connectors
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system fixed at body" annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system fixed at body" annotation(
+        HideResult = true,
         Placement(transformation(extent = {{84, -16}, {116, 16}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_w = true, get_angles = true) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_w = true, get_angles = true) annotation(
+        HideResult = true,
         Placement(transformation(origin = {0, 54}, extent = {{-14, -14}, {14, 14}}, rotation = -0)));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor1(get_angles = true, get_r = true, get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(HideResult = true,
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor1(get_angles = true, get_r = true, get_v = true, get_w = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        HideResult = true,
         Placement(transformation(origin = {2, -60}, extent = {{-14, -14}, {14, 14}}, rotation = -180)));
       LinearPTOForce linearPTOForce(enableLinearPTOForce = enableLinearPTOForce, fileName = filePath.FileName) annotation(
         Placement(transformation(extent = {{-16, -16}, {16, 16}})));
@@ -2210,13 +2577,1330 @@ if enableRadiationForce then
       connect(linearPTOForce.frame_b, frame_b) annotation(
         Line(points = {{16, 0}, {100, 0}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(
-              extent={{-150,145},{150,105}},
-              textString="%name",
-              textColor={0,0,255}),Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear PTO")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Linear PTO")}),
         Diagram);
     end LinearPTO;
   end PTO;
+
+  package Experimental
+    model multibodyWEC_er
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath filePath annotation(
+        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
+      inner Wave.Environment environment(n_omega = 150) annotation(
+        Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_er hydrodynamicBody(BodyIndex = 2, enableRadiationForce = true, r = {0, 0, 0}, r_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_er hydrodynamicBody1(BodyIndex = 1, enableRadiationForce = true, r = {0, 0, 0}, r_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Sources.Sine sine[3](amplitude = {1000, 1000, 1000000}, f = {0.1, 0.1, 0.1}) annotation(
+        Placement(transformation(origin = {-56, 38}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Forces.WorldForce force annotation(
+        Placement(transformation(origin = {-22, 38}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}) annotation(
+        Placement(transformation(origin = {40, -32}, extent = {{-10, -10}, {10, 10}})));
+    equation
+// Connections
+      connect(sine.y, force.force) annotation(
+        Line(points = {{-44, 38}, {-34, 38}}, color = {0, 0, 127}, thickness = 0.5));
+      connect(force.frame_b, hydrodynamicBody.frame_a) annotation(
+        Line(points = {{-12, 38}, {0, 38}, {0, -12}}, color = {95, 95, 95}));
+      connect(prismatic.frame_b, hydrodynamicBody1.frame_a) annotation(
+        Line(points = {{50, -32}, {60, -32}, {60, -16}}, color = {95, 95, 95}));
+      connect(prismatic.frame_a, hydrodynamicBody.frame_b) annotation(
+        Line(points = {{30, -32}, {20, -32}, {20, -12}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+        <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+        <p>This model represents a simplified 1D single-body wave energy converter system, 
+        focusing on the vertical motion of the body in response to wave excitation forces.</p>
+        
+        <p><b>Model Description</b></p>
+        <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+        The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+        
+        <p><b>Key Components</b></p>
+        <ul>
+          <li><code>world</code>: Defines the world coordinate system without gravity</li>
+          <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+          <li><code>prismatic</code>: Allows vertical motion of the body</li>
+          <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+          <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+        </ul>
+        
+        <p><b>Assumptions and Simplifications</b></p>
+        <ul>
+          <li>The model considers only vertical motion (1D) of the WEC</li>
+          <li>Gravity is not included in the world model</li>
+          <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+        </ul>
+        
+        <p><b>Notes</b></p>
+        <ul>
+          <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+          <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+          <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+          <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+        </ul>
+      </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end multibodyWEC_er;
+
+    model HydrodynamicBody_er "6-Dimensional Hydrodynamic Forces and Moments Calculation"
+      // Inheritance
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      //extends Hydrodynamic.HydroDataImport.massData;
+      /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
+      // BodyShape parameters
+      outer Hydro.FilePath filePath;
+      parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        Dialog(group = "Hydro Data"));
+      /* Removing mass definition here and adding it to a custom bodyShape model
+                                              parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                                Dialog(group = "Body")); /*
+                                              /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+      parameter Modelica.Units.SI.Position r[3] "Position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Position r_CM[3] "Center of mass position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      BodyShape_er bodyShape(r = r, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName, useQuaternions = false, angles_fixed = false, w_0_fixed = false, z_0_fixed = false) annotation(
+        Placement(transformation(origin = {12, -84}, extent = {{-10, -10}, {10, 10}})));
+      // Hydrostatic force parameters
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        choices(checkBox = true),
+        Dialog(group = "Hydrostatic Force Parameters"));
+      // Radiation force paramters
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      /* 
+                                                                parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                    
+                                                             */
+      /*
+                                  // Damping coefficients
+                                    parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                                    
+                                    // Drag coefficients
+                                    parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                                    */
+      Hydro.DampingDrag dampingDrag annotation(
+        Placement(transformation(origin = {74, 52}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+        Placement(transformation(origin = {-66, 38}, extent = {{-10, -10}, {10, 10}})));
+    equation
+//Conections
+      connect(bodyShape.frame_b, frame_b) annotation(
+        Line(points = {{22, -84}, {62, -84}, {62, 0}, {102, 0}}, color = {95, 95, 95}));
+      connect(bodyShape.frame_a, frame_a) annotation(
+        Line(points = {{2, -84}, {-76, -84}, {-76, 0}, {-102, 0}}, color = {95, 95, 95}));
+      connect(dampingDrag.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{64, 52}, {-28, 52}, {-28, -84}, {2, -84}}, color = {95, 95, 95}));
+      connect(absoluteSensor.frame_a, frame_a) annotation(
+        Line(points = {{-76, 38}, {-100, 38}, {-100, 0}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Diagram);
+    end HydrodynamicBody_er;
+
+    model BodyShape_er "Rigid body with mass, inertia tensor, different shapes for animation, and two frame connectors (12 potential states)"
+      extends OET.DataImport.massData;
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b "Coordinate system fixed to the component with one cut-force and cut-torque" annotation(
+        Placement(transformation(extent = {{84, -16}, {116, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show shape between frame_a and frame_b and optionally a sphere at the center of mass)";
+      parameter Boolean animateSphere = true "= true, if mass shall be animated as sphere provided animation=true";
+      parameter Modelica.Units.SI.Position r[3] "Vector from frame_a to frame_b resolved in frame_a";
+      parameter Modelica.Units.SI.Position r_CM[3] "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) = M + Ainf[3, 3] "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -10000000) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -10000000) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -10000000) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Mechanics.MultiBody.Types.ShapeType shapeType = "cylinder" "Type of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Position r_shape[3] = {0, 0, 0} "Vector from frame_a to shape origin, resolved in frame_a" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.Axis lengthDirection = Modelica.Units.Conversions.to_unit1(r - r_shape) "Vector in length direction of shape, resolved in frame_a" annotation(
+        Evaluate = true,
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.Axis widthDirection = {0, 1, 0} "Vector in width direction of shape, resolved in frame_a" annotation(
+        Evaluate = true,
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Length length = Modelica.Math.Vectors.length(r - r_shape) "Length of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Distance width = length/world.defaultWidthFraction "Width of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Distance height = width "Height of shape" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Mechanics.MultiBody.Types.ShapeExtra extra = 0.0 "Additional parameter depending on shapeType (see docu of Visualizers.Advanced.Shape)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Modelica.Mechanics.MultiBody.Types.Color color = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of shape" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = 2*width "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+      input Modelica.Mechanics.MultiBody.Types.Color sphereColor = color "Color of sphere of mass" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true and animateSphere = true", enable = animation and animateSphere));
+      input Modelica.Mechanics.MultiBody.Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Modelica.Mechanics.MultiBody.Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation frameTranslation(r = r, animation = false) annotation(
+        Placement(transformation(extent = {{-20, -20}, {20, 20}})));
+      Modelica.Mechanics.MultiBody.Parts.Body body(r_CM = r_CM, m = m, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, animation = false, sequence_start = sequence_start, angles_fixed = angles_fixed, angles_start = angles_start, w_0_fixed = w_0_fixed, w_0_start = w_0_start, z_0_fixed = z_0_fixed, z_0_start = z_0_start, useQuaternions = useQuaternions, sequence_angleStates = sequence_angleStates, enforceStates = false) annotation(
+        Placement(transformation(extent = {{-27.3333, -70.3333}, {13, -30}})));
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape1(shapeType = shapeType, color = color, specularCoefficient = specularCoefficient, length = length, width = width, height = height, lengthDirection = lengthDirection, widthDirection = widthDirection, r_shape = r_shape, extra = extra, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape shape2(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and animateSphere;
+    equation
+      r_0 = frame_a.r_0;
+      v_0 = der(r_0);
+      a_0 = der(v_0);
+      connect(frame_a, frameTranslation.frame_a) annotation(
+        Line(points = {{-100, 0}, {-20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+      connect(frame_b, frameTranslation.frame_b) annotation(
+        Line(points = {{100, 0}, {20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+      connect(frame_a, body.frame_a) annotation(
+        Line(points = {{-100, 0}, {-60, 0}, {-60, -50.1666}, {-27.3333, -50.1666}}, color = {95, 95, 95}, thickness = 0.5));
+      annotation(
+        Documentation(info = "<html>
+          <p>
+          <strong>Rigid body</strong> with mass and inertia tensor and <strong>two frame connectors</strong>.
+          All parameter vectors have to be resolved in frame_a.
+          The <strong>inertia tensor</strong> has to be defined with respect to a
+          coordinate system that is parallel to frame_a with the
+          origin at the center of mass of the body. The coordinate system <strong>frame_b</strong>
+          is always parallel to <strong>frame_a</strong>.
+          </p>
+          <p>
+          By default, this component is visualized by any <strong>shape</strong> that can be
+          defined with Modelica.Mechanics.MultiBody.Visualizers.FixedShape. This shape is placed
+          between frame_a and frame_b (default: length(shape) = Frames.length(r)).
+          Additionally a <strong>sphere</strong> may be visualized that has
+          its center at the center of mass.
+          Note, that
+          the animation may be switched off via parameter animation = <strong>false</strong>.
+          </p>
+          <p>
+          <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/BodyShape.png\" alt=\"Parts.BodyShape\">
+          </p>
+          
+          <p>
+          The following shapes can be defined via parameter <strong>shapeType</strong>,
+          e.g., shapeType=\"cone\":
+          </p>
+          
+          <p>
+          <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Visualizers/FixedShape.png\" alt=\"Visualizers.FixedShape\">
+          </p>
+          
+          <p>
+          A BodyShape component has potential states. For details of these
+          states and of the \"Advanced\" menu parameters, see model
+          <a href=\"modelica://Modelica.Mechanics.MultiBody.Parts.Body\">MultiBody.Parts.Body</a>.
+          </p>
+          </html>"),
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Text(extent = {{-150, -100}, {150, -70}}, textString = "r=%r"), Rectangle(extent = {{-100, 30}, {101, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Ellipse(extent = {{-60, 60}, {60, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255}), Text(extent = {{-50, 24}, {55, -27}}, textString = "%m"), Text(extent = {{55, 12}, {91, -13}}, textString = "b"), Text(extent = {{-92, 13}, {-56, -12}}, textString = "a")}),
+        Diagram(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Line(points = {{-100, 9}, {-100, 43}}, color = {128, 128, 128}), Line(points = {{100, 0}, {100, 44}}, color = {128, 128, 128}), Line(points = {{-100, 40}, {90, 40}}, color = {135, 135, 135}), Polygon(points = {{90, 44}, {90, 36}, {100, 40}, {90, 44}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-22, 68}, {20, 40}}, textColor = {128, 128, 128}, textString = "r"), Line(points = {{-100, -10}, {-100, -90}}, color = {128, 128, 128}), Line(points = {{-100, -84}, {-10, -84}}, color = {128, 128, 128}), Polygon(points = {{-10, -80}, {-10, -88}, {0, -84}, {-10, -80}}, lineColor = {128, 128, 128}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid), Text(extent = {{-82, -66}, {-56, -84}}, textColor = {128, 128, 128}, textString = "r_CM"), Line(points = {{0, -46}, {0, -90}}, color = {128, 128, 128})}));
+    end BodyShape_er;
+
+    model pooker "Simple pendulum with one revolute joint and one body"
+      extends Modelica.Icons.Example;
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.UniformGravity) annotation(
+        Placement(transformation(extent = {{-60, -10}, {-40, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Revolute rev(n = {0, 0, 1}, useAxisFlange = true, phi(fixed = true), w(fixed = true)) annotation(
+        Placement(transformation(extent = {{-20, -10}, {0, 10}})));
+      Modelica.Mechanics.Rotational.Components.Damper damper(d = 0.1) annotation(
+        Placement(transformation(extent = {{-20, 30}, {0, 50}})));
+      OET.Experimental.Bood body(m = 1.0, r_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {48, 0}, extent = {{20, -10}, {40, 10}})));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = {1, 0, 0}) annotation(
+        Placement(transformation(origin = {42, 0}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true) annotation(
+        Placement(transformation(origin = {46, -76}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor1(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true) annotation(
+        Placement(transformation(origin = {94, -58}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = {1, 0, 0}) annotation(
+        Placement(transformation(origin = {30, 30}, extent = {{-10, -10}, {10, 10}})));
+    equation
+      connect(world.frame_b, rev.frame_a) annotation(
+        Line(points = {{-40, 0}, {-20, 0}}, color = {95, 95, 95}, thickness = 0.5));
+      connect(damper.flange_b, rev.axis) annotation(
+        Line(points = {{0, 40}, {0, 20}, {-10, 20}, {-10, 10}}));
+      connect(rev.support, damper.flange_a) annotation(
+        Line(points = {{-16, 10}, {-16, 20}, {-20, 20}, {-20, 40}}));
+      connect(fixedTranslation.frame_b, body.frame_a) annotation(
+        Line(points = {{52, 0}, {68, 0}}, color = {95, 95, 95}));
+      connect(absoluteSensor.frame_a, fixedTranslation.frame_a) annotation(
+        Line(points = {{36, -76}, {36, -38}, {32, -38}, {32, 0}}, color = {95, 95, 95}));
+      connect(absoluteSensor1.frame_a, fixedTranslation.frame_b) annotation(
+        Line(points = {{84, -58}, {84, -29}, {52, -29}, {52, 0}}, color = {95, 95, 95}));
+      connect(fixedTranslation1.frame_a, rev.frame_b) annotation(
+        Line(points = {{20, 30}, {0, 30}, {0, 0}}, color = {95, 95, 95}));
+      connect(fixedTranslation1.frame_b, fixedTranslation.frame_a) annotation(
+        Line(points = {{40, 30}, {32, 30}, {32, 0}}, color = {95, 95, 95}));
+      annotation(
+        experiment(StopTime = 5),
+        Documentation(info = "<html>
+  <p>
+  This simple model demonstrates that by just dragging components
+  default animation is defined that shows the structure of the
+  assembled system.
+  </p>
+  <blockquote>
+  <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Examples/Elementary/Pendulum.png\"
+  alt=\"model Examples.Elementary.Pendulum\">
+  </blockquote>
+  </html>"),
+        uses(Modelica(version = "4.0.0")));
+    end pooker;
+
+    model Bood "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
+      import Modelica.Mechanics.MultiBody.Types;
+      import Modelica.Mechanics.MultiBody.Frames;
+      import Modelica.Units.Conversions.to_unit1;
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show cylinder and sphere)";
+      parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -100000000000) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -100000000000) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -100000000000) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = world.defaultBodyDiameter "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color sphereColor = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of sphere" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter cylinderDiameter = sphereDiameter/Types.Defaults.BodyCylinderDiameterFraction "Diameter of cylinder" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color cylinderColor = sphereColor "Color of cylinder" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      final parameter Modelica.Units.SI.Inertia I[3, 3] = [I_11, I_21, I_31; I_21, I_22, I_32; I_31, I_32, I_33] "Inertia tensor";
+      final parameter Frames.Orientation R_start = Modelica.Mechanics.MultiBody.Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
+      Modelica.Units.SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
+      Modelica.Units.SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
+      Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      // Declarations for quaternions (dummies, if quaternions are not used)
+      parameter Frames.Quaternions.Orientation Q_start = Frames.to_Q(R_start) "Quaternion orientation object from world frame to frame_a at initial time";
+      Frames.Quaternions.Orientation Q(start = Q_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.prefer else StateSelect.never) else StateSelect.avoid) "Quaternion orientation object from world frame to frame_a (dummy value, if quaternions are not used as states)";
+      // Declaration for 3 angles
+      parameter Modelica.Units.SI.Angle phi_start[3] = if sequence_start[1] == sequence_angleStates[1] and sequence_start[2] == sequence_angleStates[2] and sequence_start[3] == sequence_angleStates[3] then angles_start else Frames.axesRotationsAngles(R_start, sequence_angleStates) "Potential angle states at initial time";
+      Modelica.Units.SI.Angle phi[3](start = phi_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "Dummy or 3 angles to rotate world frame into frame_a of body";
+      Modelica.Units.SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
+      Modelica.Units.SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
+      // Declarations for animation
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
+    initial equation
+      if angles_fixed then
+// Initialize positional variables
+        if not Connections.isRoot(frame_a.R) then
+// frame_a.R is computed somewhere else
+          zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
+        elseif useQuaternions then
+// frame_a.R is computed from quaternions Q
+          zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
+        else
+// frame_a.R is computed from the 3 angles 'phi'
+          phi = phi_start;
+        end if;
+      end if;
+    equation
+      if enforceStates then
+        Connections.root(frame_a.R);
+      else
+        Connections.potentialRoot(frame_a.R);
+      end if;
+      r_0 = frame_a.r_0;
+      if not Connections.isRoot(frame_a.R) then
+// Body does not have states
+// Dummies
+        Q = {0, 0, 0, 1};
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      elseif useQuaternions then
+// Use Quaternions as states (with dynamic state selection)
+        frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
+        {0} = Frames.Quaternions.orientationConstraint(Q);
+// Dummies
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      else
+// Use Cardan angles as states
+        phi_d = der(phi);
+        phi_dd = der(phi_d);
+        frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
+// Dummies
+        Q = {0, 0, 0, 1};
+      end if;
+// gravity acceleration at center of mass resolved in world frame
+      g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
+// translational kinematic differential equations
+      v_0 = der(frame_a.r_0);
+      a_0 = der(v_0);
+// rotational kinematic differential equations
+      w_a = Frames.angularVelocity2(frame_a.R);
+      z_a = der(w_a);
+/* Newton/Euler equations with respect to center of mass
+              a_CM = a_a + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM));
+              f_CM = m*(a_CM - g_a);
+              t_CM = I*z_a + cross(w_a, I*w_a);
+         frame_a.f = f_CM
+         frame_a.t = t_CM + cross(r_CM, f_CM);
+      Inserting the first three equations in the last two results in:
+    */
+/*frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
+    frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f);*/
+      frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0));
+      frame_a.t = I*z_a + cross(w_a, I*w_a);
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
+        Documentation(info = "<html>
+  <p>
+  <strong>Rigid body</strong> with mass and inertia tensor.
+  All parameter vectors have to be resolved in frame_a.
+  The <strong>inertia tensor</strong> has to be defined with respect to a
+  coordinate system that is parallel to frame_a with the
+  origin at the center of mass of the body.
+  </p>
+  <p>
+  By default, this component is visualized by a <strong>cylinder</strong> located
+  between frame_a and the center of mass and by a <strong>sphere</strong> that has
+  its center at the center of mass. If the cylinder length is smaller as
+  the radius of the sphere, e.g., since frame_a is located at the
+  center of mass, the cylinder is not displayed. Note, that
+  the animation may be switched off via parameter animation = <strong>false</strong>.
+  </p>
+  <p>
+  <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/Body.png\" alt=\"Parts.Body\">
+  </p>
+  
+  <p>
+  <strong>States of Body Components</strong>
+  </p>
+  <p>
+  Every body has potential states. If possible a tool will select
+  the states of joints and not the states of bodies because this is
+  usually the most efficient choice. In this case the position, orientation,
+  velocity and angular velocity of frame_a of the body will be computed
+  by the component that is connected to frame_a. However, if a body is moving
+  freely in space, variables of the body have to be used as states. The potential
+  states of the body are:
+  </p>
+  <ul>
+  <li> The <strong>position vector</strong> frame_a.r_0 from the origin of the
+       world frame to the origin of frame_a of the body, resolved in
+       the world frame and the <strong>absolute velocity</strong> v_0 of the origin of
+       frame_a, resolved in the world frame (= der(frame_a.r_0)).
+  </li>
+  <li> If parameter <strong>useQuaternions</strong> in the \"Advanced\" menu
+       is <strong>true</strong> (this is the default), then <strong>4 quaternions</strong>
+       are potential states. Additionally, the coordinates of the
+       absolute angular velocity vector of the
+       body are 3 potential states.<br>
+       If <strong>useQuaternions</strong> in the \"Advanced\" menu
+       is <strong>false</strong>, then <strong>3 angles</strong> and the derivatives of
+       these angles are potential states. The orientation of frame_a
+       is computed by rotating the world frame along the axes defined
+       in parameter vector \"sequence_angleStates\" (default = {1,2,3}, i.e.,
+       the Cardan angle sequence) around the angles used as potential states.
+       For example, the default is to rotate the x-axis of the world frame
+       around angles[1], the new y-axis around angles[2] and the new z-axis
+       around angles[3], arriving at frame_a.
+   </li>
+  </ul>
+  <p>
+  The quaternions have the slight disadvantage that there is a
+  non-linear constraint equation between the 4 quaternions.
+  Therefore, at least one non-linear equation has to be solved
+  during simulation. A tool might, however, analytically solve this
+  simple constraint equation. Using the 3 angles as states has the
+  disadvantage that there is a singular configuration in which a
+  division by zero will occur. If it is possible to determine in advance
+  for an application class that this singular configuration is outside
+  of the operating region, the 3 angles might be used as potential
+  states by setting <strong>useQuaternions</strong> = <strong>false</strong>.
+  </p>
+  <p>
+  In text books about 3-dimensional mechanics often 3 angles and the
+  angular velocity are used as states. This is not the case here, since
+  3 angles and their derivatives are used as potential states
+  (if useQuaternions = false). The reason
+  is that for real-time simulation the discretization formula of the
+  integrator might be \"inlined\" and solved together with the body equations.
+  By appropriate symbolic transformation the performance is
+  drastically increased if angles and their
+  derivatives are used as states, instead of angles and the angular
+  velocity.
+  </p>
+  <p>
+  Whether or not variables of the body are used as states is usually
+  automatically selected by the Modelica translator. If parameter
+  <strong>enforceStates</strong> is set to <strong>true</strong> in the \"Advanced\" menu,
+  then body variables are forced to be used as states according
+  to the setting of parameters \"useQuaternions\" and
+  \"sequence_angleStates\".
+  </p>
+  </html>"),
+        uses(Modelica(version = "4.0.0")));
+    end Bood;
+    
+    model HydrodynamicBody_cm "6-Dimensional Hydrodynamic Forces and Moments Calculation"
+      // Inheritance
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      //extends Hydrodynamic.HydroDataImport.massData;
+      /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
+      // BodyShape parameters
+      outer Hydro.FilePath filePath;
+      parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        Dialog(group = "Hydro Data"));
+      /* Removing mass definition here and adding it to a custom bodyShape model
+                                              parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                                Dialog(group = "Body")); /*
+                                              /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+      parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      // Hydrostatic force parameters
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        choices(checkBox = true),
+        Dialog(group = "Hydrostatic Force Parameters"));
+      // Radiation force paramters
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      /* 
+                                                    parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                        
+                                                 */
+      /*
+                      // Damping coefficients
+                        parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        
+                        // Drag coefficients
+                        parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        */
+      Hydro.Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {-60, 0}, extent = {{-14, -14}, {14, 14}})));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        Placement(transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.DampingDrag dampingDrag annotation(
+        Placement(transformation(origin = {57, -3}, extent = {{-13, -13}, {13, 13}})));
+  BodyCM_am bodyCM(animationEnable = animationEnable, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_CM + rCM_b, m = 1958670,fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {0, -66}, extent = {{-10, -10}, {10, 10}})));
+    
+      parameter Boolean animationEnable = false;
+      parameter Real ra_CM[3] = {0, 0, 0};
+      parameter Real rCM_b[3] = {0, 0, 0};
+      parameter Real ra_b[3] = ra_CM + rCM_b;
+    equation
+//Conections
+      connect(hydrostatic.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{-74, 0}, {-74, -56}, {0, -56}}, color = {95, 95, 95}));
+      connect(dampingDrag.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{44, -2}, {42, -2}, {42, -56}, {0, -56}}, color = {95, 95, 95}));
+      connect(bodyCM.frame_a, frame_a) annotation(
+        Line(points = {{-10, -66}, {-100, -66}, {-100, 0}}, color = {95, 95, 95}));
+      connect(bodyCM.frame_b, frame_b) annotation(
+        Line(points = {{10, -66}, {100, -66}, {100, 0}}, color = {95, 95, 95}));
+  connect(absoluteSensor.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{-64, 60}, {0, 60}, {0, -56}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Diagram);
+    end HydrodynamicBody_cm;
+    
+    model multibodyWEC_cm
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath filePath annotation(
+        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
+      inner Wave.Environment environment(n_omega = 100) annotation(
+        Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
+        Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Forces.WorldForce force annotation(
+        Placement(transformation(origin = {-16, 32}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.Sine sine[3](amplitude = {1000, 1000, 1000000}, f = {0.1, 0.1, 0.1})  annotation(
+        Placement(transformation(origin = {-52, 34}, extent = {{-10, -10}, {10, 10}})));
+  HydrodynamicBody_cm hydrodynamicBody_cm(BodyIndex = 2, ra_CM = {0, 0, 1}, rCM_b = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {14, -24}, extent = {{-10, -10}, {10, 10}})));
+  HydrodynamicBody_cm hydrodynamicBody_cm1(BodyIndex = 1)  annotation(
+        Placement(transformation(origin = {72, -28}, extent = {{-10, -10}, {10, 10}})));
+  Mooring.LinearMooring linearMooring annotation(
+        Placement(transformation(origin = {-34, -60}, extent = {{-10, -10}, {10, 10}})));
+    equation
+// Connections
+      connect(sine.y, force.force) annotation(
+        Line(points = {{-40, 34}, {-28, 34}, {-28, 32}}, color = {0, 0, 127}));
+  connect(force.frame_b, hydrodynamicBody_cm.frame_a) annotation(
+        Line(points = {{-6, 32}, {4, 32}, {4, -24}}, color = {95, 95, 95}));
+  connect(hydrodynamicBody_cm.frame_b, prismatic1.frame_a) annotation(
+        Line(points = {{24, -24}, {32, -24}, {32, 2}}, color = {95, 95, 95}));
+  connect(hydrodynamicBody_cm1.frame_a, prismatic1.frame_b) annotation(
+        Line(points = {{62, -28}, {52, -28}, {52, 2}}, color = {95, 95, 95}));
+  connect(linearMooring.frame_a, hydrodynamicBody_cm.frame_a) annotation(
+        Line(points = {{-44, -60}, {4, -60}, {4, -24}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+        <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+        <p>This model represents a simplified 1D single-body wave energy converter system, 
+        focusing on the vertical motion of the body in response to wave excitation forces.</p>
+        
+        <p><b>Model Description</b></p>
+        <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+        The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+        
+        <p><b>Key Components</b></p>
+        <ul>
+          <li><code>world</code>: Defines the world coordinate system without gravity</li>
+          <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+          <li><code>prismatic</code>: Allows vertical motion of the body</li>
+          <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+          <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+        </ul>
+        
+        <p><b>Assumptions and Simplifications</b></p>
+        <ul>
+          <li>The model considers only vertical motion (1D) of the WEC</li>
+          <li>Gravity is not included in the world model</li>
+          <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+        </ul>
+        
+        <p><b>Notes</b></p>
+        <ul>
+          <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+          <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+          <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+          <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+        </ul>
+      </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end multibodyWEC_cm;
+    
+    model Body_cm "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
+      import Modelica.Mechanics.MultiBody.Types;
+      import Modelica.Mechanics.MultiBody.Frames;
+      import Modelica.Units.Conversions.to_unit1;
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show cylinder and sphere)";
+      parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -Modelica.Constants.inf) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -Modelica.Constants.inf) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -Modelica.Constants.inf) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = world.defaultBodyDiameter "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color sphereColor = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of sphere" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter cylinderDiameter = sphereDiameter/Types.Defaults.BodyCylinderDiameterFraction "Diameter of cylinder" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color cylinderColor = sphereColor "Color of cylinder" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      final parameter Modelica.Units.SI.Inertia I[3, 3] = [I_11, I_21, I_31; I_21, I_22, I_32; I_31, I_32, I_33] "Inertia tensor";
+      final parameter Frames.Orientation R_start = Modelica.Mechanics.MultiBody.Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
+      Modelica.Units.SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
+      Modelica.Units.SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
+      Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      // Declarations for quaternions (dummies, if quaternions are not used)
+      parameter Frames.Quaternions.Orientation Q_start = Frames.to_Q(R_start) "Quaternion orientation object from world frame to frame_a at initial time";
+      Frames.Quaternions.Orientation Q(start = Q_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.prefer else StateSelect.never) else StateSelect.avoid) "Quaternion orientation object from world frame to frame_a (dummy value, if quaternions are not used as states)";
+      // Declaration for 3 angles
+      parameter Modelica.Units.SI.Angle phi_start[3] = if sequence_start[1] == sequence_angleStates[1] and sequence_start[2] == sequence_angleStates[2] and sequence_start[3] == sequence_angleStates[3] then angles_start else Frames.axesRotationsAngles(R_start, sequence_angleStates) "Potential angle states at initial time";
+      Modelica.Units.SI.Angle phi[3](start = phi_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "Dummy or 3 angles to rotate world frame into frame_a of body";
+      Modelica.Units.SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
+      Modelica.Units.SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
+      // Declarations for animation
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
+    initial equation
+      if angles_fixed then
+    // Initialize positional variables
+        if not Connections.isRoot(frame_a.R) then
+    // frame_a.R is computed somewhere else
+          zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
+        elseif useQuaternions then
+    // frame_a.R is computed from quaternions Q
+          zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
+        else
+    // frame_a.R is computed from the 3 angles 'phi'
+          phi = phi_start;
+        end if;
+      end if;
+    equation
+      if enforceStates then
+        Connections.root(frame_a.R);
+      else
+        Connections.potentialRoot(frame_a.R);
+      end if;
+      r_0 = frame_a.r_0;
+      if not Connections.isRoot(frame_a.R) then
+    // Body does not have states
+    // Dummies
+        Q = {0, 0, 0, 1};
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      elseif useQuaternions then
+    // Use Quaternions as states (with dynamic state selection)
+        frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
+        {0} = Frames.Quaternions.orientationConstraint(Q);
+    // Dummies
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      else
+    // Use Cardan angles as states
+        phi_d = der(phi);
+        phi_dd = der(phi_d);
+        frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
+    // Dummies
+        Q = {0, 0, 0, 1};
+      end if;
+    // gravity acceleration at center of mass resolved in world frame
+      g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
+    // translational kinematic differential equations
+      v_0 = der(frame_a.r_0);
+      a_0 = der(v_0);
+    // rotational kinematic differential equations
+      w_a = Frames.angularVelocity2(frame_a.R);
+      z_a = der(w_a);
+    /* Newton/Euler equations with respect to center of mass
+                a_CM = a_a + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM));
+                f_CM = m*(a_CM - g_a);
+                t_CM = I*z_a + cross(w_a, I*w_a);
+           frame_a.f = f_CM
+           frame_a.t = t_CM + cross(r_CM, f_CM);
+        Inserting the first three equations in the last two results in:
+      */
+      frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
+      frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f);
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
+        Documentation(info = "<html>
+    <p>
+    <strong>Rigid body</strong> with mass and inertia tensor.
+    All parameter vectors have to be resolved in frame_a.
+    The <strong>inertia tensor</strong> has to be defined with respect to a
+    coordinate system that is parallel to frame_a with the
+    origin at the center of mass of the body.
+    </p>
+    <p>
+    By default, this component is visualized by a <strong>cylinder</strong> located
+    between frame_a and the center of mass and by a <strong>sphere</strong> that has
+    its center at the center of mass. If the cylinder length is smaller as
+    the radius of the sphere, e.g., since frame_a is located at the
+    center of mass, the cylinder is not displayed. Note, that
+    the animation may be switched off via parameter animation = <strong>false</strong>.
+    </p>
+    <p>
+    <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/Body.png\" alt=\"Parts.Body\">
+    </p>
+    
+    <p>
+    <strong>States of Body Components</strong>
+    </p>
+    <p>
+    Every body has potential states. If possible a tool will select
+    the states of joints and not the states of bodies because this is
+    usually the most efficient choice. In this case the position, orientation,
+    velocity and angular velocity of frame_a of the body will be computed
+    by the component that is connected to frame_a. However, if a body is moving
+    freely in space, variables of the body have to be used as states. The potential
+    states of the body are:
+    </p>
+    <ul>
+    <li> The <strong>position vector</strong> frame_a.r_0 from the origin of the
+         world frame to the origin of frame_a of the body, resolved in
+         the world frame and the <strong>absolute velocity</strong> v_0 of the origin of
+         frame_a, resolved in the world frame (= der(frame_a.r_0)).
+    </li>
+    <li> If parameter <strong>useQuaternions</strong> in the \"Advanced\" menu
+         is <strong>true</strong> (this is the default), then <strong>4 quaternions</strong>
+         are potential states. Additionally, the coordinates of the
+         absolute angular velocity vector of the
+         body are 3 potential states.<br>
+         If <strong>useQuaternions</strong> in the \"Advanced\" menu
+         is <strong>false</strong>, then <strong>3 angles</strong> and the derivatives of
+         these angles are potential states. The orientation of frame_a
+         is computed by rotating the world frame along the axes defined
+         in parameter vector \"sequence_angleStates\" (default = {1,2,3}, i.e.,
+         the Cardan angle sequence) around the angles used as potential states.
+         For example, the default is to rotate the x-axis of the world frame
+         around angles[1], the new y-axis around angles[2] and the new z-axis
+         around angles[3], arriving at frame_a.
+     </li>
+    </ul>
+    <p>
+    The quaternions have the slight disadvantage that there is a
+    non-linear constraint equation between the 4 quaternions.
+    Therefore, at least one non-linear equation has to be solved
+    during simulation. A tool might, however, analytically solve this
+    simple constraint equation. Using the 3 angles as states has the
+    disadvantage that there is a singular configuration in which a
+    division by zero will occur. If it is possible to determine in advance
+    for an application class that this singular configuration is outside
+    of the operating region, the 3 angles might be used as potential
+    states by setting <strong>useQuaternions</strong> = <strong>false</strong>.
+    </p>
+    <p>
+    In text books about 3-dimensional mechanics often 3 angles and the
+    angular velocity are used as states. This is not the case here, since
+    3 angles and their derivatives are used as potential states
+    (if useQuaternions = false). The reason
+    is that for real-time simulation the discretization formula of the
+    integrator might be \"inlined\" and solved together with the body equations.
+    By appropriate symbolic transformation the performance is
+    drastically increased if angles and their
+    derivatives are used as states, instead of angles and the angular
+    velocity.
+    </p>
+    <p>
+    Whether or not variables of the body are used as states is usually
+    automatically selected by the Modelica translator. If parameter
+    <strong>enforceStates</strong> is set to <strong>true</strong> in the \"Advanced\" menu,
+    then body variables are forced to be used as states according
+    to the setting of parameters \"useQuaternions\" and
+    \"sequence_angleStates\".
+    </p>
+    </html>"));
+    end Body_cm;
+    
+    model Body_cm_am "Rigid body with mass, inertia tensor and one frame connector (12 potential states)"
+      import Modelica.Mechanics.MultiBody.Types;
+      import Modelica.Mechanics.MultiBody.Frames;
+      import Modelica.Units.Conversions.to_unit1;
+      
+      extends DataImport.massData_am;
+        parameter String fileName annotation(
+        HideResult = true);
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        HideResult = true,
+        Dialog(group = "Hydro Data"));
+      
+      
+      
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      parameter Boolean animation = true "= true, if animation shall be enabled (show cylinder and sphere)";
+      parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
+      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
+      parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_21(min = -Modelica.Constants.inf) = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_31(min = -Modelica.Constants.inf) = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      parameter Modelica.Units.SI.Inertia I_32(min = -Modelica.Constants.inf) = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
+      Modelica.Units.SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Velocity v_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Absolute velocity of frame_a, resolved in world frame (= der(r_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      Modelica.Units.SI.Acceleration a_0[3](start = {0, 0, 0}) "Absolute acceleration of frame_a resolved in world frame (= der(v_0))" annotation(
+        Dialog(tab = "Initialization", showStartAttribute = true));
+      parameter Boolean angles_fixed = false "= true, if angles_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Angle angles_start[3] = {0, 0, 0} "Initial values of angles to rotate world frame around 'sequence_start' axes into frame_a" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Types.RotationSequence sequence_start = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a at initial time" annotation(
+        Evaluate = true,
+        Dialog(tab = "Initialization"));
+      parameter Boolean w_0_fixed = false "= true, if w_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularVelocity w_0_start[3] = {0, 0, 0} "Initial or guess values of angular velocity of frame_a resolved in world frame" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Boolean z_0_fixed = false "= true, if z_0_start are used as initial values, else as guess values" annotation(
+        Evaluate = true,
+        choices(checkBox = true),
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0_start[3] = {0, 0, 0} "Initial values of angular acceleration z_0 = der(w_0)" annotation(
+        Dialog(tab = "Initialization"));
+      parameter Modelica.Units.SI.Diameter sphereDiameter = world.defaultBodyDiameter "Diameter of sphere" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color sphereColor = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of sphere" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Modelica.Units.SI.Diameter cylinderDiameter = sphereDiameter/Types.Defaults.BodyCylinderDiameterFraction "Diameter of cylinder" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.Color cylinderColor = sphereColor "Color of cylinder" annotation(
+        Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
+      input Types.SpecularCoefficient specularCoefficient = world.defaultSpecularCoefficient "Reflection of ambient light (= 0: light is completely absorbed)" annotation(
+        Dialog(tab = "Animation", group = "if animation = true", enable = animation));
+      parameter Boolean enforceStates = false "= true, if absolute variables of body object shall be used as states (StateSelect.always)" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Boolean useQuaternions = true "= true, if quaternions shall be used as potential states otherwise use 3 angles as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced"));
+      parameter Types.RotationSequence sequence_angleStates = {1, 2, 3} "Sequence of rotations to rotate world frame into frame_a around the 3 angles used as potential states" annotation(
+        Evaluate = true,
+        Dialog(tab = "Advanced", enable = not useQuaternions));
+      final parameter Modelica.Units.SI.Inertia I[3, 3] = [I_11, I_21, I_31; I_21, I_22, I_32; I_31, I_32, I_33] "Inertia tensor";
+      final parameter Frames.Orientation R_start = Modelica.Mechanics.MultiBody.Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
+      Modelica.Units.SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
+      Modelica.Units.SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
+      Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+    protected
+      outer Modelica.Mechanics.MultiBody.World world;
+      // Declarations for quaternions (dummies, if quaternions are not used)
+      parameter Frames.Quaternions.Orientation Q_start = Frames.to_Q(R_start) "Quaternion orientation object from world frame to frame_a at initial time";
+      Frames.Quaternions.Orientation Q(start = Q_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.prefer else StateSelect.never) else StateSelect.avoid) "Quaternion orientation object from world frame to frame_a (dummy value, if quaternions are not used as states)";
+      // Declaration for 3 angles
+      parameter Modelica.Units.SI.Angle phi_start[3] = if sequence_start[1] == sequence_angleStates[1] and sequence_start[2] == sequence_angleStates[2] and sequence_start[3] == sequence_angleStates[3] then angles_start else Frames.axesRotationsAngles(R_start, sequence_angleStates) "Potential angle states at initial time";
+      Modelica.Units.SI.Angle phi[3](start = phi_start, each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "Dummy or 3 angles to rotate world frame into frame_a of body";
+      Modelica.Units.SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
+      Modelica.Units.SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
+      // Declarations for animation
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+      Modelica.Mechanics.MultiBody.Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
+    initial equation
+      if angles_fixed then
+    // Initialize positional variables
+        if not Connections.isRoot(frame_a.R) then
+    // frame_a.R is computed somewhere else
+          zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
+        elseif useQuaternions then
+    // frame_a.R is computed from quaternions Q
+          zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
+        else
+    // frame_a.R is computed from the 3 angles 'phi'
+          phi = phi_start;
+        end if;
+      end if;
+    equation
+      if enforceStates then
+        Connections.root(frame_a.R);
+      else
+        Connections.potentialRoot(frame_a.R);
+      end if;
+      r_0 = frame_a.r_0;
+      if not Connections.isRoot(frame_a.R) then
+    // Body does not have states
+    // Dummies
+        Q = {0, 0, 0, 1};
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      elseif useQuaternions then
+    // Use Quaternions as states (with dynamic state selection)
+        frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
+        {0} = Frames.Quaternions.orientationConstraint(Q);
+    // Dummies
+        phi = zeros(3);
+        phi_d = zeros(3);
+        phi_dd = zeros(3);
+      else
+    // Use Cardan angles as states
+        phi_d = der(phi);
+        phi_dd = der(phi_d);
+        frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
+    // Dummies
+        Q = {0, 0, 0, 1};
+      end if;
+    // gravity acceleration at center of mass resolved in world frame
+      g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
+    // translational kinematic differential equations
+      v_0 = der(frame_a.r_0);
+      a_0 = der(v_0);
+    // rotational kinematic differential equations
+      w_a = Frames.angularVelocity2(frame_a.R);
+      z_a = der(w_a);
+    /* Newton/Euler equations with respect to center of mass
+                    a_CM = a_a + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM));
+                    f_CM = m*(a_CM - g_a);
+                    t_CM = I*z_a + cross(w_a, I*w_a);
+               frame_a.f = f_CM
+               frame_a.t = t_CM + cross(r_CM, f_CM);
+            Inserting the first three equations in the last two results in:
+          */
+      frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
+      frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f);
+      annotation(
+        Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
+        Documentation(info = "<html>
+        <p>
+        <strong>Rigid body</strong> with mass and inertia tensor.
+        All parameter vectors have to be resolved in frame_a.
+        The <strong>inertia tensor</strong> has to be defined with respect to a
+        coordinate system that is parallel to frame_a with the
+        origin at the center of mass of the body.
+        </p>
+        <p>
+        By default, this component is visualized by a <strong>cylinder</strong> located
+        between frame_a and the center of mass and by a <strong>sphere</strong> that has
+        its center at the center of mass. If the cylinder length is smaller as
+        the radius of the sphere, e.g., since frame_a is located at the
+        center of mass, the cylinder is not displayed. Note, that
+        the animation may be switched off via parameter animation = <strong>false</strong>.
+        </p>
+        <p>
+        <img src=\"modelica://Modelica/Resources/Images/Mechanics/MultiBody/Parts/Body.png\" alt=\"Parts.Body\">
+        </p>
+        
+        <p>
+        <strong>States of Body Components</strong>
+        </p>
+        <p>
+        Every body has potential states. If possible a tool will select
+        the states of joints and not the states of bodies because this is
+        usually the most efficient choice. In this case the position, orientation,
+        velocity and angular velocity of frame_a of the body will be computed
+        by the component that is connected to frame_a. However, if a body is moving
+        freely in space, variables of the body have to be used as states. The potential
+        states of the body are:
+        </p>
+        <ul>
+        <li> The <strong>position vector</strong> frame_a.r_0 from the origin of the
+             world frame to the origin of frame_a of the body, resolved in
+             the world frame and the <strong>absolute velocity</strong> v_0 of the origin of
+             frame_a, resolved in the world frame (= der(frame_a.r_0)).
+        </li>
+        <li> If parameter <strong>useQuaternions</strong> in the \"Advanced\" menu
+             is <strong>true</strong> (this is the default), then <strong>4 quaternions</strong>
+             are potential states. Additionally, the coordinates of the
+             absolute angular velocity vector of the
+             body are 3 potential states.<br>
+             If <strong>useQuaternions</strong> in the \"Advanced\" menu
+             is <strong>false</strong>, then <strong>3 angles</strong> and the derivatives of
+             these angles are potential states. The orientation of frame_a
+             is computed by rotating the world frame along the axes defined
+             in parameter vector \"sequence_angleStates\" (default = {1,2,3}, i.e.,
+             the Cardan angle sequence) around the angles used as potential states.
+             For example, the default is to rotate the x-axis of the world frame
+             around angles[1], the new y-axis around angles[2] and the new z-axis
+             around angles[3], arriving at frame_a.
+         </li>
+        </ul>
+        <p>
+        The quaternions have the slight disadvantage that there is a
+        non-linear constraint equation between the 4 quaternions.
+        Therefore, at least one non-linear equation has to be solved
+        during simulation. A tool might, however, analytically solve this
+        simple constraint equation. Using the 3 angles as states has the
+        disadvantage that there is a singular configuration in which a
+        division by zero will occur. If it is possible to determine in advance
+        for an application class that this singular configuration is outside
+        of the operating region, the 3 angles might be used as potential
+        states by setting <strong>useQuaternions</strong> = <strong>false</strong>.
+        </p>
+        <p>
+        In text books about 3-dimensional mechanics often 3 angles and the
+        angular velocity are used as states. This is not the case here, since
+        3 angles and their derivatives are used as potential states
+        (if useQuaternions = false). The reason
+        is that for real-time simulation the discretization formula of the
+        integrator might be \"inlined\" and solved together with the body equations.
+        By appropriate symbolic transformation the performance is
+        drastically increased if angles and their
+        derivatives are used as states, instead of angles and the angular
+        velocity.
+        </p>
+        <p>
+        Whether or not variables of the body are used as states is usually
+        automatically selected by the Modelica translator. If parameter
+        <strong>enforceStates</strong> is set to <strong>true</strong> in the \"Advanced\" menu,
+        then body variables are forced to be used as states according
+        to the setting of parameters \"useQuaternions\" and
+        \"sequence_angleStates\".
+        </p>
+        </html>"));
+    end Body_cm_am;
+    
+    model BodyCM_am
+    extends OET.Internal.PartialThreeFrames;
+    parameter Boolean animationEnable = false;
+    //parameter String fileName = "float.stl";
+    //parameter String filePath = "c:Users/"; // re add in shapetype
+    parameter Real ra_CM[3] = {0, 0, 0};
+    parameter Real rCM_b[3] = {0, 0, 0};
+    parameter Real ra_b[3] = ra_CM + rCM_b;
+    parameter Real m = 1000;
+      parameter String fileName annotation(
+        HideResult = true);
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        HideResult = true,
+        Dialog(group = "Hydro Data"));
+    Experimental.Body_cm body(m=m) annotation(
+      Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
+    Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = ra_CM) annotation(
+      Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = rCM_b) annotation(
+      Placement(transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(length = 1, width = 1, height = 1, animation = animationEnable) annotation(
+      Placement(transformation(origin = {40, -36}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+      Placement(transformation(origin = {50, 52}, extent = {{-10, -10}, {10, 10}})));
+  equation
+    connect(body.frame_a, frame_c) annotation(
+      Line(points = {{0, -34}, {0, 100}}, color = {95, 95, 95}));
+    connect(fixedTranslation1.frame_a, body.frame_a) annotation(
+      Line(points = {{50, 0}, {0, 0}, {0, -34}}, color = {95, 95, 95}));
+    connect(fixedTranslation.frame_b, body.frame_a) annotation(
+      Line(points = {{-40, 0}, {0, 0}, {0, -34}}, color = {95, 95, 95}));
+    connect(fixedTranslation1.frame_b, frame_b) annotation(
+      Line(points = {{70, 0}, {100, 0}}, color = {95, 95, 95}));
+    connect(fixedTranslation.frame_a, frame_a) annotation(
+      Line(points = {{-60, 0}, {-100, 0}}, color = {95, 95, 95}));
+    connect(fixedShape.frame_a, body.frame_a) annotation(
+      Line(points = {{30, -36}, {0, -36}, {0, -34}}, color = {95, 95, 95}));
+  connect(absoluteSensor.frame_a, body.frame_a) annotation(
+      Line(points = {{40, 52}, {0, 52}, {0, -34}}, color = {95, 95, 95}));
+    annotation(
+      Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Body")}),
+      Diagram);
+  end BodyCM_am;
+    
+    
+  end Experimental;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle
     {0, 0, 0}, fillPattern = // Light gray fill
