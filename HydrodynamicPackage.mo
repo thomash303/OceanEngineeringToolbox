@@ -2600,7 +2600,7 @@ This component has a filled rectangular icon.
       // Define hydrodynamic body
       inner Hydro.FilePath filePath annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(n_omega = 150) annotation(
+      inner Wave.Environment environment(n_omega = 100, waveSelector = "PiersonMoskowitz") annotation(
         Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
       HydrodynamicBody_er hydrodynamicBody(BodyIndex = 2, enableRadiationForce = true, r = {0, 0, 0}, r_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
@@ -2690,7 +2690,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Body"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Body"));
-      BodyShape_er bodyShape(r = r, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName, useQuaternions = false, angles_fixed = false, w_0_fixed = false, z_0_fixed = false) annotation(
+      BodyShape_er bodyShape(r = r, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName, bodyIndex = BodyIndex, useQuaternions = false, angles_fixed = false, w_0_fixed = false, z_0_fixed = false) annotation(
         Placement(transformation(origin = {12, -84}, extent = {{-10, -10}, {10, 10}})));
       // Hydrostatic force parameters
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -3912,7 +3912,11 @@ This component has a filled rectangular icon.
 
     model Environment_fn
       extends DataImport.waveData;
+        extends Models.physicalConstants;
       outer OET.Hydro.FilePath filePath;
+      
+      redeclare parameter String fileName = filePath.FileName;
+        redeclare parameter Integer bodyIndex = 1;
       parameter Modelica.Units.SI.Time Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
         Dialog(group = "Simulation Parameters"));
       Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
@@ -3920,36 +3924,30 @@ This component has a filled rectangular icon.
       parameter String waveSelector = "PiersonMoskowitz" annotation(
         Dialog(group = "Wave Spectrum Parameters"),
         choices(choice = "Linear", choice = "Bretschneider", choice = "PiersonMoskowitz", choice = "JONSWAP"));
-      parameter Integer n_omega = 1 "Number of frequency components (default is 100 for irregular)" annotation(
+      parameter Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
         Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
       parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-          parameter String frequencySelection = "random" annotation(
+          parameter String frequencySelection = "equalEnergy" annotation(
         Dialog(group = "Wave Spectrum Parameters"),
         choices(choice = "random", choice = "equalEnergy"));
     
-      Modelica.Units.SI.AngularFrequency omega[:] "Frequency components selected for simulation [rad/s]";
-        Modelica.Units.SI.Length zeta[:] "Wave amplitude component [m]";
-      parameter Real epsilon[:] "Wave components phase shift";
-      
-    initial equation
-      if waveSelector == "Linear" then
-        n_omega = 1;
-        // Calculate wave amplityde
-        zeta[n_omega] = Hs/2 "Wave amplitude [m]";
-        // Assign peak amplitude to the scalar frequency
-        omega[n_omega] = omega_peak;
-        zeta = 0;
-        epsilon = 0;
-      else
-        n_omega = 100;
-        (zeta, epsilon, omega) = EnvironmentFunc_fn(frequencySelection = frequencySelection, Trmp = Trmp, d = d, waveSelector = waveSelector, n_omega = n_omega, Hs = Hs, omega_peak = omega_peak);
-      end if;
+      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
+        Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component [m]";
+      Real epsilon[n_omega];// = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
       
     equation
-    
+      if waveSelector == "Linear" then
+    // Calculate wave amplityde
+        zeta[n_omega] = Hs/2 "Wave amplitude [m]";
+    // Assign peak amplitude to the scalar frequency
+        omega[n_omega] = omega_peak;
+        epsilon[n_omega] = 0;
+      else
+        (zeta, epsilon, omega) = EnvironmentFunc_fn(frequencySelection = frequencySelection, Trmp = Trmp, d = d, waveSelector = waveSelector, n_omega = n_omega, Hs = Hs, omega_peak = omega_peak, FileName = filePath.FileName);
+      end if;
   SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
     end Environment_fn;
 
@@ -3967,14 +3965,14 @@ This component has a filled rectangular icon.
       input Integer n_omega;
       input Real Hs;
       input Real omega_peak;
+      input String FileName;
       
       
       
       output Modelica.Units.SI.Length  zeta[n_omega];
       output Real epsilon[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega);
       output Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
-      
-      protected
+    protected  
     // Irregular wave spectrum parameters
       parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
@@ -3991,8 +3989,8 @@ This component has a filled rectangular icon.
       parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(
         HideResult = true,
         Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
-      inner Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
-    protected
+     Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
+    
       // Random phase shift
       Real rnd_shft[n_omega] "Random shifts for frequency selection";
       // Frequency selection and wave spectrum
@@ -4001,7 +3999,7 @@ This component has a filled rectangular icon.
       Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
       Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
     
-      redeclare parameter String fileName = filePath.FileName;
+      redeclare parameter String fileName = FileName;
       redeclare parameter Integer bodyIndex = 1;
       // Wave selection
     
@@ -4022,15 +4020,7 @@ This component has a filled rectangular icon.
     // Calculate wave parameters
       Tp := 2*pi./omega;
       k := Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
-    // Calculate sea surface elevation (SSE) as the sum of all wave components
-      SSE := sum(zeta.*cos(omega*time - 2*pi*epsilon));
-      if waveSelector == "Linear" then
-    // Calculate wave amplityde
-        zeta[n_omega] := Hs/2 "Wave amplitude [m]";
-    // Assign peak amplitude to the scalar frequency
-        omega[n_omega] := omega_peak;
-        rnd_shft := zeros(n_omega);
-      else
+    
         rnd_shft := Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega);
     // Calculate wave parameter
         domega := Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
@@ -4046,7 +4036,6 @@ This component has a filled rectangular icon.
           omega_int := zeros(n_omega_int);
           S_int := zeros(n_omega_int);
         end if;
-      end if;
 
     end EnvironmentFunc_fn;
     
@@ -4063,9 +4052,9 @@ This component has a filled rectangular icon.
       parameter Boolean enableExcitationForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
         HideResult = true,
         Dialog(group = "Excitation Force Parameters"));
-      Real ExcCoeffRe[bodyDoF, :] "Real component of excitation coefficient for frequency components" annotation(
+      Real ExcCoeffRe[bodyDoF, environment.n_omega] "Real component of excitation coefficient for frequency components" annotation(
         HideResult = true);
-      Real ExcCoeffIm[bodyDoF, :] "Imaginary component of excitation coefficient for frequency components" annotation(
+      Real ExcCoeffIm[bodyDoF, environment.n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(
         HideResult = true);
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
     protected
@@ -4101,6 +4090,477 @@ This component has a filled rectangular icon.
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
         Diagram);
     end Excitation_fn;
+    
+    model multibodyWEC_fn
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath filePath annotation(
+        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_fn hydrodynamicBody(BodyIndex = 2, enableRadiationForce = true, r = {0, 0, 0}, r_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_fn hydrodynamicBody1(BodyIndex = 1, enableRadiationForce = true, r = {0, 0, 0}, r_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}) annotation(
+        Placement(transformation(origin = {40, -32}, extent = {{-10, -10}, {10, 10}})));
+  inner Experimental.Environment_fnV2 environment annotation(
+        Placement(transformation(origin = {94, 32}, extent = {{-10, -10}, {10, 10}})));
+    equation
+// Connections
+      connect(prismatic.frame_b, hydrodynamicBody1.frame_a) annotation(
+        Line(points = {{50, -32}, {60, -32}, {60, -16}}, color = {95, 95, 95}));
+      connect(prismatic.frame_a, hydrodynamicBody.frame_b) annotation(
+        Line(points = {{30, -32}, {20, -32}, {20, -12}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+        <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+        <p>This model represents a simplified 1D single-body wave energy converter system, 
+        focusing on the vertical motion of the body in response to wave excitation forces.</p>
+        
+        <p><b>Model Description</b></p>
+        <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+        The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+        
+        <p><b>Key Components</b></p>
+        <ul>
+          <li><code>world</code>: Defines the world coordinate system without gravity</li>
+          <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+          <li><code>prismatic</code>: Allows vertical motion of the body</li>
+          <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+          <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+        </ul>
+        
+        <p><b>Assumptions and Simplifications</b></p>
+        <ul>
+          <li>The model considers only vertical motion (1D) of the WEC</li>
+          <li>Gravity is not included in the world model</li>
+          <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+        </ul>
+        
+        <p><b>Notes</b></p>
+        <ul>
+          <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+          <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+          <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+          <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+        </ul>
+      </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end multibodyWEC_fn;
+    
+    model HydrodynamicBody_fn "6-Dimensional Hydrodynamic Forces and Moments Calculation"
+      // Inheritance
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      //extends Hydrodynamic.HydroDataImport.massData;
+      /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
+      // BodyShape parameters
+      outer Hydro.FilePath filePath;
+      parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        Dialog(group = "Hydro Data"));
+      /* Removing mass definition here and adding it to a custom bodyShape model
+                                              parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                                Dialog(group = "Body")); /*
+                                              /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+      parameter Modelica.Units.SI.Position r[3] "Position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Position r_CM[3] "Center of mass position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      BodyShape_er bodyShape(r = r, r_CM = r_CM, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, fileName = filePath.FileName, bodyIndex = BodyIndex, useQuaternions = false, angles_fixed = false, w_0_fixed = false, z_0_fixed = false) annotation(
+        Placement(transformation(origin = {12, -84}, extent = {{-10, -10}, {10, 10}})));
+      // Hydrostatic force parameters
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        choices(checkBox = true),
+        Dialog(group = "Hydrostatic Force Parameters"));
+      // Radiation force paramters
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      /* 
+                                                                parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                                                parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                                  Dialog(group = "PTO Parameters"));
+                                    
+                                                             */
+      /*
+                                  // Damping coefficients
+                                    parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                                    
+                                    // Drag coefficients
+                                    parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                                    parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                                    */
+      Hydro.DampingDrag dampingDrag annotation(
+        Placement(transformation(origin = {74, 52}, extent = {{-10, -10}, {10, 10}})));
+    Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+        Placement(transformation(origin = {-66, 38}, extent = {{-10, -10}, {10, 10}})));
+  Excitation_fn excitation_fn(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {16, 12}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {20, -24}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.Radiation radiation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {-36, -26}, extent = {{-10, -10}, {10, 10}})));
+    equation
+    //Conections
+      connect(bodyShape.frame_b, frame_b) annotation(
+        Line(points = {{22, -84}, {62, -84}, {62, 0}, {102, 0}}, color = {95, 95, 95}));
+      connect(bodyShape.frame_a, frame_a) annotation(
+        Line(points = {{2, -84}, {-76, -84}, {-76, 0}, {-102, 0}}, color = {95, 95, 95}));
+      connect(dampingDrag.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{64, 52}, {-28, 52}, {-28, -84}, {2, -84}}, color = {95, 95, 95}));
+      connect(absoluteSensor.frame_a, frame_a) annotation(
+        Line(points = {{-76, 38}, {-100, 38}, {-100, 0}}, color = {95, 95, 95}));
+  connect(excitation_fn.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{6, 12}, {2, 12}, {2, -84}}, color = {95, 95, 95}));
+  connect(hydrostatic.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{10, -24}, {2, -24}, {2, -84}}, color = {95, 95, 95}));
+  connect(radiation.frame_a, bodyShape.frame_a) annotation(
+        Line(points = {{-46, -26}, {2, -26}, {2, -84}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Diagram);
+    end HydrodynamicBody_fn;
+    
+    model Environment_fnV2
+      extends DataImport.waveData;
+      extends Models.physicalConstants;
+      extends DataImport.frequencyData;
+      outer Hydro.FilePath filePath;
+      redeclare parameter String fileName = filePath.FileName;
+      redeclare parameter Integer bodyIndex = 1;
+      parameter Modelica.Units.SI.Time Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+      // Wave selection
+      parameter String waveSelector = "PiersonMoskowitz" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "Linear", choice = "Bretschneider", choice = "PiersonMoskowitz", choice = "JONSWAP"));
+      parameter Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
+        Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter String frequencySelection = "random" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "random", choice = "equalEnergy"));
+      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
+      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component [m]";
+      Real epsilon[n_omega];
+      // = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
+      
+    protected 
+    // Irregular wave spectrum parameters
+      parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      // Random freqeuncy selection paramters (will be disabled if user opts to use equal energy method)
+      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      // Equal Energy Parameters
+      parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(
+        HideResult = true,
+        Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+     Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
+    
+      // Random phase shift
+      Real rnd_shft[n_omega] "Random shifts for frequency selection";
+      // Frequency selection and wave spectrum
+      Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+      //unit issue here
+      Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
+      Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
+    
+    
+      // Derived parameters
+      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection"));
+      // readd , enable = frequencySelection == "random"
+      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection"));
+      // readd , enable = frequencySelection == "random"
+      Modelica.Units.SI.Time Tp[n_omega] "Wave period components [s]" annotation(
+        HideResult = true);
+      Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component [1/m]";
+    
+    
+    equation
+      if waveSelector == "Linear" then
+    // Calculate wave amplityde
+        zeta[n_omega] = Hs/2 "Wave amplitude [m]";
+    // Assign peak amplitude to the scalar frequency
+        omega[n_omega] = omega_peak;
+        epsilon[n_omega] = 0;
+        Tp[n_omega] = 0;
+        k[n_omega] = 0;
+        S_int = zeros(n_omega_int);
+        S[n_omega] = 0;
+        rnd_shft[n_omega] = 0;
+        domega = 0;
+        omega_int = zeros(n_omega_int);
+      else
+      // Calculate wave parameters
+      Tp = 2*pi./omega;
+      k = Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
+      epsilon = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega);
+    
+        rnd_shft = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega);
+    // Calculate wave parameter
+        domega = Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
+        zeta = sqrt(2*S*domega);
+    // Select equal energy or random frequency selection
+        if frequencySelection == "equalEnergy" then
+          omega_int = Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
+          S_int = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega_int, n_omega = n_omega_int);
+          (omega, S) = Wave.WaveFunctions.EqualEnergyFrequencyFunctions.equalEnergyFrequencySelector(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
+        elseif frequencySelection == "random" then
+          omega = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omega_min, omega_max, rnd_shft, n_omega) "Selected frequency components [rad/s]";
+          S = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega, n_omega = n_omega);
+          omega_int = zeros(n_omega_int);
+          S_int = zeros(n_omega_int);
+        end if;
+    end if;
+      
+      SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+    end Environment_fnV2;
+    
+    model multibodyWEC_full
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}) "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath filePath annotation(
+        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
+      inner Experimental.Environment_fnV2 environment annotation(
+        Placement(transformation(origin = {52, 22}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
+        Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Mechanics.MultiBody.Forces.WorldForce force annotation(
+        Placement(transformation(origin = {-16, 32}, extent = {{-10, -10}, {10, 10}})));
+      Modelica.Blocks.Sources.Sine sine[3](amplitude = {1000, 1000, 1000000}, f = {0.1, 0.1, 0.1}) annotation(
+        Placement(transformation(origin = {-52, 34}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_full hydrodynamicBody_cm(BodyIndex = 2, ra_CM = {0, 0, 0}, rCM_b = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {14, -24}, extent = {{-10, -10}, {10, 10}})));
+      HydrodynamicBody_full hydrodynamicBody_cm1(BodyIndex = 1) annotation(
+        Placement(transformation(origin = {72, -28}, extent = {{-10, -10}, {10, 10}})));
+      Mooring.LinearMooring linearMooring annotation(
+        Placement(transformation(origin = {-34, -60}, extent = {{-10, -10}, {10, 10}})));
+    equation
+    // Connections
+      connect(sine.y, force.force) annotation(
+        Line(points = {{-40, 34}, {-28, 34}, {-28, 32}}, color = {0, 0, 127}));
+      connect(force.frame_b, hydrodynamicBody_cm.frame_a) annotation(
+        Line(points = {{-6, 32}, {4, 32}, {4, -24}}, color = {95, 95, 95}));
+      connect(hydrodynamicBody_cm.frame_b, prismatic1.frame_a) annotation(
+        Line(points = {{24, -24}, {32, -24}, {32, 2}}, color = {95, 95, 95}));
+      connect(hydrodynamicBody_cm1.frame_a, prismatic1.frame_b) annotation(
+        Line(points = {{62, -28}, {52, -28}, {52, 2}}, color = {95, 95, 95}));
+      connect(linearMooring.frame_a, hydrodynamicBody_cm.frame_a) annotation(
+        Line(points = {{-44, -60}, {4, -60}, {4, -24}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+            <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+            <p>This model represents a simplified 1D single-body wave energy converter system, 
+            focusing on the vertical motion of the body in response to wave excitation forces.</p>
+            
+            <p><b>Model Description</b></p>
+            <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+            The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+            
+            <p><b>Key Components</b></p>
+            <ul>
+              <li><code>world</code>: Defines the world coordinate system without gravity</li>
+              <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+              <li><code>prismatic</code>: Allows vertical motion of the body</li>
+              <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+              <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+            </ul>
+            
+            <p><b>Assumptions and Simplifications</b></p>
+            <ul>
+              <li>The model considers only vertical motion (1D) of the WEC</li>
+              <li>Gravity is not included in the world model</li>
+              <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+            </ul>
+            
+            <p><b>Notes</b></p>
+            <ul>
+              <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+              <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+              <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+              <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+            </ul>
+          </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end multibodyWEC_full;
+    
+    model HydrodynamicBody_full "6-Dimensional Hydrodynamic Forces and Moments Calculation"
+      // Inheritance
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+      //extends Hydrodynamic.HydroDataImport.massData;
+      /* This should be removed from here and included in the definition of the body in HydrodynamicBody, but is okay in the interim */
+      // BodyShape parameters
+      outer Hydro.FilePath filePath;
+      parameter Integer BodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
+        Dialog(group = "Hydro Data"));
+      /* Removing mass definition here and adding it to a custom bodyShape model
+                                              parameter Modelica.Units.SI.Mass m = M + Ainf[3, 3] "Mass of the body" annotation(
+                                                Dialog(group = "Body")); /*
+                                              /* The mass is only valid when motion is constrained in heave. This line is also repeated in the PTO force code base to determine the control gain */
+      parameter Modelica.Units.SI.Position r[3] = {0, 0, 0} "Position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Position r_CM[3] = {0, 0, 0} "Center of mass position vector" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+        Dialog(group = "Body"));
+      // Hydrostatic force parameters
+      parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        choices(checkBox = true),
+        Dialog(group = "Hydrostatic Force Parameters"));
+      // Radiation force paramters
+      parameter Boolean enableRadiationForce = true "Switch to enable/disable 6D radiation force calculation" annotation(
+        Dialog(group = "Radiation Force Parameters"));
+      /* 
+                                                    parameter Real Kpx = 0.0 "Proportional gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpy = 0.0 "Proportional gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprx = 0.0 "Proportional gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kpry = 0.0 "Proportional gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter Real Kprz = 0.0 "Proportional gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kix = 0.0 "Integral gain for x-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter TranslationalSpringConstant Kiy = 0.0 "Integral gain for y-axis translation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirx = 0.0 "Integral gain for x-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kiry = 0.0 "Integral gain for y-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                                                    parameter RotationalSpringConstant Kirz = 0.0 "Integral gain for z-axis rotation" annotation(
+                                                      Dialog(group = "PTO Parameters"));
+                        
+                                                 */
+      /*
+                      // Damping coefficients
+                        parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(HideResult = true);
+                        
+                        // Drag coefficients
+                        parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(HideResult = true);
+                        parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(HideResult = true);
+                        */
+      Hydro.Hydrostatic hydrostatic(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {-60, 0}, extent = {{-14, -14}, {14, 14}})));
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+        Placement(transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.DampingDrag dampingDrag annotation(
+        Placement(transformation(origin = {57, -3}, extent = {{-13, -13}, {13, 13}})));
+    BodyCM_am bodyCM(animationEnable = animationEnable, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_CM + rCM_b,fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {0, -66}, extent = {{-10, -10}, {10, 10}})));
+    
+      parameter Boolean animationEnable = false;
+      parameter Real ra_CM[3] = {0, 0, 0};
+      parameter Real rCM_b[3] = {0, 0, 0};
+      parameter Real ra_b[3] = ra_CM + rCM_b;
+  Hydro.Radiation radiation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {16, 6}, extent = {{-10, -10}, {10, 10}})));
+  Excitation_fn excitation_fn(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+        Placement(transformation(origin = {26, 50}, extent = {{-10, -10}, {10, 10}})));
+    equation
+    //Conections
+      connect(hydrostatic.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{-74, 0}, {-74, -56}, {0, -56}}, color = {95, 95, 95}));
+      connect(dampingDrag.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{44, -2}, {42, -2}, {42, -56}, {0, -56}}, color = {95, 95, 95}));
+      connect(bodyCM.frame_a, frame_a) annotation(
+        Line(points = {{-10, -66}, {-100, -66}, {-100, 0}}, color = {95, 95, 95}));
+      connect(bodyCM.frame_b, frame_b) annotation(
+        Line(points = {{10, -66}, {100, -66}, {100, 0}}, color = {95, 95, 95}));
+    connect(absoluteSensor.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{-64, 60}, {0, 60}, {0, -56}}, color = {95, 95, 95}));
+  connect(radiation.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{6, 6}, {0, 6}, {0, -56}}, color = {95, 95, 95}));
+  connect(excitation_fn.frame_a, bodyCM.frame_c) annotation(
+        Line(points = {{16, 50}, {0, 50}, {0, -56}}, color = {95, 95, 95}));
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
+        Diagram);
+    end HydrodynamicBody_full;
     
     
   end Experimental;
