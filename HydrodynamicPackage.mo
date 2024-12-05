@@ -476,7 +476,7 @@ This component has a filled rectangular icon.
     record filePath
       parameter String fileName "File path to file storing the hydrodynamic data" annotation(
         Dialog(group = "Filepath"));
-      parameter Integer bodyIndex = 1 "Index of body corresponding to that of BEM" annotation(
+      parameter Integer bodyIndex "Index of body corresponding to that of BEM" annotation(
         Dialog(group = "Filepath"));
       // this will need to be moved, not all bodies inheriting filename need body index
     end filePath;
@@ -606,13 +606,20 @@ This component has a filled rectangular icon.
       parameter Integer stateStart = integer(sum(stateStartInter[1:bodyIndex]));
     end radiationData;
     
-    partial model massData_am
+    partial model massData_am //uncoupled only
     extends DataImport.multibodyData;
-  protected
+  
     parameter Modelica.Units.SI.Mass M_full[1, nbodies] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.bodies.m", 1, nbodies) "Total mass of the body (including ballast) for all bodies";
     parameter Modelica.Units.SI.Mass Ainf_full[nDoF, nDoF] = Modelica.Utilities.Streams.readRealMatrix(fileName, "hydro.coefficients.radiation.Ainf", nDoF, nDoF) "Added mass at maximum (cut-off) frequency for all bodies";
     parameter Modelica.Units.SI.Mass M = M_full[1, bodyIndex] "Total mass of the body (including ballast)";
-    parameter Modelica.Units.SI.Mass Ainf[bodyDoF, nDoF] = Ainf_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, :] "Added mass at maximum (cut-off) frequency";
+    parameter Modelica.Units.SI.Mass m[3,3] = diagonal({M,M,M}) "Mass matrix of the body (including ballast)"; 
+    parameter Modelica.Units.SI.Mass Ainf[bodyDoF, bodyDoF] = Ainf_full[bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex, bodyDoF*(bodyIndex - 1) + 1:bodyDoF*bodyIndex] "Added mass at maximum (cut-off) frequency";
+    parameter Modelica.Units.SI.Mass Ainf11[3,3] = Ainf[1:3,1:3] "Upper left block";
+    parameter Modelica.Units.SI.Mass Ainf12[3,3] = Ainf[1:3,4:6] "Upper right block";
+    parameter Modelica.Units.SI.Mass Ainf21[3,3] = Ainf[4:6,1:3] "Lower left block";
+    parameter Modelica.Units.SI.Mass Ainf22[3,3] = Ainf[4:6,4:6] "Lower right block";
+    
+    
   end massData_am;
   
   end DataImport;
@@ -2327,7 +2334,7 @@ This component has a filled rectangular icon.
     end IrregularWave;
 
     model Environment
-      extends Wave.waveParameters(fileName = filePath.FileName);
+      extends Wave.waveParameters(fileName = filePath.FileName,bodyIndex=1);
       outer OET.Hydro.FilePath filePath;
       // Irregular wave spectrum parameters
       parameter String frequencySelection = "random" annotation(
@@ -2395,7 +2402,7 @@ This component has a filled rectangular icon.
   package Mooring
     model LinearMooringForce
       // Import hydro coefficients
-      extends DataImport.linearMooringData;
+      extends DataImport.linearMooringData(bodyIndex=1);
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Position connectors
@@ -3270,7 +3277,7 @@ This component has a filled rectangular icon.
         Placement(transformation(origin = {-54, 60}, extent = {{-10, -10}, {10, 10}})));
       Hydro.DampingDrag dampingDrag annotation(
         Placement(transformation(origin = {57, -3}, extent = {{-13, -13}, {13, 13}})));
-  BodyCM_am bodyCM(animationEnable = animationEnable, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_CM + rCM_b, m = 1958670,fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
+  BodyCM_am bodyCM(animationEnable = animationEnable, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_CM + rCM_b,fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {0, -66}, extent = {{-10, -10}, {10, 10}})));
     
       parameter Boolean animationEnable = false;
@@ -3625,7 +3632,7 @@ This component has a filled rectangular icon.
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
       parameter Boolean animation = true "= true, if animation shall be enabled (show cylinder and sphere)";
       parameter Modelica.Units.SI.Position r_CM[3](start = {0, 0, 0}) "Vector from frame_a to center of mass, resolved in frame_a";
-      parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
+     // parameter Modelica.Units.SI.Mass m(min = 0, start = 1) "Mass of rigid body";
       parameter Modelica.Units.SI.Inertia I_11(min = 0) = 0.001 "Element (1,1) of inertia tensor" annotation(
         Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
       parameter Modelica.Units.SI.Inertia I_22(min = 0) = 0.001 "Element (2,2) of inertia tensor" annotation(
@@ -3750,7 +3757,7 @@ This component has a filled rectangular icon.
       g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
     // translational kinematic differential equations
       v_0 = der(frame_a.r_0);
-      a_0 = der(v_0);
+      a_0 = Frames.resolve2(frame_a.R,der(v_0));
     // rotational kinematic differential equations
       w_a = Frames.angularVelocity2(frame_a.R);
       z_a = der(w_a);
@@ -3762,9 +3769,14 @@ This component has a filled rectangular icon.
                frame_a.t = t_CM + cross(r_CM, f_CM);
             Inserting the first three equations in the last two results in:
           */
+          
+        /*
       frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
-      frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f);
-      annotation(
+      frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f); */
+      // Note a_0 now defined as local translational acceleration
+      frame_a.f = (m+Ainf11)*a_0 + Ainf12*z_a;
+      frame_a.t = (I+Ainf22)*z_a + cross(w_a,(I+Ainf22)*w_a) + Ainf21*a_0;
+       annotation(
         Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
         Documentation(info = "<html>
         <p>
@@ -3863,13 +3875,12 @@ This component has a filled rectangular icon.
     parameter Real ra_CM[3] = {0, 0, 0};
     parameter Real rCM_b[3] = {0, 0, 0};
     parameter Real ra_b[3] = ra_CM + rCM_b;
-    parameter Real m = 1000;
       parameter String fileName annotation(
         HideResult = true);
       parameter Integer bodyIndex "Index of body corresponding to that of BEM (1, 2, 3, etc)" annotation(
         HideResult = true,
         Dialog(group = "Hydro Data"));
-    Experimental.Body_cm body(m=m) annotation(
+    Experimental.Body_cm_am body(fileName = fileName, bodyIndex = bodyIndex) annotation(
       Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
     Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = ra_CM) annotation(
       Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
@@ -3898,6 +3909,198 @@ This component has a filled rectangular icon.
       Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Body")}),
       Diagram);
   end BodyCM_am;
+
+    model Environment_fn
+      extends DataImport.waveData;
+      outer OET.Hydro.FilePath filePath;
+      parameter Modelica.Units.SI.Time Trmp = 200 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+      // Wave selection
+      parameter String waveSelector = "PiersonMoskowitz" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "Linear", choice = "Bretschneider", choice = "PiersonMoskowitz", choice = "JONSWAP"));
+      parameter Integer n_omega = 1 "Number of frequency components (default is 100 for irregular)" annotation(
+        Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_peak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+          parameter String frequencySelection = "random" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "random", choice = "equalEnergy"));
+    
+      Modelica.Units.SI.AngularFrequency omega[:] "Frequency components selected for simulation [rad/s]";
+        Modelica.Units.SI.Length zeta[:] "Wave amplitude component [m]";
+      parameter Real epsilon[:] "Wave components phase shift";
+      
+    initial equation
+      if waveSelector == "Linear" then
+        n_omega = 1;
+        // Calculate wave amplityde
+        zeta[n_omega] = Hs/2 "Wave amplitude [m]";
+        // Assign peak amplitude to the scalar frequency
+        omega[n_omega] = omega_peak;
+        zeta = 0;
+        epsilon = 0;
+      else
+        n_omega = 100;
+        (zeta, epsilon, omega) = EnvironmentFunc_fn(frequencySelection = frequencySelection, Trmp = Trmp, d = d, waveSelector = waveSelector, n_omega = n_omega, Hs = Hs, omega_peak = omega_peak);
+      end if;
+      
+    equation
+    
+  SSE = sum(zeta.*cos(omega*time - 2*pi*epsilon));
+    end Environment_fn;
+
+    function EnvironmentFunc_fn
+    
+      extends DataImport.frequencyData;
+      // need to add
+      extends Models.physicalConstants;
+    
+    
+      input String frequencySelection;
+      input Real Trmp;
+      input Real d;
+      input String waveSelector;
+      input Integer n_omega;
+      input Real Hs;
+      input Real omega_peak;
+      
+      
+      
+      output Modelica.Units.SI.Length  zeta[n_omega];
+      output Real epsilon[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega);
+      output Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
+      
+      protected
+    // Irregular wave spectrum parameters
+      parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      // Random freqeuncy selection paramters (will be disabled if user opts to use equal energy method)
+      parameter Integer localSeed = 614657 "Local random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      parameter Integer globalSeed = 30020 "Global random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      // Equal Energy Parameters
+      parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration (equal energy only)" annotation(
+        HideResult = true,
+        Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+      inner Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
+    protected
+      // Random phase shift
+      Real rnd_shft[n_omega] "Random shifts for frequency selection";
+      // Frequency selection and wave spectrum
+      Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+      //unit issue here
+      Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
+      Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
+    
+      redeclare parameter String fileName = filePath.FileName;
+      redeclare parameter Integer bodyIndex = 1;
+      // Wave selection
+    
+      // Derived parameters
+      parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection"));
+      // readd , enable = frequencySelection == "random"
+      parameter Integer globalSeed1 = 40020 "Global random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection"));
+      // readd , enable = frequencySelection == "random"
+      Modelica.Units.SI.Time Tp[n_omega] "Wave period components [s]" annotation(
+        HideResult = true);
+      Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component [1/m]";
+      //Real F_exc[nDoF] "6D excitation force [N]";
+    algorithm
+    // Calculate wave parameters
+      Tp := 2*pi./omega;
+      k := Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
+    // Calculate sea surface elevation (SSE) as the sum of all wave components
+      SSE := sum(zeta.*cos(omega*time - 2*pi*epsilon));
+      if waveSelector == "Linear" then
+    // Calculate wave amplityde
+        zeta[n_omega] := Hs/2 "Wave amplitude [m]";
+    // Assign peak amplitude to the scalar frequency
+        omega[n_omega] := omega_peak;
+        rnd_shft := zeros(n_omega);
+      else
+        rnd_shft := Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega);
+    // Calculate wave parameter
+        domega := Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
+        zeta := sqrt(2*S*domega);
+    // Select equal energy or random frequency selection
+        if frequencySelection == "equalEnergy" then
+          omega_int := Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
+          S_int := Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega_int, n_omega = n_omega_int);
+          (omega, S) := Wave.WaveFunctions.EqualEnergyFrequencyFunctions.equalEnergyFrequencySelector(omega_min, omega_max, n_omega, n_omega_int, omega_int, S_int);
+        elseif frequencySelection == "random" then
+          omega := Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omega_min, omega_max, rnd_shft, n_omega) "Selected frequency components [rad/s]";
+          S := Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega, n_omega = n_omega);
+          omega_int := zeros(n_omega_int);
+          S_int := zeros(n_omega_int);
+        end if;
+      end if;
+
+    end EnvironmentFunc_fn;
+    
+    model Excitation_fn
+      extends DataImport.excitationData;
+      extends Models.physicalConstants;
+      extends DataImport.physicalConstantData;
+      // Simulation parameters w/ implicit connections
+      outer Wave.Environment environment;
+      // Frame_a connector
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      parameter Boolean enableExcitationForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
+        HideResult = true,
+        Dialog(group = "Excitation Force Parameters"));
+      Real ExcCoeffRe[bodyDoF, :] "Real component of excitation coefficient for frequency components" annotation(
+        HideResult = true);
+      Real ExcCoeffIm[bodyDoF, :] "Imaginary component of excitation coefficient for frequency components" annotation(
+        HideResult = true);
+      Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
+    protected
+      Modelica.Units.SI.Force f_element[3];
+      Modelica.Units.SI.Torque t_element[3];
+    equation
+    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+      for i in 1:bodyDoF loop
+        for j in 1:environment.n_omega loop
+          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], environment.omega[j])*rho*g;
+          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], environment.omega[j])*rho*g;
+        end for;
+      end for;
+      if enableExcitationForce then
+    // Calculate the excitation force
+        for i in 1:bodyDoF loop
+    // Calculate and apply ramping to the excitation force
+          if time < environment.Trmp then
+    // Ramp up the excitation force during the initial phase
+            F[i] = 0.5*(1 + cos(pi + (pi*time/environment.Trmp)))*sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - 2*pi*environment.epsilon)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - 2*pi*environment.epsilon)));
+          else
+    // Apply full excitation force after the ramping period
+            F[i] = sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - 2*pi*environment.epsilon)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - 2*pi*environment.epsilon)));
+          end if;
+        end for;
+      else
+        F = zeros(6);
+      end if;
+    // Assign excitation force to output
+      frame_a.f = f_element;
+      frame_a.t = t_element;
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
+        Diagram);
+    end Excitation_fn;
     
     
   end Experimental;
