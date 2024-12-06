@@ -12,7 +12,7 @@ clc
 
 %% Reading
 % File directory
-filename = 'C:\Users\thogan1\Documents\GitHub\OET_6DoF\rm3.h5';
+filename = 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\rm3.h5';
 
 hydro = {};
 
@@ -76,7 +76,7 @@ for i = 1:hydro.bodies.Nb
     hydro.coefficients.excitation.spectralDecomp.im(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = permute(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/im']),[3,1,2]);
     
     % For excitation IRF (not relevant now, but will be required eventually)
-    hydro.coefficients.excitation.convolution.K(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/f']));
+    hydro.coefficients.excitation.convolution.K(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = permute(reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/f'])),[1,3,2]);
     hydro.coefficients.excitation.convolution.ex_t(1,:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/t'])); % Assumes all bodies have same time vector
     hydro.coefficients.excitation.convolution.ex_w(1,:) = h5read(filename, [h5BodyName '/hydro_coeffs/excitation/impulse_response_fun/w']); % Assumes all bodies have same interpolated frequencies
 
@@ -91,7 +91,7 @@ for i = 1:hydro.bodies.Nb
     try hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/radiation_damping/state_space/it'])); end
     % Number of states per body
     hydro.coefficients.radiation.stateSpace.bodyOrder(i)=sum(sum(hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i,:)));
-    hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled(i)=sum(sum(hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i,:)));
+    hydro.coefficients.radiation.stateSpace.bodyOrderUncoupled(i)=sum(sum(hydro.coefficients.radiation.stateSpace.order(hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i,hydro.bodies.dof(1)*(i-1)+1:hydro.bodies.dof(1)*i)));
     hydro.coefficients.radiation.stateSpace.bodyOrderTotal = hydro.coefficients.radiation.stateSpace.bodyOrder(i) +     hydro.coefficients.radiation.stateSpace.bodyOrderTotal;
     % SS approximation R2
     try hydro.coefficients.radiation.stateSpace.R2(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/radiation_damping/state_space/r2t'])); end
@@ -103,7 +103,7 @@ end
 %% Processing 
 
  % Scaling 
- hydro.coefficients.Khs =  hydro.coefficients.Khs*hydro.parameters.rho*hydro.parameters.g;
+ hydro.coefficients.hydrostatic.Khs =  hydro.coefficients.Khs*hydro.parameters.rho*hydro.parameters.g;
 
  % Scaling
  hydro.coefficients.radiation.Ainf = hydro.coefficients.radiation.Ainf*hydro.parameters.rho;
@@ -150,4 +150,8 @@ hydro.pto.linear.kpto = diag([0,0,-40000,0,0,0]);
 hydro.mooring.linear.cm = diag([50,60,3000,500,40,60]);
 hydro.mooring.linear.km = diag([100,400,5000,300,200,100]);
 
-save('hydroCoeff_6DoF_multibody.mat','hydro')
+hydro.wave.spectrumImport.w = linspace(0,5,51)
+
+% Spectrum import
+
+save('RM3HydroCoeff.mat','hydro')

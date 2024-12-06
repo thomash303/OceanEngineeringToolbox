@@ -12,7 +12,7 @@ clc
 
 %% Reading
 % File directory
-filename = 'C:\Users\thogan1\Documents\GitHub\OET_6DoF\rm3.h5';
+filename = 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\rm3.h5';
 
 hydro = {};
 
@@ -62,7 +62,7 @@ for i = 1:hydro.bodies.Nb
     hydro.bodies.cb(1:3,i) = h5read(filename,[h5BodyName '/properties/cb']);
     
     % Hydrostatic stiffness reading
-    hydro.coefficients.Khs(:,:,i) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/linear_restoring_stiffness']));
+    hydro.coefficients.hydrostatic.Khs(:,:,i) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/linear_restoring_stiffness']));
 
     % Multibody DoF
     hydro.bodies.dof(i) = h5read(filename,[h5BodyName '/properties/dof']);
@@ -103,7 +103,7 @@ end
 %% Processing 
 
  % Scaling 
- hydro.coefficients.Khs =  hydro.coefficients.Khs*hydro.parameters.rho*hydro.parameters.g;
+ hydro.coefficients.hydrostatic.Khs =  hydro.coefficients.hydrostatic.Khs*hydro.parameters.rho*hydro.parameters.g;
 
  % Scaling
  hydro.coefficients.radiation.Ainf = hydro.coefficients.radiation.Ainf*hydro.parameters.rho;
@@ -116,7 +116,7 @@ hydro.bodies.nDOF = hydro.bodies.Nb*hydro.bodies.dof(1); % dof is just 6
 
 
 % Reshape into 2D matrix
-hydro.coefficients.Khs = reshape(hydro.coefficients.Khs,hydro.bodies.dof(1),hydro.bodies.nDOF);
+hydro.coefficients.hydrostatic.Khs = reshape(hydro.coefficients.hydrostatic.Khs,hydro.bodies.dof(1),hydro.bodies.nDOF);
 
 
  % State Space Formulation (state-space and B2B)
@@ -150,4 +150,10 @@ hydro.pto.linear.kpto = diag([0,0,-40000,0,0,0]);
 hydro.mooring.linear.cm = diag([50,60,3000,500,40,60]);
 hydro.mooring.linear.km = diag([100,400,5000,300,200,100]);
 
-save('hydroCoeff_6DoF_multibody.mat','hydro')
+hydro.wave.spectrumImport.w = linspace(0,5,51);
+hydro.wave.spectrumImport.S = sin(hydro.wave.spectrumImport.w/1.6);
+hydro.wave.spectrumImport.phase = 2 * pi * rand(1, 51);
+
+% Spectrum import
+
+save('RM3HydroCoeff.mat','hydro')
