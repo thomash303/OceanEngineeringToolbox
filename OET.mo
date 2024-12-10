@@ -713,6 +713,17 @@ This component has a filled rectangular icon.
         Dialog(group = "Body Data"));
     end GeometryFile;
   
+  partial model spectrumImportData
+    extends DataImport.FilePath; 
+  
+    parameter Integer SDim[2] = Modelica.Utilities.Streams.readMatrixSize(fileDir, "hydro.wave.spectrumImport.w") "Dimensions of the frequency vector";
+    parameter Integer n_omega = SDim[2];
+    parameter Real omega[n_omega] = vector(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.wave.spectrumImport.w", n_omega, 1)) "Angular frequency vector [rad/s]";
+    parameter Real S[n_omega] = vector(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.wave.spectrumImport.S", n_omega, 1)) "Spectral Density";
+    parameter Real phi[n_omega] = vector(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.wave.spectrumImport.phase", n_omega, 1)) "Phase vector";
+  end spectrumImportData;
+  
+  
   end DataImport;
 
   package Hydro
@@ -937,7 +948,10 @@ This component has a filled rectangular icon.
     end DampingDragForce;
 
     model Excitation "Excitation Force"
-    
+      
+      extends DataImport.FilePath; 
+      extends DataImport.BodyIndex;
+      
       // Simulation parameters w/ implicit connections
       outer OET.Wave.Environment environment;
       // Frame_a connector
@@ -945,19 +959,28 @@ This component has a filled rectangular icon.
         HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
     
-  ExcitationIrregularWave excitationIrregularWave if environment.waveSelector == "Regular" annotation(
-        Placement(transformation(origin = {-2, 42}, extent = {{-10, -10}, {10, 10}})));
-  ExcitationRegularWave excitationRegularWave if environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "JONSWAP" annotation(
+      parameter String waveSelector = environment.waveSelector;
+    
+      // Regular
+      ExcitationRegularWave excitationRegularWave(A = environment.A, omegaPeak = environment.omegaPeak, Trmp = environment.Trmp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if environment.waveSelector == "Regular" annotation(
         Placement(transformation(origin = {-4, -4}, extent = {{-10, -10}, {10, 10}})));
     
+      // Irregular
+      ExcitationIrregularWave excitationIrregularWave(n_omega = environment.n_omega, omega = environment.omega, zeta = environment.zeta, phi = environment.phi, Trmp = environment.Trmp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "JONSWAP" annotation(
+        Placement(transformation(origin = {-2, 42}, extent = {{-10, -10}, {10, 10}})));
+    
+      // Spectrum import
+      ExcitationIrregularWave excitationSpectrumImport(n_omega = environment.n_omegaS, omega = environment.omegaS, zeta = environment.zetaS, phi = environment.phiS, Trmp = environment.Trmp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if waveSelector == "spectrumImport";
     equation
     
-  connect(excitationRegularWave.frame_a, frame_a) annotation(
+    connect(excitationRegularWave.frame_a, frame_a) annotation(
         Line(points = {{-14, -4}, {-100, -4}, {-100, 0}}, color = {95, 95, 95}));
-  connect(excitationIrregularWave.frame_a, frame_a) annotation(
+    connect(excitationIrregularWave.frame_a, frame_a) annotation(
         Line(points = {{-12, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));
+    connect(excitationSpectrumImport.frame_a, frame_a) annotation(
+        Line(points = {{-14, -36}, {-100, -36}, {-100, 0}}, color = {95, 95, 95}));
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitation")}),
         Diagram);
     end Excitation;
 
@@ -1800,6 +1823,7 @@ if not Connections.isRoot(frame_a.R) then
     end HydrodynamicBody_test;
     
     model ExcitationIrregularWave "Excitation Force"
+      
       extends DataImport.FilePath;
       extends DataImport.BodyIndex;
       extends DataImport.excitationData;
@@ -1809,13 +1833,23 @@ if not Connections.isRoot(frame_a.R) then
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
         HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+     
+     // Parameters to call
+      parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
+      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component";
+      Real phi[n_omega] "Wave components phase shift";
+      parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+      Dialog(group = "Simulation Parameters"));
+     
       parameter Boolean enableExcitationForce "Switch to enable/disable hydrostatic force calculation" annotation(
         HideResult = true,
         choices(checkBox = true),
         Dialog(group = "Excitation"));
-      Real ExcCoeffRe[bodyDoF, environment.n_omega] "Real component of excitation coefficient for frequency components" annotation(
+      Real ExcCoeffRe[bodyDoF, n_omega] "Real component of excitation coefficient for frequency components" annotation(
         HideResult = true);
-      Real ExcCoeffIm[bodyDoF, environment.n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(
+      Real ExcCoeffIm[bodyDoF, n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(
         HideResult = true);
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
     protected
@@ -1827,21 +1861,21 @@ if not Connections.isRoot(frame_a.R) then
     equation
     // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
       for i in 1:bodyDoF loop
-        for j in 1:environment.n_omega loop
-          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], environment.omega[j])*rho*g;
-          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], environment.omega[j])*rho*g;
+        for j in 1:n_omega loop
+          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], omega[j])*rho*g;
+          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], omega[j])*rho*g;
         end for;
       end for;
       if enableExcitationForce then
     // Calculate the excitation force
         for i in 1:bodyDoF loop
     // Calculate and apply ramping to the excitation force
-          if time < environment.Trmp then
+          if time < Trmp then
     // Ramp up the excitation force during the initial phase
-            F[i] = 0.5*(1 + cos(pi + (pi*time/environment.Trmp)))*sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - environment.phi)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - environment.phi)));
+            F[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
           else
     // Apply full excitation force after the ramping period
-            F[i] = sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - environment.phi)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - environment.phi)));
+            F[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
           end if;
         end for;
       else
@@ -1851,21 +1885,30 @@ if not Connections.isRoot(frame_a.R) then
       frame_a.f = f_element;
       frame_a.t = t_element;
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Irregular Wave")}),
         Diagram);
     end ExcitationIrregularWave;
     
     model ExcitationRegularWave "Excitation Force"
+     
       extends DataImport.FilePath;
       extends DataImport.BodyIndex;
       extends DataImport.excitationData;
       extends DataImport.physicalConstantData;
     
-    
       // Frame_a connector
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
         HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+      
+      
+      // Parameters to call
+      parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      Modelica.Units.SI.Height A "Wave amplitude";
+      parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+      Dialog(group = "Simulation Parameters"));
+      
       parameter Boolean enableExcitationForce "Switch to enable/disable hydrostatic force calculation" annotation(
         HideResult = true,
         choices(checkBox = true),
@@ -1891,12 +1934,12 @@ if not Connections.isRoot(frame_a.R) then
     // Calculate the excitation force
         for i in 1:bodyDoF loop
     // Calculate and apply ramping to the excitation force
-          if time < environment.Trmp then
+          if time < Trmp then
     // Ramp up the excitation force during the initial phase
-            F[i] = 0.5*(1 + cos(pi + (pi*time/environment.Trmp)))*(ExcCoeffRe[i].*environment.A*cos(environment.omegaPeak*time)) - (ExcCoeffIm[i].*environment.A*sin(environment.omegaPeak*time));
+            F[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*(ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
           else
     // Apply full excitation force after the ramping period
-            F[i] = (ExcCoeffRe[i].*environment.A*cos(environment.omegaPeak*time)) - (ExcCoeffIm[i].*environment.A*sin(environment.omegaPeak*time));
+            F[i] = (ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
           end if;
         end for;
       else
@@ -1906,9 +1949,77 @@ if not Connections.isRoot(frame_a.R) then
       frame_a.f = f_element;
       frame_a.t = t_element;
       annotation(
-        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitationc")}),
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Regular Wave")}),
         Diagram);
     end ExcitationRegularWave;
+    
+    model ExcitationSpectrumImport "Excitation Force"
+    /* Identical to Irregular but double naming requires variable names to be unique, even with conditional declaration*/
+      
+      extends DataImport.FilePath;
+      extends DataImport.BodyIndex;
+      extends DataImport.excitationData;
+      extends DataImport.physicalConstantData;
+    
+      // Frame_a connector
+      Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
+        HideResult = true,
+        Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
+     
+     // Parameters to call
+      parameter Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
+      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component";
+      Real phi[n_omega] "Wave components phase shift";
+      parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+      Dialog(group = "Simulation Parameters"));
+     
+      parameter Boolean enableExcitationForce "Switch to enable/disable hydrostatic force calculation" annotation(
+        HideResult = true,
+        choices(checkBox = true),
+        Dialog(group = "Excitation"));
+      Real ExcCoeffRe[bodyDoF, n_omega] "Real component of excitation coefficient for frequency components" annotation(
+        HideResult = true);
+      Real ExcCoeffIm[bodyDoF, n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(
+        HideResult = true);
+      Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
+    protected
+      Modelica.Units.SI.Force f_element[3];
+      Modelica.Units.SI.Torque t_element[3];
+      // Physical constants
+      constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+      constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+    equation
+    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+      for i in 1:bodyDoF loop
+        for j in 1:n_omega loop
+          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], omega[j])*rho*g;
+          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], omega[j])*rho*g;
+        end for;
+      end for;
+      if enableExcitationForce then
+    // Calculate the excitation force
+        for i in 1:bodyDoF loop
+    // Calculate and apply ramping to the excitation force
+          if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+            F[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
+          else
+    // Apply full excitation force after the ramping period
+            F[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
+          end if;
+        end for;
+      else
+        F = zeros(6);
+      end if;
+    // Assign excitation force to output
+      frame_a.f = f_element;
+      frame_a.t = t_element;
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Spectrum Import")}),
+        Diagram);
+    end ExcitationSpectrumImport;
   end Hydro;
 
   package Wave
@@ -2745,6 +2856,9 @@ if not Connections.isRoot(frame_a.R) then
       parameter String waveSelector = "Regular" annotation(
         Dialog(group = "Wave Spectrum Parameters"),
         choices(choice = "Linear", choice = "PiersonMoskowitz", choice = "JONSWAP", choice = "spectrumImport"));
+      parameter String frequencySelection = "random" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "random", choice = "equalEnergy"));  
       parameter Modelica.Units.SI.Height Hs = 2.5 "Significant Wave Height [m]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
@@ -2757,17 +2871,26 @@ if not Connections.isRoot(frame_a.R) then
       
       // Irregular
       constant Integer n_omega = irregularWave.n_omega if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" "Number of frequency components";
-      Modelica.Units.SI.AngularFrequency omega[irregularWave.n_omega] = irregularWave.omega if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP""Frequency components selected for simulation [rad/s]";
-      Modelica.Units.SI.Length zeta[irregularWave.n_omega] = irregularWave.zeta if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP""Wave amplitude component [m]";
-      Real phi[irregularWave.n_omega] = irregularWave.phi if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP""Wave components phase shift";
+      Modelica.Units.SI.AngularFrequency omega[n_omega] = irregularWave.omega if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" "Frequency components selected for simulation [rad/s]";
+      Modelica.Units.SI.Length zeta[n_omega] = irregularWave.zeta if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" "Wave amplitude component [m]";
+      Real phi[n_omega] = irregularWave.phi if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" "Wave components phase shift";
+     
+      // Spectrum Import
+      constant Integer n_omegaS = spectrumImport.n_omega if waveSelector == "spectrumImport" "Number of frequency components";
+      Modelica.Units.SI.AngularFrequency omegaS[n_omegaS] = spectrumImport.omega if waveSelector == "spectrumImport" "Frequency components selected for simulation [rad/s]";
+      Modelica.Units.SI.Length zetaS[n_omegaS] = spectrumImport.zeta if waveSelector == "spectrumImport" "Wave amplitude component [m]";
+      Real phiS[n_omegaS] = spectrumImport.phi if waveSelector == "spectrumImport" "Wave components phase shift";
       
+     
       
       // Models
-    RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak) if waveSelector == "Regular" annotation(
+      RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak) if waveSelector == "Regular" annotation(
         Placement(transformation(origin = {-26, 10}, extent = {{-10, -10}, {10, 10}})));
-    IrregularWave irregularWave(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) annotation(
+    
+      IrregularWave irregularWave(Hs = Hs, omegaPeak = omegaPeak, frequencySelection = frequencySelection, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" annotation(
         Placement(transformation(origin = {30, 6}, extent = {{-10, -10}, {10, 10}})));
-  SpectrumImport spectrumImport(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) annotation(
+    
+      SpectrumImport spectrumImport(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "spectrumImport" annotation(
         Placement(transformation(origin = {-14, -30}, extent = {{-10, -10}, {10, 10}})));
     
     equation
@@ -2782,10 +2905,10 @@ if not Connections.isRoot(frame_a.R) then
         SSE = irregularWave.SSE;
         
       elseif waveSelector == "spectrumImport" then
-        omega = irregularWave.omega;
-        zeta = irregularWave.zeta;
-        phi = irregularWave.phi;
-        SSE = irregularWave.SSE;  
+        omegaS = spectrumImport.omega;
+        zetaS = spectrumImport.zeta;
+        phiS = spectrumImport.phi;
+        SSE = spectrumImport.SSE;  
       
       end if;
       
@@ -2793,7 +2916,7 @@ if not Connections.isRoot(frame_a.R) then
     annotation(
       defaultComponentName = "environment",
       defaultComponentPrefixes = "inner",
-      missingInnerMessage = "No \"environemnt\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
+      missingInnerMessage = "No \"environment\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
       Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Environment")}),
       Diagram);
     end Environment;
@@ -2801,8 +2924,22 @@ if not Connections.isRoot(frame_a.R) then
     model SpectrumImport
     
       extends DataImport.FilePath;
+      extends DataImport.spectrumImportData;
+      
+      
+      
+      // Parameters
+      parameter Modelica.Units.SI.AngularFrequency omegaMin = omega[1] "Lowest frequency component" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omegaMax = omega[end] "Highest frequency component" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+    
+      Modelica.Units.SI.Length SSE "Sea surface elevation"; 
+      Modelica.Units.SI.Length zeta[n_omega] = sqrt(2*S*domega) "Wave amplitude component [m]";
+      Modelica.Units.SI.AngularFrequency domega = Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGenerator(omegaMin = omegaMin, omegaMax = omegaMax, n_omega = n_omega) "Frequency step size";
     equation
-
+  SSE = sum(zeta.*cos(omega*time - phi));
+      
       annotation(
         defaultComponentName = "spectrumImport",
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Spectrum Import")}),
