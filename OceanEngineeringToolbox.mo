@@ -3464,14 +3464,14 @@ This component has a filled rectangular icon.
     initial equation
       if angles_fixed then
     // Initialize positional variables
-        if not Connections.isRoot(frame_a.R) then
-    // frame_a.R is computed somewhere else
+if not Connections.isRoot(frame_a.R) then
+// frame_a.R is computed somewhere else
           zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
         elseif useQuaternions then
-    // frame_a.R is computed from quaternions Q
+// frame_a.R is computed from quaternions Q
           zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
         else
-    // frame_a.R is computed from the 3 angles 'phi'
+// frame_a.R is computed from the 3 angles 'phi'
           phi = phi_start;
         end if;
       end if;
@@ -3483,34 +3483,34 @@ This component has a filled rectangular icon.
       end if;
       r_0 = frame_a.r_0;
       if not Connections.isRoot(frame_a.R) then
-    // Body does not have states
-    // Dummies
+// Body does not have states
+// Dummies
         Q = {0, 0, 0, 1};
         phi = zeros(3);
         phi_d = zeros(3);
         phi_dd = zeros(3);
       elseif useQuaternions then
-    // Use Quaternions as states (with dynamic state selection)
+// Use Quaternions as states (with dynamic state selection)
         frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
         {0} = Frames.Quaternions.orientationConstraint(Q);
-    // Dummies
+// Dummies
         phi = zeros(3);
         phi_d = zeros(3);
         phi_dd = zeros(3);
       else
-    // Use Cardan angles as states
+// Use Cardan angles as states
         phi_d = der(phi);
         phi_dd = der(phi_d);
         frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
-    // Dummies
+// Dummies
         Q = {0, 0, 0, 1};
       end if;
-    // gravity acceleration at center of mass resolved in world frame
+// gravity acceleration at center of mass resolved in world frame
       g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
-    // translational kinematic differential equations
+// translational kinematic differential equations
       v_0 = der(frame_a.r_0);
       a_0 = der(v_0);
-    // rotational kinematic differential equations
+// rotational kinematic differential equations
       w_a = Frames.angularVelocity2(frame_a.R);
       z_a = der(w_a);
     /* Newton/Euler equations with respect to center of mass
@@ -3712,14 +3712,14 @@ This component has a filled rectangular icon.
     initial equation
       if angles_fixed then
     // Initialize positional variables
-        if not Connections.isRoot(frame_a.R) then
-    // frame_a.R is computed somewhere else
+if not Connections.isRoot(frame_a.R) then
+// frame_a.R is computed somewhere else
           zeros(3) = Frames.Orientation.equalityConstraint(frame_a.R, R_start);
         elseif useQuaternions then
-    // frame_a.R is computed from quaternions Q
+// frame_a.R is computed from quaternions Q
           zeros(3) = Frames.Quaternions.Orientation.equalityConstraint(Q, Q_start);
         else
-    // frame_a.R is computed from the 3 angles 'phi'
+// frame_a.R is computed from the 3 angles 'phi'
           phi = phi_start;
         end if;
       end if;
@@ -3731,34 +3731,34 @@ This component has a filled rectangular icon.
       end if;
       r_0 = frame_a.r_0;
       if not Connections.isRoot(frame_a.R) then
-    // Body does not have states
-    // Dummies
+// Body does not have states
+// Dummies
         Q = {0, 0, 0, 1};
         phi = zeros(3);
         phi_d = zeros(3);
         phi_dd = zeros(3);
       elseif useQuaternions then
-    // Use Quaternions as states (with dynamic state selection)
+// Use Quaternions as states (with dynamic state selection)
         frame_a.R = Frames.from_Q(Q, Frames.Quaternions.angularVelocity2(Q, der(Q)));
         {0} = Frames.Quaternions.orientationConstraint(Q);
-    // Dummies
+// Dummies
         phi = zeros(3);
         phi_d = zeros(3);
         phi_dd = zeros(3);
       else
-    // Use Cardan angles as states
+// Use Cardan angles as states
         phi_d = der(phi);
         phi_dd = der(phi_d);
         frame_a.R = Frames.axesRotations(sequence_angleStates, phi, phi_d);
-    // Dummies
+// Dummies
         Q = {0, 0, 0, 1};
       end if;
-    // gravity acceleration at center of mass resolved in world frame
+// gravity acceleration at center of mass resolved in world frame
       g_0 = world.gravityAcceleration(frame_a.r_0 + Frames.resolve1(frame_a.R, r_CM));
-    // translational kinematic differential equations
+// translational kinematic differential equations
       v_0 = der(frame_a.r_0);
       a_0 = Frames.resolve2(frame_a.R,der(v_0));
-    // rotational kinematic differential equations
+// rotational kinematic differential equations
       w_a = Frames.angularVelocity2(frame_a.R);
       z_a = der(w_a);
     /* Newton/Euler equations with respect to center of mass
@@ -3773,7 +3773,7 @@ This component has a filled rectangular icon.
         /*
       frame_a.f = m*(Frames.resolve2(frame_a.R, a_0 - g_0) + cross(z_a, r_CM) + cross(w_a, cross(w_a, r_CM)));
       frame_a.t = I*z_a + cross(w_a, I*w_a) + cross(r_CM, frame_a.f); */
-      // Note a_0 now defined as local translational acceleration
+// Note a_0 now defined as local translational acceleration
       frame_a.f = (m+Ainf11)*a_0 + Ainf12*z_a;
       frame_a.t = (I+Ainf22)*z_a + cross(w_a,(I+Ainf22)*w_a) + Ainf21*a_0;
        annotation(
@@ -3871,7 +3871,7 @@ This component has a filled rectangular icon.
     extends OET.Internal.PartialThreeFrames;
     parameter Boolean animationEnable = false;
     //parameter String fileName = "float.stl";
-    //parameter String filePath = "c:Users/"; // re add in shapetype
+      //parameter String filePath = "c:Users/"; // re add in shapetype
     parameter Real ra_CM[3] = {0, 0, 0};
     parameter Real rCM_b[3] = {0, 0, 0};
     parameter Real ra_b[3] = ra_CM + rCM_b;
@@ -3936,13 +3936,13 @@ This component has a filled rectangular icon.
     
       Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
         Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component [m]";
-      Real epsilon[n_omega];// = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
-      
-    equation
+      Real epsilon[n_omega];      
+    // = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
+equation
       if waveSelector == "Linear" then
-    // Calculate wave amplityde
+// Calculate wave amplityde
         zeta[n_omega] = Hs/2 "Wave amplitude [m]";
-    // Assign peak amplitude to the scalar frequency
+// Assign peak amplitude to the scalar frequency
         omega[n_omega] = omega_peak;
         epsilon[n_omega] = 0;
       else
@@ -3973,7 +3973,7 @@ This component has a filled rectangular icon.
       output Real epsilon[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega);
       output Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation [rad/s]";
     protected  
-    // Irregular wave spectrum parameters
+// Irregular wave spectrum parameters
       parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(
@@ -3990,8 +3990,7 @@ This component has a filled rectangular icon.
         HideResult = true,
         Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
      Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
-    
-      // Random phase shift
+    // Random phase shift
       Real rnd_shft[n_omega] "Random shifts for frequency selection";
       // Frequency selection and wave spectrum
       Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
@@ -4002,7 +4001,6 @@ This component has a filled rectangular icon.
       redeclare parameter String fileName = FileName;
       redeclare parameter Integer bodyIndex = 1;
       // Wave selection
-    
       // Derived parameters
       parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
         HideResult = true,
@@ -4017,15 +4015,15 @@ This component has a filled rectangular icon.
       Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component [1/m]";
       //Real F_exc[nDoF] "6D excitation force [N]";
     algorithm
-    // Calculate wave parameters
+// Calculate wave parameters
       Tp := 2*pi./omega;
       k := Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
     
         rnd_shft := Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega);
-    // Calculate wave parameter
+// Calculate wave parameter
         domega := Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
         zeta := sqrt(2*S*domega);
-    // Select equal energy or random frequency selection
+// Select equal energy or random frequency selection
         if frequencySelection == "equalEnergy" then
           omega_int := Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
           S_int := Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega_int, n_omega = n_omega_int);
@@ -4036,7 +4034,6 @@ This component has a filled rectangular icon.
           omega_int := zeros(n_omega_int);
           S_int := zeros(n_omega_int);
         end if;
-
     end EnvironmentFunc_fn;
     
     model Excitation_fn
@@ -4061,7 +4058,7 @@ This component has a filled rectangular icon.
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
     equation
-    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+// Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
       for i in 1:bodyDoF loop
         for j in 1:environment.n_omega loop
           ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], environment.omega[j])*rho*g;
@@ -4069,21 +4066,21 @@ This component has a filled rectangular icon.
         end for;
       end for;
       if enableExcitationForce then
-    // Calculate the excitation force
+// Calculate the excitation force
         for i in 1:bodyDoF loop
     // Calculate and apply ramping to the excitation force
-          if time < environment.Trmp then
-    // Ramp up the excitation force during the initial phase
+if time < environment.Trmp then
+// Ramp up the excitation force during the initial phase
             F[i] = 0.5*(1 + cos(pi + (pi*time/environment.Trmp)))*sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - 2*pi*environment.epsilon)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - 2*pi*environment.epsilon)));
           else
-    // Apply full excitation force after the ramping period
+// Apply full excitation force after the ramping period
             F[i] = sum((ExcCoeffRe[i].*environment.zeta.*cos(environment.omega*time - 2*pi*environment.epsilon)) - (ExcCoeffIm[i].*environment.zeta.*sin(environment.omega*time - 2*pi*environment.epsilon)));
           end if;
         end for;
       else
         F = zeros(6);
       end if;
-    // Assign excitation force to output
+// Assign excitation force to output
       frame_a.f = f_element;
       frame_a.t = t_element;
       annotation(
@@ -4243,7 +4240,7 @@ This component has a filled rectangular icon.
   Hydro.Radiation radiation(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {-36, -26}, extent = {{-10, -10}, {10, 10}})));
     equation
-    //Conections
+//Conections
       connect(bodyShape.frame_b, frame_b) annotation(
         Line(points = {{22, -84}, {62, -84}, {62, 0}, {102, 0}}, color = {95, 95, 95}));
       connect(bodyShape.frame_a, frame_a) annotation(
@@ -4292,7 +4289,7 @@ This component has a filled rectangular icon.
       // = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega) "Wave components phase shift";
       
     protected 
-    // Irregular wave spectrum parameters
+// Irregular wave spectrum parameters
       parameter Modelica.Units.SI.AngularFrequency omega_min = w[1] "Lowest frequency component [rad/s]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omega_max = w[end] "Highest frequency component [rad/s]" annotation(
@@ -4309,17 +4306,14 @@ This component has a filled rectangular icon.
         HideResult = true,
         Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
      Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum [m^2*s/rad]";
-    
-      // Random phase shift
+    // Random phase shift
       Real rnd_shft[n_omega] "Random shifts for frequency selection";
       // Frequency selection and wave spectrum
       Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
       //unit issue here
       Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
       Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
-    
-    
-      // Derived parameters
+    // Derived parameters
       parameter Integer localSeed1 = 614757 "Local random seed for phase shifts" annotation(
         HideResult = true,
         Dialog(group = "Random Frequency Selection"));
@@ -4335,9 +4329,9 @@ This component has a filled rectangular icon.
     
     equation
       if waveSelector == "Linear" then
-    // Calculate wave amplityde
+// Calculate wave amplityde
         zeta[n_omega] = Hs/2 "Wave amplitude [m]";
-    // Assign peak amplitude to the scalar frequency
+// Assign peak amplitude to the scalar frequency
         omega[n_omega] = omega_peak;
         epsilon[n_omega] = 0;
         Tp[n_omega] = 0;
@@ -4348,16 +4342,16 @@ This component has a filled rectangular icon.
         domega = 0;
         omega_int = zeros(n_omega_int);
       else
-      // Calculate wave parameters
+// Calculate wave parameters
       Tp = 2*pi./omega;
       k = Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega);
       epsilon = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed1, globalSeed1, n_omega);
     
         rnd_shft = Wave.WaveFunctions.RandomFrequencyFunctions.randomNumberGen(localSeed, globalSeed, n_omega);
-    // Calculate wave parameter
+// Calculate wave parameter
         domega = Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGen(omega, n_omega);
         zeta = sqrt(2*S*domega);
-    // Select equal energy or random frequency selection
+// Select equal energy or random frequency selection
         if frequencySelection == "equalEnergy" then
           omega_int = Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omega_min, omega_max, n_omega_int);
           S_int = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omega_peak = omega_peak, omega = omega_int, n_omega = n_omega_int);
@@ -4396,9 +4390,9 @@ This component has a filled rectangular icon.
       HydrodynamicBody_full hydrodynamicBody_cm1(BodyIndex = 1) annotation(
         Placement(transformation(origin = {72, -28}, extent = {{-10, -10}, {10, 10}})));
       Mooring.LinearMooring linearMooring annotation(
-        Placement(transformation(origin = {-34, -60}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {-20, -58}, extent = {{-10, -10}, {10, 10}})));
     equation
-    // Connections
+// Connections
       connect(sine.y, force.force) annotation(
         Line(points = {{-40, 34}, {-28, 34}, {-28, 32}}, color = {0, 0, 127}));
       connect(force.frame_b, hydrodynamicBody_cm.frame_a) annotation(
@@ -4408,7 +4402,7 @@ This component has a filled rectangular icon.
       connect(hydrodynamicBody_cm1.frame_a, prismatic1.frame_b) annotation(
         Line(points = {{62, -28}, {52, -28}, {52, 2}}, color = {95, 95, 95}));
       connect(linearMooring.frame_a, hydrodynamicBody_cm.frame_a) annotation(
-        Line(points = {{-44, -60}, {4, -60}, {4, -24}}, color = {95, 95, 95}));
+        Line(points = {{-30, -58}, {-30, -42}, {4, -42}, {4, -24}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -4542,7 +4536,7 @@ This component has a filled rectangular icon.
   Excitation_fn excitation_fn(fileName = filePath.FileName, bodyIndex = BodyIndex) annotation(
         Placement(transformation(origin = {26, 50}, extent = {{-10, -10}, {10, 10}})));
     equation
-    //Conections
+//Conections
       connect(hydrostatic.frame_a, bodyCM.frame_c) annotation(
         Line(points = {{-74, 0}, {-74, -56}, {0, -56}}, color = {95, 95, 95}));
       connect(dampingDrag.frame_a, bodyCM.frame_c) annotation(
