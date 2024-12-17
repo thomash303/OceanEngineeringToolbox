@@ -14,20 +14,14 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, -0.72}) annotation(
-        Placement(transformation(origin = {10, -12}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, -20.57}) annotation(
+      Hydro.HydrodynamicBody spar(enableRadiationForce = false, bodyIndex = 2, enableExcitationForce = false, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = false) annotation(
+        Placement(transformation(origin = {22, 10}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic1(n = {0, 0, 1}) annotation(
-        Placement(transformation(origin = {42, 2}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785) annotation(
+      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, Trmp = 150) annotation(
         Placement(transformation(origin = {102, 10}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(prismatic1.frame_b, float.frame_a) annotation(
-        Line(points = {{52, 2}, {60, 2}, {60, -16}}, color = {95, 95, 95}));
-      connect(prismatic1.frame_a, spar.frame_b) annotation(
-        Line(points = {{32, 2}, {20, 2}, {20, -12}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -650,10 +644,18 @@ This component has a filled rectangular icon.
       extends OET.DataImport.multibodyData;
     protected
       parameter Integer n_state[2] = Modelica.Utilities.Streams.readMatrixSize(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.A" + bodyIndexString) "Number of states";
+      
+      
       parameter Real A[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.A" + bodyIndexString, n_state[1], n_state[1]) "State matrix";
       parameter Real B[n_state[1], bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.B" + bodyIndexString, n_state[1], bodyDoF) "Input matrix";
       parameter Real C[bodyDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.C" + bodyIndexString, bodyDoF, n_state[1]) "Output matrix";
       parameter Real D[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.D" + bodyIndexString, bodyDoF, bodyDoF) "Feedforward matrix";
+     
+      /*
+        parameter Real A[n_state[1], n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.Atest", n_state[1], n_state[1]) "State matrix";
+      parameter Real B[n_state[1], bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.Btest", n_state[1], bodyDoF) "Input matrix";
+      parameter Real C[bodyDoF, n_state[1]] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.C" + bodyIndexString, bodyDoF, n_state[1]) "Output matrix";
+      parameter Real D[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.D" + bodyIndexString, bodyDoF, bodyDoF) "Feedforward matrix"; */
     end radiationNoB2BData;
 
     partial model massData_am
@@ -778,7 +780,7 @@ This component has a filled rectangular icon.
         choices(checkBox = true),
         Dialog(group = "Damping/Drag"));
       // Sensor (validation)
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
         Placement(transformation(origin = {-80, -82}, extent = {{-10, -10}, {10, 10}})));
     equation
 //Conections
@@ -876,8 +878,8 @@ This component has a filled rectangular icon.
       else
         F = zeros(6);
       end if;
-      frame_a.f = -f_element;
-      frame_a.t = -t_element;
+      frame_a.f = f_element;
+      frame_a.t = t_element;
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydrostatic Force")}));
     end HydrostaticForce;
@@ -911,17 +913,17 @@ This component has a filled rectangular icon.
         HideResult = true);
       parameter Real Cv[6, 6] = diagonal({Cvtx, Cvty, Cvtz, Cvrx, Cvry, Cvrz}) "Combined damping coefficient matrix";
       // Drag coefficients
-      parameter Real Cdtx = 0.01 "Translational drag coefficient for x-axis [-]" annotation(
+      parameter Real Cdtx = 100000 "Translational drag coefficient for x-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdty = 0.01 "Translational drag coefficient for y-axis [-]" annotation(
+      parameter Real Cdty = 10000 "Translational drag coefficient for y-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdtz = 0.01 "Translational drag coefficient for z-axis [-]" annotation(
+      parameter Real Cdtz = 100000 "Translational drag coefficient for z-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdrx = 0.01 "Rotational drag coefficient for x-axis [-]" annotation(
+      parameter Real Cdrx = 10000 "Rotational drag coefficient for x-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdry = 0.01 "Rotational drag coefficient for y-axis [-]" annotation(
+      parameter Real Cdry = 10000 "Rotational drag coefficient for y-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdrz = 0.01 "Rotational drag coefficient for z-axis [-]" annotation(
+      parameter Real Cdrz = 10000 "Rotational drag coefficient for z-axis [-]" annotation(
         HideResult = true);
       parameter Real Cd[6, 6] = diagonal({Cdtx, Cdty, Cdtz, Cdrx, Cdry, Cdrz}) "Combined drag coefficient matrix";
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
@@ -937,8 +939,8 @@ This component has a filled rectangular icon.
       else
         F = zeros(6);
       end if;
-      frame_a.f = -f_element;
-      frame_a.t = -t_element;
+      frame_a.f = f_element;
+      frame_a.t = t_element;
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Damping/Drag Force")}));
     end DampingDragForce;
@@ -1236,8 +1238,8 @@ This component has a filled rectangular icon.
 //x = zeros(n_states_Uncoupled);
 //F = zeros(6);
 //end if;
-      frame_a.f = -f_element;
-      frame_a.t = -t_element;
+      frame_a.f = f_element;
+      frame_a.t = t_element;
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation Force")}));
     end RadiationForce;
@@ -1888,44 +1890,60 @@ This component has a filled rectangular icon.
         HideResult = true,
         choices(checkBox = true),
         Dialog(group = "Excitation"));
-      Real ExcCoeffRe[bodyDoF] "Real component of excitation coefficient" annotation(
-        HideResult = true);
-      Real ExcCoeffIm[bodyDoF] "Imaginary component of excitation coefficient" annotation(
-        HideResult = true);
+      Real ExcCoeffRe[bodyDoF] "Real component of excitation coefficient" annotation(HideResult = true);
+      Real ExcCoeffIm[bodyDoF] "Imaginary component of excitation coefficient" annotation(HideResult = true);
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
+    
     protected
+      Real ramp "Ramping function"; // This is a bug, for some reason
+      // I have to multiply by ramp at front and end
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
       // Physical constants
       constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
       constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
     equation
-// Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+      ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
+    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
       for i in 1:bodyDoF loop
+    
         ExcCoeffRe[i] = Modelica.Math.Vectors.interpolate(w, F_excRe[i], omegaPeak)*rho*g;
         ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm[i], omegaPeak)*rho*g;
       end for;
       if enableExcitationForce then
-// Calculate the excitation force
-        for i in 1:bodyDoF loop
-// Calculate and apply ramping to the excitation force
-          if time < Trmp then
-// Ramp up the excitation force during the initial phase
-            F[i] = 0.5*(1 + cos(pi + (pi*time/Trmp)))*(ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
+            if time < Trmp then
+    
+    // Ramp up the excitation force during the initial phase
+            F = ramp.*(ExcCoeffRe.*A*cos(omegaPeak*time)) -(ExcCoeffIm.*A*sin(omegaPeak*time)).*ramp;
           else
-// Apply full excitation force after the ramping period
+    // Apply full excitation force after the ramping period
+            F = (ExcCoeffRe.*A*cos(omegaPeak*time)) - (ExcCoeffIm.*A*sin(omegaPeak*time));
+          end if;
+      /*
+    // Calculate the excitation force
+        for i in 1:bodyDoF loop
+    // Calculate and apply ramping to the excitation force
+          if time < Trmp then
+    // Ramp up the excitation force during the initial phase
+            F[i] = ramp*(ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
+            test_force[i] = (ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
+          else
+    // Apply full excitation force after the ramping period
             F[i] = (ExcCoeffRe[i].*A*cos(omegaPeak*time)) - (ExcCoeffIm[i].*A*sin(omegaPeak*time));
+            test_force[i] = 0;
           end if;
         end for;
+        
+        */
       else
         F = zeros(6);
       end if;
-// Assign excitation force to output
+    // Assign excitation force to output
       frame_a.f = f_element;
       frame_a.t = t_element;
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Regular Wave")}),
-        Diagram);
+        Diagram(coordinateSystem(extent = {{-120, 20}, {-40, -60}})));
     end ExcitationRegularWave;
 
     model ExcitationSpectrumImport "Excitation Force"
@@ -2324,16 +2342,18 @@ This component has a filled rectangular icon.
           end frequencyStepGenerator;
 
           function integrationFrequencyGen
-            input Real omega_min "Minimum frequency [rad/s]";
-            input Real omega_max "Maximum frequency [rad/s]";
+            input Real omegaMin "Minimum frequency [rad/s]";
+            input Real omegaMax "Maximum frequency [rad/s]";
             constant input Integer n_omega_int "Number of frequency compenents defining the spectrum";
             output Real omega_int[n_omega_int];
             // = omega_min:domega_int:omega_max "Frequencies for spectrum generation and integration";
           protected
-            Real domega_int = (omega_max - omega_min)/(n_omega_int - 1) "Frequency step size";
+            Real domega_int = (omegaMax - omegaMin)/(n_omega_int) "Frequency step size";
           algorithm
-            for i in 1:n_omega_int loop
-              omega_int[i] := omega_min + (i - 1)*(omega_max - omega_min)/(n_omega_int - 1);
+              omega_int[1] := omegaMin;
+              omega_int[end] := omegaMax;
+            for i in 2:n_omega_int-1 loop
+              omega_int[i] := omega_int[i-1] + domega_int;
             end for;
           end integrationFrequencyGen;
 
@@ -2725,10 +2745,10 @@ This component has a filled rectangular icon.
         Dialog(group = "Random Phase Selection"));
     protected
       // Random frequency selection
-      parameter Integer localSeedFrequency = 614657 if frequencySelection == "random" "Local random seed for frequency selection" annotation(
+      parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection" annotation(
         HideResult = true,
         Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
-      parameter Integer globalSeedFrequency = 30020 if frequencySelection == "random" "Global random seed for frequency selection" annotation(
+      parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(
         HideResult = true,
         Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
       // Equal Energy Parameters
@@ -2736,9 +2756,9 @@ This component has a filled rectangular icon.
         HideResult = true,
         Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
       // if frequencySelection == "equalEnergy"
-      Modelica.Units.SI.AngularFrequency domega if frequencySelection == "equalEnergy" "Frequency step size [rad/s]";
-      Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] if frequencySelection == "equalEnergy" "Integration frequency step size (equal energy only) [rad/s]";
-      Units.SpectrumEnergyDensity S_int[n_omega_int] if frequencySelection == "equalEnergy" "Integratation wave energy spectrum [m^2*s/rad]";
+      Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+      Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] "Integration frequency step size (equal energy only) [rad/s]";
+      Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
       // Derived parameters
       // JONSWAP parameters
       parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
@@ -2764,6 +2784,12 @@ This component has a filled rectangular icon.
       elseif frequencySelection == "random" then
         omega = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega);
         S = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB);
+        
+        // Non conditional additions
+        
+        S_int = zeros(n_omega_int);
+        omega_int = zeros(n_omega_int);
+        domega = 0;
       end if;
       SSE = sum(zeta.*cos(omega*time - phi));
       annotation(

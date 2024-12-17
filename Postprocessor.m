@@ -16,10 +16,10 @@
 rows = 2; % Number of rows
 cols = 3; % Number of columns
 n = 3;
-DoF = min(rows * cols, size(output.bodies(1).velocity, 2));
+DoF = min(rows * cols, size(output.bodies.velocity, 2));
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
 OETData = 8004;
-bodies = 2;
+bodies = 1;
 bodyName = {'float', 'spar'};
 
 %% Kinematic Results
@@ -40,10 +40,10 @@ for i = 1:bodies
         for k = 1:DoF
             subplot(rows, cols, k); 
             tempNameWS = [kinematics{j}];
-            plot(output.bodies(i).time, output.bodies(i).(tempNameWS)(:, k)); 
+            plot(output.bodies.time, output.bodies.(tempNameWS)(:, k)); 
             hold on
             tempNameOET = [bodyName{i} sourceName kinQuantities{j,k}];
-            plot(TestResults1.time(1:OETData),-1*TestResults1.(tempNameOET)(1:OETData));
+            plot(TestResults4.time,-1*TestResults4.(tempNameOET));
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([kinematics{j} ' (' units{j,k} ')']); 
@@ -66,11 +66,10 @@ for i = 1:bodies
             figure("Name",[bodyName{i} ' ' 'radiation'])
             for k = 1:DoF
                 subplot(rows, cols, k); 
-                plot(output.bodies(i).time, (output.bodies(i).forceRadiationDamping(:, k) ...
-                    + output.bodies(i).forceAddedMass(:, k))); 
+                plot(output.bodies.time, -1*output.bodies.forceRadiationDamping(:, k)); 
                 hold on
                 tempNameOET = [bodyName{i} 'radiationradiationForce' forces{k}];
-                plot(TestResults1.time(1:OETData),TestResults1.(tempNameOET)(1:OETData));
+                plot(TestResults4.time,TestResults4.(tempNameOET));
                 title([num2str(modes(k))]); 
                 xlabel('Time (s)');
                 ylabel(['forceRadiation' ' (' units{k} ')']); 
@@ -81,10 +80,10 @@ for i = 1:bodies
             for k = 1:DoF
                 subplot(rows, cols, k); 
                 tempNameWS = [dynamics{j}];
-                plot(output.bodies(i).time, output.bodies(i).(tempNameWS)(:, k)); 
+                plot(output.bodies.time, output.bodies.(tempNameWS)(:, k)); 
                 hold on
                 tempNameOET = [bodyName{i} sourceName{j} forces{k}];
-                plot(TestResults1.time(1:OETData),TestResults1.(tempNameOET)(1:OETData));
+                plot(TestResults4.time,TestResults4.(tempNameOET));
                 title([num2str(modes(k))]); 
                 xlabel('Time (s)');
                 ylabel([dynamics{j} ' (' units{k} ')']); 
