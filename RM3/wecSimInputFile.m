@@ -14,22 +14,23 @@ simu.stateSpace = 1;
 % % noWaveCIC, no waves with radiation CIC  
 % waves = waveClass('noWaveCIC');       % Initialize Wave Class and Specify Type  
 
-% % Regular Waves  
-waves = waveClass('regular');           % Initialize Wave Class and Specify Type                                 
-waves.height = 2.5;                     % Wave Height [m]
-waves.period = 8;                       % Wave Period [s]
+% % % Regular Waves  
+% waves = waveClass('regular');           % Initialize Wave Class and Specify Type                                 
+% waves.height = 2.5;                     % Wave Height [m]
+% waves.period = 8;                       % Wave Period [s]
 
 % % Regular Waves with CIC
 % waves = waveClass('regularCIC');          % Initialize Wave Class and Specify Type                                 
 % waves.height = 2.5;                       % Wave Height [m]
 % waves.period = 8;                         % Wave Period [s]
 
-% % Irregular Waves using PM Spectrum 
-%  waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
-%  waves.height = 2.5;                       % Significant Wave Height [m]
-%  waves.period = 8;                         % Peak Period [s]
-%  waves.spectrumType = 'PM';                % Specify Wave Spectrum Type
-%  waves.direction=[0];
+% Irregular Waves using PM Spectrum 
+ waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
+ waves.height = 2.5;                       % Significant Wave Height [m]
+ waves.period = 8;                         % Peak Period [s]
+ waves.spectrumType = 'JS';                % Specify Wave Spectrum Type
+ waves.direction = [0];
+ waves.gamma = 3.3;
 
 % % Irregular Waves using JS Spectrum with Equal Energy and Seeded Phase
 % waves = waveClass('irregular');           % Initialize Wave Class and Specify Type

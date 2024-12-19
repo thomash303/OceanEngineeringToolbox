@@ -32,38 +32,8 @@
 % 
 % hydro.coefficients.radiation.stateSpace.noB2B.Atest = A;
 % hydro.coefficients.radiation.stateSpace.noB2B.Btest = B;
-alpha = [];
-Sjs = [];
-Spm = [];
-omegaPeak = 0.785;
-fPeak = omegaPeak/(2*pi);
-Hs = 2.5;
-n_omega = 500;
-omega = waves.omega;
-f = omega./(2*pi);
-gamma = 3.3;
-sigmaA = 0.07;
-sigmaB = 0.09;
 
-beta = exp(-1.25*(omegaPeak./omega).^4);
-Spm = 5/16*Hs^2*(omegaPeak^4).*(omega.^(-5)).*beta;
 
-  lambda = 1 - 0.287*log(gamma);
-  for i = 1:n_omega 
-    if f(i) <= fPeak 
-      sigma(i) = sigmaA;
-    else
-      sigma(i) = sigmaB;
-    end
+omega = linspace(0,10,101);
 
-  alpha(i) = exp(-0.5*((f(i)' - fPeak)/(sigma(i)*fPeak))^2);
-  Sjs(i) = lambda*Spm(i)*gamma^alpha(i);
-  end
-clf
-
-figure('Name','PM')
-plot(omega,Spm);
-hold on
-plot(omega,Sjs)
-plot(waves.omega,waves.spectrum)
-legend('PM','JS','WS JS','Location','best')
+beta = exp(-1.25)

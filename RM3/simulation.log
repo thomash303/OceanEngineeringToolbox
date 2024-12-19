@@ -5,126 +5,26 @@ Version: 6.1
 
 Initializing the Simulation Class...
 	Case Dir: C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3 
-Elapsed time is 0.513093 seconds.
+Elapsed time is 0.329708 seconds.
 
 WEC-Sim Pre-processing ...   
 	Infinite water depth specified in BEM and "waves.waterDepth" not specified in input file.
 Set water depth to 200m for visualization.
-Elapsed time is 0.073091 seconds.
-
-WEC-Sim Simulation Settings:
-	Start Time                     (sec) = 0
-	End Time                       (sec) = 100
-	Time Step Size                 (sec) = 0.1
-	Ramp Function Time             (sec) = 50
-	 Number of Time Steps     = 1000 
-
-Wave Environment: 
-	Wave Type                            = Regular Waves (Constant Hydrodynamic Coefficients)
-	Wave Height, height (m)                   = 2.5
-	Wave Period, period (sec)                 = 8
-
-List of Body: Number of Bodies = 1 
-
-	***** Body Number 1, Name: float *****
-	Body CG                          (m) = [0,0,-0.72]
-	Body Mass                       (kg) = 725833 
-	Body Moments of Inertia       (kgm2) = [2.09073E+07,2.13061E+07,3.70855E+07]
-	Body Products of Inertia      (kgm2) = [0,0,0]
-
-List of PTO(s): No PTO in the system
-
-List of Constraint(s): Number of Constraints = 1 
-
-	***** Constraint Name: Constraint1 *****
-
-
-Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\RM3.slx...   
-Elapsed time is 0.176880 seconds.
-Elapsed time is 3.698135 seconds.
-
-Post-processing and saving...   
-{Index exceeds the number of array elements. Index must not exceed 1.
-
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('responseClass/plotResponse', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\objects\responseClass.m', 389)" style="font-weight:bold">responseClass/plotResponse</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\objects\responseClass.m',389,0)">line 389</a>)
-            t=obj.bodies(bodyNum).time;
-              ^^^^^^^^^^^^^^^^^^^^^^^^
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('userDefinedFunctions', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\userDefinedFunctions.m', 14)" style="font-weight:bold">userDefinedFunctions</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\userDefinedFunctions.m',14,0)">line 14</a>)
-output.plotResponse(2,3);
-^^^^^^^^^^^^^^^^^^^^^^^^
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('stopWecSim', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\functions\stopWecSim.m', 34)" style="font-weight:bold">stopWecSim</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\functions\stopWecSim.m',34,0)">line 34</a>)
-    userDefinedFunctions;
-    ^^^^^^^^^^^^^^^^^^^^
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('run', 'C:\Program Files\MATLAB\R2024b\toolbox\matlab\lang\run.m', 112)" style="font-weight:bold">run</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024b\toolbox\matlab\lang\run.m',112,0)">line 112</a>)
-evalin('caller', strcat(scriptStem, ';'));
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('wecSim', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\wecSim.m', 56)" style="font-weight:bold">wecSim</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\wecSim.m',56,0)">line 56</a>)
-run('stopWecSim');
-^^^^^^^^^^^^^^^^^
-} 
-Plot_compare
-{Unable to resolve the name 'TestResults2.time'.
-
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('Plot_compare', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Plot_compare.m', 2)" style="font-weight:bold">Plot_compare</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Plot_compare.m',2,0)">line 2</a>)
-plot(TestResults2.time,TestResults2.floatexcitationexcitationRegularWaveF3)
-     ^^^^^^^^^^^^^^^^^
-} 
-Plot_compare
-{Unable to resolve the name 'TestResults2.time'.
-
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('Plot_compare', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Plot_compare.m', 2)" style="font-weight:bold">Plot_compare</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Plot_compare.m',2,0)">line 2</a>)
-plot(TestResults2.time,TestResults2.floatexcitationexcitationRegularWaveF3)
-     ^^^^^^^^^^^^^^^^^
-} 
-Plot_compare
-Plot_compare
-Plot_compare
-Postprocessor
-{Unable to resolve the name 'TestResults3.time'.
-
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('Postprocessor', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Postprocessor.m', 46)" style="font-weight:bold">Postprocessor</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Postprocessor.m',46,0)">line 46</a>)
-            plot(TestResults3.time,-1*TestResults3.(tempNameOET));
-                 ^^^^^^^^^^^^^^^^^
-} 
-Postprocessor
-Postprocessor
-Postprocessor
-{Unable to resolve the name 'TestResults4.time'.
-
-Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('Postprocessor', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Postprocessor.m', 46)" style="font-weight:bold">Postprocessor</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\Postprocessor.m',46,0)">line 46</a>)
-            plot(TestResults4.time,-1*TestResults4.(tempNameOET));
-                 ^^^^^^^^^^^^^^^^^
-} 
-Postprocessor
-MATLAB has experienced a low-level graphics error, and may not have drawn correctly.
-Read about what you can do to prevent this issue at <a href="matlab:opengl('problems')">Resolving Low-Level Graphics Issues</a> then restart MATLAB.
-To share details of this issue with MathWorks technical support,
-please include <a href="file:C:\Users\thogan1\AppData\Local\Temp\jogl.ex.23924">this file</a> with your service request.
-
-WEC-Sim Input From Standard wecSimInputFile.m Of Case Directory... 
-WEC-Sim: An open-source code for simulating wave energy converters
-Version: 6.1
-
-Initializing the Simulation Class...
-	Case Dir: C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3 
-Elapsed time is 0.633338 seconds.
-
-WEC-Sim Pre-processing ...   
-	Infinite water depth specified in BEM and "waves.waterDepth" not specified in input file.
-Set water depth to 200m for visualization.
-Elapsed time is 0.165471 seconds.
+Elapsed time is 0.329293 seconds.
 
 WEC-Sim Simulation Settings:
 	Start Time                     (sec) = 0
 	End Time                       (sec) = 500
 	Time Step Size                 (sec) = 0.1
 	Ramp Function Time             (sec) = 50
+	Convolution Integral Interval  (sec) = 60
 	 Number of Time Steps     = 5000 
 
 Wave Environment: 
-	Wave Type                            = Regular Waves (Constant Hydrodynamic Coefficients)
-	Wave Height, height (m)                   = 2.5
-	Wave Period, period (sec)                 = 8
+	Wave Type                            = Irregular Waves (Arbitrary Random Phase)
+	Spectrum Type                        = JONSWAP 
+	Significant Wave Height, Hs      (m) = 2.5
+	Peak Wave Period, Tp           (sec) = 8
 
 List of Body: Number of Bodies = 1 
 
@@ -142,8 +42,8 @@ List of Constraint(s): Number of Constraints = 1
 
 
 Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\RM3.slx...   
-Elapsed time is 3.139314 seconds.
-Elapsed time is 23.059121 seconds.
+Elapsed time is 0.115739 seconds.
+Elapsed time is 3.775012 seconds.
 
 Post-processing and saving...   
 {Index exceeds the number of array elements. Index must not exceed 1.
@@ -164,3 +64,635 @@ Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('we
 run('stopWecSim');
 ^^^^^^^^^^^^^^^^^
 } 
+matrixFixer
+plot(waves.waveAmpTime)
+figure('Name','eta')
+plot(waves.waveAmpTime)
+figure('Name','eta')
+> plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+ > plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+ ↑
+{Invalid use of operator.
+} 
+figure('Name','eta')
+plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+ plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+                                                    ↑
+{Invalid expression. When calling a function or indexing a variable, use parentheses. Otherwise, check
+for mismatched delimiters.
+} 
+figure('Name','eta')
+> plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2))
+ > plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2))
+ ↑
+{Invalid use of operator.
+} 
+figure('Name','eta')
+plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+ plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2)
+                                                    ↑
+{Invalid expression. When calling a function or indexing a variable, use parentheses. Otherwise, check
+for mismatched delimiters.
+} 
+figure('Name','eta')
+plot(waves.waveAmptTime(:,1),waves.waveAmpTime(:,2))
+{Unrecognized method, property, or field 'waveAmptTime' for class 'waveClass'.
+} 
+figure('Name','eta')
+plot(waves.waveAmpTime(:,1),waves.waveAmpTime(:,2))
+help mean
+ <strong>mean</strong> - Average or mean value of array
+    This MATLAB function returns the mean of the elements of A along the
+    first array dimension whose size does not equal 1.
+
+    Syntax
+      M = <strong>mean</strong>(A)
+      M = <strong>mean</strong>(A,"all")
+      M = <strong>mean</strong>(A,dim)
+      M = <strong>mean</strong>(A,vecdim)
+      M = <strong>mean</strong>(___,outtype)
+      M = <strong>mean</strong>(___,missingflag)
+      M = <strong>mean</strong>(___,Weights=W)
+
+    Input Arguments
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#bt5b82t-1-A')">A</a> - Input data
+        vector | matrix | multidimensional array | table | timetable
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#bt5b82t-1-dim')">dim</a> - Dimension to operate along
+        positive integer scalar
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#mw_7e557632-72ff-44be-b891-c8646646387d')">vecdim</a> - Vector of dimensions
+        vector of positive integers
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#bt5b82t-1-outtype')">outtype</a> - Output data type
+        "default" (default) | "double" | "native"
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#mw_44035159-4a67-4049-b7c3-b6903c5de7a7')">missingflag</a> - Missing value condition
+        "includemissing" (default) | "includenan" | "includenat" |
+        "omitmissing" | "omitnan" | "omitnat"
+      <a href="matlab:web('C:\Program Files\MATLAB\R2024b\help/matlab/ref/double.mean.html#mw_2ccfc7be-2982-4dd2-88f6-5bd187b4fc88')">W</a> - Weighting scheme
+        vector | matrix | multidimensional array
+
+    Examples
+      <a href="matlab:openExample('matlab/MeanOfMatrixColumnsExample')">Mean of Matrix Columns</a>
+      <a href="matlab:openExample('matlab/MeanOfMatrixRowsExample')">Mean of Matrix Rows</a>
+      <a href="matlab:openExample('matlab/MeanOf3DArrayExample')">Mean of 3-D Array</a>
+      <a href="matlab:openExample('matlab/MeanOfArrayPageExample')">Mean of Array Page</a>
+      <a href="matlab:openExample('matlab/MeanOf8BitIntegerArrayExample')">Mean of Single-Precision Array</a>
+      <a href="matlab:openExample('matlab/MeanExcludingNaNExample')">Mean Excluding Missing Values</a>
+      <a href="matlab:openExample('matlab/WeightedMeanExample')">Weighted Mean</a>
+
+    See also <a href="matlab:help median -displayBanner">median</a>, <a href="matlab:help mode -displayBanner">mode</a>, <a href="matlab:help std -displayBanner">std</a>, <a href="matlab:help var -displayBanner">var</a>, <a href="matlab:help sum -displayBanner">sum</a>
+
+    Introduced in MATLAB before R2006a
+    <a href="matlab:doc mean">Documentation for mean</a>
+    <a href="matlab:matlab.lang.internal.introspective.overloads.displayOverloads('mean')">Other uses of mean</a>
+
+mean(waves.domega)
+{Unrecognized method, property, or field 'domega' for class 'waveClass'.
+} 
+mean(waves.dOmega)
+
+ans =
+
+    0.0067
+
+zeta = sqrt(waves.amplitude.*waves.dOmega)
+
+zeta =
+
+    0.1868
+    0.0447
+    0.0425
+    0.0416
+    0.0411
+    0.0408
+    0.0406
+    0.0404
+    0.0403
+    0.0402
+    0.0402
+    0.0401
+    0.0401
+    0.0400
+    0.0399
+    0.0399
+    0.0399
+    0.0399
+    0.0398
+    0.0399
+    0.0398
+    0.0399
+    0.0398
+    0.0398
+    0.0398
+    0.0398
+    0.0398
+    0.0398
+    0.0397
+    0.0398
+    0.0397
+    0.0398
+    0.0398
+    0.0397
+    0.0398
+    0.0397
+    0.0397
+    0.0398
+    0.0398
+    0.0397
+    0.0398
+    0.0397
+    0.0397
+    0.0398
+    0.0398
+    0.0398
+    0.0396
+    0.0399
+    0.0397
+    0.0398
+    0.0397
+    0.0396
+    0.0397
+    0.0398
+    0.0398
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0398
+    0.0396
+    0.0397
+    0.0398
+    0.0395
+    0.0399
+    0.0395
+    0.0396
+    0.0397
+    0.0398
+    0.0397
+    0.0397
+    0.0396
+    0.0396
+    0.0396
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0395
+    0.0397
+    0.0397
+    0.0397
+    0.0397
+    0.0396
+    0.0396
+    0.0396
+    0.0395
+    0.0397
+    0.0397
+    0.0396
+    0.0398
+    0.0397
+    0.0396
+    0.0395
+    0.0397
+    0.0396
+    0.0395
+    0.0396
+    0.0398
+    0.0397
+    0.0395
+    0.0397
+    0.0395
+    0.0397
+    0.0395
+    0.0397
+    0.0395
+    0.0397
+    0.0395
+    0.0396
+    0.0397
+    0.0395
+    0.0397
+    0.0394
+    0.0396
+    0.0397
+    0.0395
+    0.0396
+    0.0397
+    0.0394
+    0.0396
+    0.0397
+    0.0398
+    0.0395
+    0.0396
+    0.0397
+    0.0394
+    0.0395
+    0.0396
+    0.0397
+    0.0394
+    0.0398
+    0.0395
+    0.0396
+    0.0393
+    0.0398
+    0.0394
+    0.0395
+    0.0396
+    0.0396
+    0.0397
+    0.0393
+    0.0398
+    0.0395
+    0.0395
+    0.0395
+    0.0396
+    0.0396
+    0.0393
+    0.0397
+    0.0393
+    0.0398
+    0.0394
+    0.0394
+    0.0399
+    0.0395
+    0.0395
+    0.0395
+    0.0395
+    0.0396
+    0.0396
+    0.0392
+    0.0396
+    0.0396
+    0.0396
+    0.0396
+    0.0392
+    0.0396
+    0.0396
+    0.0396
+    0.0396
+    0.0396
+    0.0392
+    0.0396
+    0.0396
+    0.0396
+    0.0395
+    0.0395
+    0.0395
+    0.0395
+    0.0395
+    0.0395
+    0.0398
+    0.0394
+    0.0394
+    0.0398
+    0.0393
+    0.0397
+    0.0393
+    0.0396
+    0.0396
+    0.0396
+    0.0395
+    0.0395
+    0.0395
+    0.0394
+    0.0394
+    0.0397
+    0.0393
+    0.0396
+    0.0396
+    0.0395
+    0.0395
+    0.0394
+    0.0394
+    0.0397
+    0.0393
+    0.0396
+    0.0395
+    0.0395
+    0.0394
+    0.0394
+    0.0397
+    0.0396
+    0.0395
+    0.0395
+    0.0394
+    0.0393
+    0.0396
+    0.0395
+    0.0395
+    0.0394
+    0.0397
+    0.0396
+    0.0395
+    0.0394
+    0.0393
+    0.0396
+    0.0395
+    0.0394
+    0.0397
+    0.0396
+    0.0395
+    0.0394
+    0.0396
+    0.0395
+    0.0394
+    0.0393
+    0.0395
+    0.0394
+    0.0396
+    0.0395
+    0.0394
+    0.0396
+    0.0395
+    0.0394
+    0.0396
+    0.0394
+    0.0393
+    0.0395
+    0.0394
+    0.0395
+    0.0394
+    0.0396
+    0.0394
+    0.0396
+    0.0394
+    0.0393
+    0.0394
+    0.0396
+    0.0394
+    0.0393
+    0.0394
+    0.0395
+    0.0394
+    0.0395
+    0.0396
+    0.0394
+    0.0393
+    0.0394
+    0.0395
+    0.0396
+    0.0394
+    0.0395
+    0.0395
+    0.0393
+    0.0394
+    0.0395
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0395
+    0.0395
+    0.0393
+    0.0395
+    0.0393
+    0.0396
+    0.0393
+    0.0394
+    0.0394
+    0.0396
+    0.0393
+    0.0393
+    0.0395
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0395
+    0.0393
+    0.0394
+    0.0395
+    0.0394
+    0.0393
+    0.0394
+    0.0395
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0394
+    0.0393
+    0.0395
+    0.0393
+    0.0395
+    0.0393
+    0.0393
+    0.0395
+    0.0393
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0395
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0393
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0395
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0395
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0393
+    0.0393
+    0.0394
+    0.0393
+    0.0394
+    0.0394
+    0.0393
+    0.0394
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0393
+    0.0392
+    0.0393
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0392
+    0.0391
+    0.0391
+    0.0391
+    0.0391
+    0.0391
+    0.0391
+    0.0391
+    0.0390
+    0.0390
+    0.0390
+    0.0390
+    0.0389
+    0.0389
+    0.0389
+    0.0388
+    0.0388
+    0.0388
+    0.0387
+    0.0386
+    0.0386
+    0.0385
+    0.0384
+    0.0383
+    0.0381
+    0.0380
+    0.0377
+    0.0374
+    0.0370
+    0.0363
+    0.0351
+    0.0325
+
+  for i = 1:length(waves.waveAmpTime(:,1))
+                tmp  = sqrt(waves.amplitude.*waves.dOmega);
+                tmp1 = tmp.*real(exp(sqrt(-1).*(waves.omega.*waves.waveAmpTime(i,1) + waves.phase)));
+                eta = sum(tmp1,'all');
+end
+plot(waves.waveAmpTime(:,1),eta)
+[Warning: Limiting legend entries to 50. Specify a vector of graphics objects to display more than 50 entries.] 
+[> In matlab.graphics.illustration.Legend.autoUpdateCallback] 
+size(eta)
+
+ans =
+
+     1     1
+
+ for i = 1:length(waves.waveAmpTime(:,1))
+                tmp  = sqrt(waves.amplitude.*waves.dOmega);
+                tmp1 = tmp.*real(exp(sqrt(-1).*(waves.omega.*waves.waveAmpTime(i,1) + waves.phase)));
+                eta(i) = sum(tmp1,'all');
+end
+figure('Name','1')
+plot(eta)
+plot(tmp)
+figure('Name','1')
+plot(tmp)
+obj.dOmega = mean(diff(waves.omega))
+
+obj = 
+
+  <a href="matlab:helpPopup('struct')" style="font-weight:bold">struct</a> with fields:
+
+    dOmega: 0.0057
+
+dOmega = mean(diff(waves.omega))
+
+dOmega =
+
+    0.0057
+
