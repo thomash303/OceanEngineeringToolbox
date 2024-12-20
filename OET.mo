@@ -14,20 +14,14 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = true) annotation(
+      Hydro.HydrodynamicBody spar(enableRadiationForce = false, bodyIndex = 2, enableExcitationForce = false, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = false, enableDampingDragForce = false) annotation(
         Placement(transformation(origin = {12, -16}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = true, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
+      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random") annotation(
+      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random") annotation(
         Placement(transformation(origin = {102, 10}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
-        Placement(transformation(origin = {42, -16}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(spar.frame_b, prismatic.frame_a) annotation(
-        Line(points = {{22, -16}, {32, -16}}, color = {95, 95, 95}));
-  connect(prismatic.frame_b, float.frame_a) annotation(
-        Line(points = {{52, -16}, {60, -16}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>

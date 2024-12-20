@@ -29,9 +29,9 @@ displacements = {'r1', 'r2', 'r3', 'angles1', 'angles2', 'angles3'};
 velocities = {'v1', 'v2', 'v3', 'w1', 'w2', 'w3'};
 accelerations = {'a1', 'a2', 'a3', 'z1', 'z2', 'z3'};
 kinQuantities = [displacements; velocities; accelerations];
-units = {'m','m','m','deg','deg','deg';
-    'm/s','m/s','m/s','deg/s','deg/s','deg/s';
-    'm/s^2','m/s^2','m/s^2','deg/s^2','deg/s^2','deg/s^2'};
+units = {'m','m','m','rad','rad','rad';
+    'm/s','m/s','m/s','rad/s','rad/s','rad/s';
+    'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
 
 sourceName = 'absoluteSensor';
 for i = 1:bodies

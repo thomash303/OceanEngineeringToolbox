@@ -13,14 +13,13 @@ bodyName = {'float', 'spar'};
 
 % Kinematics
 % Kinematic component names
-kinematicNames = {'position', 'velocity' 'acceleration'};
-displacements = {'r_1_', 'r_2_', 'r_3_', 'angles_1_', 'angles_2_', 'angles_3_'};
-velocities = {'v_1_', 'v_2_', 'v_3_', 'w_1_', 'w_2_', 'w_3_'};
-accelerations = {'a_1_', 'a_2_', 'a_3_', 'z_1_', 'z_2_', 'z_3_'};
+kinematics = {'position', 'velocity' 'acceleration'};
+displacements = {'r1', 'r2', 'r3', 'angles1', 'angles2', 'angles3'};
+velocities = {'v1', 'v2', 'v3', 'w1', 'w2', 'w3'};
+accelerations = {'a1', 'a2', 'a3', 'z1', 'z2', 'z3'};
 kinQuantities = [displacements; velocities; accelerations];
 units = {'m','m','m','rad','rad','rad';
     'm/s','m/s','m/s','rad/s','rad/s','rad/s';
-    'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
 
 velocity = zeros(2896,3);
 for i = 1:3
