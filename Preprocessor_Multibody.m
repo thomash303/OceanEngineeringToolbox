@@ -1,5 +1,5 @@
-clear
-clc
+%%clear
+%%clc
 
 % This is directly from WEC-Sim/source/Functions/readH5ToStruct.m
 % However, I have removed several components irrelevent to OET 
@@ -91,7 +91,7 @@ for i = 1:hydro.bodies.Nb
     %hydro.coefficients.radiation.Ainf(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/added_mass/inf_freq']));
     hydro.coefficients.radiation.stateSpace.B2B.(addedMassName) = reverseDimensionOrder(h5read(filename, [h5BodyName '/hydro_coeffs/added_mass/inf_freq']));
     hydro.coefficients.radiation.stateSpace.B2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)*hydro.parameters.rho;
-    hydro.coefficients.radiation.stateSpace.noB2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)(:,1:hydro.bodies.nDoF);
+    hydro.coefficients.radiation.stateSpace.noB2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)(:,1+(i-1)*hydro.bodies.nDoF:i*hydro.bodies.nDoF);
     
     % Excitation spectral decompositon
     %hydro.coefficients.excitation.spectralDecomp.re(hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i),:,:) = permute(h5read(filename, [h5BodyName '/hydro_coeffs/excitation/re']),[3,1,2]);

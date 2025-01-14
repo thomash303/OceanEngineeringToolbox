@@ -2,7 +2,7 @@
 
 temp = tempdir;
 current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWEC\multibodyWEC_res.csv';
+file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
 
 filedir = [temp current file];
 
@@ -14,7 +14,7 @@ body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
-bodies = 2;
+bodies = 1;
 bodyName = {'float', 'spar'};
 
 %% Data Extraction
