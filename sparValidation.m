@@ -10,7 +10,7 @@ outputData = readtable(filedir);
 
 
 %% Body
-body = {};
+% body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
@@ -19,7 +19,7 @@ bodyName = {'float', 'spar'};
 
 %% Data Extraction
 
-length = size(outputData.time,1);
+duration = size(outputData.time,1);
 
 % Kinematics
 % Kinematic component names
@@ -45,18 +45,42 @@ dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '
 forces = {'_F_1_','_F_2_','_F_3_','_F_4_','_F_5_','_F_6_'};
 nDy = size(dynamicNames,2); 
 
+kinematics = {'position', 'velocity' 'acceleration'};
 
-for i = 1:bodies
-    body(i).body = bodyName{i};
-    body(i).time = outputData.time;
-    for j = 1:nKin
-        for k = 1:DoF
-            tempName = [bodyName{i} kinSourceName kinQuantities{j,k}];
-            body(i).(kinematicNames{j})(:,k) = outputData.(tempName);
-        end
-    end
+% % Saving OET
+% for i = 1:bodies
+%     body(i).body = bodyName{i};
+%     body(i).time = outputData.time;
+%     for j = 1:nKin
+%         for k = 1:DoF
+%             tempName = [bodyName{i} kinSourceName kinQuantities{j,k}];
+%             body(i).(kinematicNames{j})(:,k) = outputData.(tempName);
+%         end
+%     end
+% 
+%     for j = 1:nDy
+%         for k = 1:DoF
+%             tempName = [bodyName{i} dySourceName{j} forces{k}];
+%             body(i).(dynamicNames{j})(:,k) = outputData.(tempName);
+%         end
+%     end
+% 
+% end
 
-end
+%% Plotting OET and WEC-Sim
+dynamics = {'forceExcitation','forceRadiationDamping','forceRestoring'};
+rows = 2; % Number of rows
+cols = 3; % Number of columns
+
+% Kinematics
+kinUnits = {'m','m','m','rad','rad','rad';
+    'm/s','m/s','m/s','rad/s','rad/s','rad/s';
+    'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
+
+% Dynamics
+dyUnits = {'N','N','N','Nm','Nm','Nm'};
+
+
 
 for i = 1:bodies
     for j = 1:nKin
@@ -65,47 +89,32 @@ for i = 1:bodies
             subplot(rows, cols, k); 
             plot(body(i).time,body(i).(kinematicNames{j})(:,k));
             hold on
+            tempNameWS = kinematics{j};
+            plot(output.bodies(i).time, output.bodies(i).(kinematics{j})(:, k));
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
-            legend('OET','Location','best');
+            legend('OET','WEC-Sim','Location','best');
         end
     end
 
-end
-
-% General Plotting Initialization
-%fileName = {'TestResults1'};
-rows = 2; % Number of rows
-cols = 3; % Number of columns
-n = 3;
-DoF = min(rows * cols, size(output.bodies.velocity, 2));
-modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
-OETData = 8004;
-bodies = 1;
-bodyName = {'float', 'spar'};
-
-%% Kinematic Results
-% Kinematic component names
-kinematics = {'position', 'velocity' 'acceleration'};
-displacements = {'r1', 'r2', 'r3', 'angles1', 'angles2', 'angles3'};
-velocities = {'v1', 'v2', 'v3', 'w1', 'w2', 'w3'};
-accelerations = {'a1', 'a2', 'a3', 'z1', 'z2', 'z3'};
-kinQuantities = [displacements; velocities; accelerations];
-units = {'m','m','m','rad','rad','rad';
-    'm/s','m/s','m/s','rad/s','rad/s','rad/s';
-    'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
-
-sourceName = 'absoluteSensor';
-for i = 1:bodies
-    for j = 1:n
-        figure('Name', [bodyName{i} ' ' kinematics{j}]);
+  for j = 1:nDy
+    figure('Name', [bodyName{i} ' ' dynamicNames{j}]);
         for k = 1:DoF
             subplot(rows, cols, k); 
-            tempNameWS = [kinematics{j}];
-            plot(output.bodies.time, output.bodies.(tempNameWS)(:, k)); 
+            plot(body(i).time,body(i).(dynamicNames{j})(:,k));
+            hold on
+            tempNameWS = dynamics{j};
+            plot(output.bodies(i).time, output.bodies(i).(tempNameWS)(:, k)); 
+            title([num2str(modes(k))]); 
+            xlabel('Time (s)');
+            ylabel([dynamicNames{j} ' (' dyUnits{k} ')']); 
+            legend('OET','WEC-Sim','Location','best');
+
         end
     end
 end
 
-save('RM3SparValidation.mat','body','output')
+
+% 
+% save('RM3SparValidation.mat','body','output')

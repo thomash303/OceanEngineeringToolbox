@@ -241,14 +241,28 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = false, rCM_b = {0, 0, 0}) annotation(
+      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, -21.29}, enableHydrostaticForce = true, enableDampingDragForce = false, rCM_b = {0, 0, 0}, I_32 = 21800) annotation(
         Placement(transformation(origin = {12, -16}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = true, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}, rCM_b = {0, 0, 0}) annotation(
+      Hydro.HydrodynamicBody float(enableRadiationForce = false, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}, rCM_b = {0, 0, 0}, I_32 = 4300) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, frequencySelection = "random", Hs = 2.5) annotation(
         Placement(transformation(origin = {102, 10}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
+        Placement(transformation(origin = {-2, -46}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {42, -42}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+        Placement(transformation(origin = {-68, 18}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
+      connect(freeMotion.frame_a, world.frame_b) annotation(
+        Line(points = {{-12, -46}, {-30, -46}, {-30, -20}}, color = {95, 95, 95}));
+  connect(freeMotion.frame_b, spar.frame_a) annotation(
+        Line(points = {{8, -46}, {2, -46}, {2, -16}}, color = {95, 95, 95}));
+  connect(prismatic.frame_b, float.frame_a) annotation(
+        Line(points = {{52, -42}, {60, -42}, {60, -16}}, color = {95, 95, 95}));
+  connect(prismatic.frame_a, spar.frame_b) annotation(
+        Line(points = {{32, -42}, {22, -42}, {22, -16}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -798,7 +812,7 @@ This component has a filled rectangular icon.
       parameter Boolean animationEnable = false "Enable animation with stl geometry file" annotation(
         Dialog(group = "Body Data"));
       // Mass parameters
-      Body body(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex, geometryFile = fileDirectory.filePath + geometryFile, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_b, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
+      Body body(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex, geometryFile = fileDirectory.filePath + geometryFile, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_b, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_0Init = r_0Init, v_0Init = v_0Init, a_0Init = a_0Init, angles_0Init = angles_0Init, w_0Init = w_0Init, z_0Init = z_0Init) annotation(
         Placement(transformation(origin = {2, -38}, extent = {{-12, -12}, {12, 12}})));
       parameter Modelica.Units.SI.Length ra_CM[3] = {0, 0, 0} "Position vector between joint A and the centre of mass" annotation(
         Dialog(group = "Mass"));
@@ -818,7 +832,13 @@ This component has a filled rectangular icon.
         Dialog(group = "Mass"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Mass"));
-      // Hydrostatic
+    parameter Modelica.Units.SI.Distance r_0Init[3] = {0,0,0} "Initial translational position vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Velocity v_0Init[3] = {0,0,0} "Initial translational velocity vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Acceleration a_0Init[3] = {0,0,0} "Initial translational acceleration vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Angle angles_0Init[3] = {0,0,0} "Initial angular position vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.AngularVelocity w_0Init[3] = {0,0,0} "Initial angular velocity vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0Init[3] = {0,0,0} "Initial angular acceleration vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));  
+// Hydrostatic
       Hydrostatic hydrostatic(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex, enableHydrostaticForce = enableHydrostaticForce) if enableHydrostaticForce annotation(
         Placement(transformation(origin = {-65, 49}, extent = {{15, -15}, {-15, 15}}, rotation = -0)));
       parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -946,11 +966,12 @@ This component has a filled rectangular icon.
       Real displacement[6] = cat(1, u_abs, theta_abs) "Combined displacement vector [m, rad]";
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
+      Real offset[6] = {0,0,21.29,0,0,0};
     equation
 // Use the switch to conditionally output the hydrostatic force torque element
       if enableHydrostaticForce then
 // Calculate the hydrostatic force/torque vector
-        F = Khs*displacement;
+        F = Khs*(displacement+offset);
       else
         F = zeros(6);
       end if;
@@ -1587,9 +1608,12 @@ This component has a filled rectangular icon.
       Modelica.Units.SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
       Modelica.Units.SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
       Modelica.Units.SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
+     
+      Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
     
-    Real fam[3];
     protected
+      Modelica.Units.SI.Force f_element[3];
+      Modelica.Units.SI.Torque t_element[3];
       parameter Boolean animation = false "= true, if animation shall be enabled (show cylinder and sphere)";
       outer Modelica.Mechanics.MultiBody.World world;
       // Declarations for quaternions (dummies, if quaternions are not used)
@@ -1667,11 +1691,11 @@ This component has a filled rectangular icon.
             Inserting the first three equations in the last two results in:
           */
 // Note a now defined as local translational acceleration
-      fam = (m + Ainf11)*a + Ainf12*z_a;
-      frame_a.f = (m + Ainf11)*a + Ainf12*z_a;
-      frame_a.t = (I + Ainf22)*z_a + cross(w_a, (I + Ainf22)*w_a) + Ainf21*a;
-//frame_a.f = (m)*a;
-//frame_a.t = (I)*z_a + cross(w_a, (I)*w_a);
+      f_element = (m + Ainf11)*a + Ainf12*z_a;
+      t_element = (I + Ainf22)*z_a + cross(w_a, (I + Ainf22)*w_a) + Ainf21*a;
+      frame_a.f = f_element;
+      frame_a.t = t_element;
+
       annotation(
         Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
         Documentation(info = "<html>
@@ -1768,10 +1792,17 @@ This component has a filled rectangular icon.
       extends DataImport.GeometryFile;
       extends DataImport.BodyIndex;
       extends Internal.PartialThreeFrames;
+      
+      parameter Modelica.Units.SI.Distance r_0Init[3] = {0,0,0} "Initial translational position vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Velocity v_0Init[3] = {0,0,0} "Initial translational velocity vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Acceleration a_0Init[3] = {0,0,0} "Initial translational acceleration vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.Angle angles_0Init[3] = {0,0,0} "Initial angular position vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.AngularVelocity w_0Init[3] = {0,0,0} "Initial angular velocity vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
+      parameter Modelica.Units.SI.AngularAcceleration z_0Init[3] = {0,0,0} "Initial angular acceleration vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
       parameter Boolean animationEnable = false "Enable animation with stl geometry file" annotation(
         Dialog(group = "Body Data"));
       // Mass
-      BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}) annotation(
+      BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, r_0(start = r_0Init), v_0(start = v_0Init), a_0(start = a_0Init), angles_start = angles_0Init, w_0_start = w_0Init, z_0_start = z_0Init, useQuaternions = false) annotation(
         Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
       parameter Modelica.Units.SI.Length ra_CM[3] = {0, 0, 0} "Position vector between joint A and the centre of mass" annotation(
         Dialog(group = "Mass"));
@@ -1797,7 +1828,7 @@ This component has a filled rectangular icon.
         Placement(transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}})));
       Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(length = 1, width = 1, height = 1, animation = animationEnable, shapeType = filePath + geometryFile) annotation(
         Placement(transformation(origin = {40, -36}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.frame_a) annotation(
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
         Placement(transformation(origin = {50, 52}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(body.frame_a, frame_c) annotation(
@@ -1993,7 +2024,7 @@ This component has a filled rectangular icon.
         ExcCoeffIm[i] = Modelica.Math.Vectors.interpolate(w, F_excIm[i], omegaPeak)*rho*g;
       end for;
     
-        F = ramp.*(ExcCoeffRe.*A*cos(omegaPeak*time)) - (ExcCoeffIm.*A*sin(omegaPeak*time)).*ramp;
+        F = (ramp.*(ExcCoeffRe.*A*cos(omegaPeak*time)) - (ExcCoeffIm.*A*sin(omegaPeak*time)).*ramp);
 /*
     // Calculate the excitation force
         for i in 1:bodyDoF loop
@@ -2014,8 +2045,8 @@ This component has a filled rectangular icon.
 //frame_a.f[3] = f_element[3];
 //frame_a.f[1] = 0;
 //frame_a.f[2] = 0;
-      frame_a.f = f_element;
-      frame_a.t = t_element;
+      frame_a.f = -f_element;
+      frame_a.t = -t_element;
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Regular Wave")}),
         Diagram(coordinateSystem(extent = {{-120, 20}, {-40, -60}})));
@@ -2767,8 +2798,8 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-      Modelica.Units.SI.Height A "Wave amplitude";
-      Modelica.Units.SI.Height SSE "Sea surface elevation";
+      Modelica.Units.SI.Distance A "Wave amplitude";
+      Modelica.Units.SI.Distance SSE "Sea surface elevation";
       Real ramp "Ramping function" annotation(
         HideResult = true);
       Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
@@ -2816,8 +2847,8 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"),
         choices(choice = "random", choice = "equalEnergy"));
       Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
-      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component";
-      Modelica.Units.SI.Length SSE "Sea surface elevation";
+      Modelica.Units.SI.Distance zeta[n_omega] "Wave amplitude component";
+      Modelica.Units.SI.Distance SSE "Sea surface elevation";
       // Irregular wave spectrum parameters
       parameter Modelica.Units.SI.AngularFrequency omegaMin = w[1] "Lowest frequency component" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
@@ -2977,8 +3008,8 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omegaMax = omega[end] "Highest frequency component" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-      Modelica.Units.SI.Length SSE "Sea surface elevation";
-      Modelica.Units.SI.Length zeta[n_omega] = sqrt(2*S*domega) "Wave amplitude component [m]";
+      Modelica.Units.SI.Distance SSE "Sea surface elevation";
+      Modelica.Units.SI.Distance zeta[n_omega] = sqrt(2*S*domega) "Wave amplitude component [m]";
       Modelica.Units.SI.AngularFrequency domega = Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGenerator(omegaMin = omegaMin, omegaMax = omegaMax, n_omega = n_omega) "Frequency step size";
       Real ramp "Ramping function" annotation(
         HideResult = true);
