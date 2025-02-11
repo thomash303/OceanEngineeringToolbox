@@ -12,7 +12,7 @@
 
 %% Reading
 % File directory
-filename = 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\rm3.h5';
+filename = 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\RM3\hydroData\rm3.h5';
 
 hydro = {};
 

@@ -1,12 +1,12 @@
 %% Loading data
 
-temp = tempdir;
-current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-
-filedir = [temp current file];
-
-outputData = readtable(filedir);
+% temp = tempdir;
+% current = 'OpenModelica\OMEdit';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% 
+% filedir = [temp current file];
+% 
+% outputData = readtable(filedir);
 
 
 %% Body
@@ -19,7 +19,7 @@ bodyName = {'float', 'spar'};
 
 %% Data Extraction
 
-duration = size(outputData.time,1);
+% duration = size(outputData.time,1);
 
 % Kinematics
 % Kinematic component names
@@ -112,7 +112,7 @@ for i = 1:bodies
             legend('OET','WEC-Sim','Location','best');
 
         end
-    end
+   end
 end
 
 

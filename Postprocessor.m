@@ -1,12 +1,12 @@
 %% Loading data
-
-temp = tempdir;
-current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-
-filedir = [temp current file];
-
-outputData = readtable(filedir);
+% 
+% temp = tempdir;
+% current = 'OpenModelica\OMEdit';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% 
+% filedir = [temp current file];
+% 
+% outputData = readtable(filedir);
 
 
 %% Body
@@ -14,7 +14,7 @@ body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
-bodies = 1;
+bodies = 2;
 bodyName = {'float', 'spar'};
 
 %% Data Extraction
@@ -64,7 +64,7 @@ for i = 1:bodies
     end
 
 end
-
+% 
 % Mooring and PTO
 
 % also need wave elevation
@@ -83,166 +83,166 @@ kinUnits = {'m','m','m','rad','rad','rad';
 % Dynamics
 dyUnits = {'N','N','N','Nm','Nm','Nm'};
 
-% for i = 1:bodies
-%     for j = 1:nKin
-%         figure('Name', [bodyName{i} ' ' kinematicNames{j}]);
-%         for k = 1:DoF
-%             subplot(rows, cols, k); 
-%             plot(body(i).time,body(i).(kinematicNames{j})(:,k));
-%             title([num2str(modes(k))]); 
-%             xlabel('Time (s)');
-%             ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
-%             legend('OET','Location','best');
-%         end
-%     end
-% 
-% 
-%     for j = 1:nDy
-%     figure('Name', [bodyName{i} ' ' dynamicNames{j}]);
-%         for k = 1:DoF
-%             subplot(rows, cols, k); 
-% 
-%             plot(body(i).time,body(i).(dynamicNames{j})(:,k));
-%             title([num2str(modes(k))]); 
-%             xlabel('Time (s)');
-%             ylabel([dynamicNames{j} ' (' dyUnits{k} ')']); 
-%             legend('OET','Location','best');
-% 
-%         end
-%     end
-% 
-% end
-
-%% Wave
-wave = {};
-waves = 1;
-% waveSpectrumType = 'irregularWave';
-waveSpectrumType = 'regularWave';
-% waveSpectrumType = 'spectrumImport';
-spectrumComponent = {'omega', 'S', 'phi'};
-
-
-% Data extraction
-for i = 1:waves
-    wave(i).time = outputData.time;
-    wave(i).eta = outputData.environment_SSE;
-    if ~(strcmp(waveSpectrumType,'regularWave'))
-        for j = 1:10000
-            tempName = ['environment_' waveSpectrumType '_' spectrumComponent{1} '_' num2str(j) '_'];
-            try
-                testLength = outputData.(temp)(1);
-            catch
-                wave(i).nOmega = j - 1;
-                break
-            end
-        end
-    
-        for j = 1:size(spectrumComponent,2)
-            for k = 1:nOmega
-                tempName = ['environment_' waveSpectrumType '_' spectrumComponent{j} '_' num2str(k) '_'];
-                wave(i).(spectrumComponent{j})(k) = outputData.(tempName)(1);
-                
-            end
+for i = 1:bodies
+    for j = 1:nKin
+        figure('Name', [bodyName{i} ' ' kinematicNames{j}]);
+        for k = 1:DoF
+            subplot(rows, cols, k); 
+            plot(body(i).time,body(i).(kinematicNames{j})(:,k));
+            title([num2str(modes(k))]); 
+            xlabel('Time (s)');
+            ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
+            legend('OET','Location','best');
         end
     end
+
+
+    for j = 1:nDy
+    figure('Name', [bodyName{i} ' ' dynamicNames{j}]);
+        for k = 1:DoF
+            subplot(rows, cols, k); 
+
+            plot(body(i).time,body(i).(dynamicNames{j})(:,k));
+            title([num2str(modes(k))]); 
+            xlabel('Time (s)');
+            ylabel([dynamicNames{j} ' (' dyUnits{k} ')']); 
+            legend('OET','Location','best');
+
+        end
+    end
+
 end
 
-% % Plotting
-% col = 1;
+% %% Wave
+% wave = {};
+% waves = 1;
+% % waveSpectrumType = 'irregularWave';
+% waveSpectrumType = 'regularWave';
+% % waveSpectrumType = 'spectrumImport';
+% spectrumComponent = {'omega', 'S', 'phi'};
+% 
+% 
+% % Data extraction
 % for i = 1:waves
-%     figure('Name',['Wave' num2str(i)])
+%     wave(i).time = outputData.time;
+%     wave(i).eta = outputData.environment_SSE;
 %     if ~(strcmp(waveSpectrumType,'regularWave'))
-%         row = 2;
-%         subplot(row,col,2)
-%         plot(wave(i).omega,wave(i).S)
-%         title('Wave Spectrum')
-%         xlabel('Angular Frequency (rad/s)')
-%         ylabel('Spectral Density (m^2s/rad)')
-%         legend('OET','Location','best');
-%     else
-%         row = 1;
+%         for j = 1:10000
+%             tempName = ['environment_' waveSpectrumType '_' spectrumComponent{1} '_' num2str(j) '_'];
+%             try
+%                 testLength = outputData.(temp)(1);
+%             catch
+%                 wave(i).nOmega = j - 1;
+%                 break
+%             end
+%         end
+% 
+%         for j = 1:size(spectrumComponent,2)
+%             for k = 1:nOmega
+%                 tempName = ['environment_' waveSpectrumType '_' spectrumComponent{j} '_' num2str(k) '_'];
+%                 wave(i).(spectrumComponent{j})(k) = outputData.(tempName)(1);
+% 
+%             end
+%         end
 %     end
-%     subplot(row,col,1)
-%     plot(wave(i).time,wave(i).eta)
-%     title('Wave Surface Elevation')
-%     xlabel('Time (s)')
-%     ylabel('Wave Elevation (m)')
-%     legend('OET','Location','best');
 % end
-
-
-
-%% Mooring
-% Data extration
-mooring = {};
-moorings = 1;
-moorSourceName = {'linearMooring_linearMooringForce'};
-mooringNames = {'mooringForce'};
-
-for i = 1:moorings
-    mooring(i).time = outputData.time;
-
-    for j = 1:DoF
-        tempName = [moorSourceName{i} forces{j}];
-        mooring(i).(mooringNames{i})(:,j) = outputData.(tempName);
-    end
-
-end
-
-%% Plotting
-% rows = 2; % Number of rows
-% cols = 3; % Number of columns
+% 
+% % % Plotting
+% % col = 1;
+% % for i = 1:waves
+% %     figure('Name',['Wave' num2str(i)])
+% %     if ~(strcmp(waveSpectrumType,'regularWave'))
+% %         row = 2;
+% %         subplot(row,col,2)
+% %         plot(wave(i).omega,wave(i).S)
+% %         title('Wave Spectrum')
+% %         xlabel('Angular Frequency (rad/s)')
+% %         ylabel('Spectral Density (m^2s/rad)')
+% %         legend('OET','Location','best');
+% %     else
+% %         row = 1;
+% %     end
+% %     subplot(row,col,1)
+% %     plot(wave(i).time,wave(i).eta)
+% %     title('Wave Surface Elevation')
+% %     xlabel('Time (s)')
+% %     ylabel('Wave Elevation (m)')
+% %     legend('OET','Location','best');
+% % end
+% 
+% 
+% 
+% %% Mooring
+% % Data extration
+% mooring = {};
+% moorings = 1;
+% moorSourceName = {'linearMooring_linearMooringForce'};
+% mooringNames = {'mooringForce'};
+% 
 % for i = 1:moorings
-%     figure('Name', [mooringNames{i}]);
+%     mooring(i).time = outputData.time;
 % 
 %     for j = 1:DoF
-%         subplot(rows, cols, j);
-% 
-%         plot(mooring(i).time,mooring(i).(mooringNames{i})(:,j));
-%         title([num2str(modes(j))]);
-%         xlabel('Time (s)');
-%         ylabel(['Force' ' (' dyUnits{j} ')']);
-%         legend('OET','Location','best');
+%         tempName = [moorSourceName{i} forces{j}];
+%         mooring(i).(mooringNames{i})(:,j) = outputData.(tempName);
 %     end
 % 
 % end
-
-%% PTO
-% Data extraction
-pto = {};
-ptos = 1;
-ptoSourceName = {'linearPTO_linearPTOForce'};
-ptoNames = {'ptoForce'};
-
-for i = 1:ptos
-    pto(i).time = outputData.time;
-
-    for j = 1:DoF
-        tempName = [ptoSourceName{i} forces{j}];
-        pto(i).(ptoNames{i})(:,j) = outputData.(tempName);
-    end
-
-end
-
-%% Plotting
-% rows = 2; % Number of rows
-% cols = 3; % Number of columns
+% 
+% %% Plotting
+% % rows = 2; % Number of rows
+% % cols = 3; % Number of columns
+% % for i = 1:moorings
+% %     figure('Name', [mooringNames{i}]);
+% % 
+% %     for j = 1:DoF
+% %         subplot(rows, cols, j);
+% % 
+% %         plot(mooring(i).time,mooring(i).(mooringNames{i})(:,j));
+% %         title([num2str(modes(j))]);
+% %         xlabel('Time (s)');
+% %         ylabel(['Force' ' (' dyUnits{j} ')']);
+% %         legend('OET','Location','best');
+% %     end
+% % 
+% % end
+% 
+% %% PTO
+% % Data extraction
+% pto = {};
+% ptos = 1;
+% ptoSourceName = {'linearPTO_linearPTOForce'};
+% ptoNames = {'ptoForce'};
+% 
 % for i = 1:ptos
-%     figure('Name', [ptoNames{i}]);
+%     pto(i).time = outputData.time;
 % 
 %     for j = 1:DoF
-%         subplot(rows, cols, j);
-% 
-%         plot(pto(i).time,pto(i).(ptoNames{i})(:,j));
-%         title([num2str(modes(j))]);
-%         xlabel('Time (s)');
-%         % % % % % ylabel(['Force' ' (' dyUnits{j} ')']);
-%         legend('OET','Location','best');
+%         tempName = [ptoSourceName{i} forces{j}];
+%         pto(i).(ptoNames{i})(:,j) = outputData.(tempName);
 %     end
 % 
 % end
+% 
+% %% Plotting
+% % rows = 2; % Number of rows
+% % cols = 3; % Number of columns
+% % for i = 1:ptos
+% %     figure('Name', [ptoNames{i}]);
+% % 
+% %     for j = 1:DoF
+% %         subplot(rows, cols, j);
+% % 
+% %         plot(pto(i).time,pto(i).(ptoNames{i})(:,j));
+% %         title([num2str(modes(j))]);
+% %         xlabel('Time (s)');
+% %         % % % % % ylabel(['Force' ' (' dyUnits{j} ')']);
+% %         legend('OET','Location','best');
+% %     end
+% % 
+% % end
 
 %% Save
-save('RM3Output.mat','body', 'wave','mooring','pto')
+% save('RM3Output.mat','body', 'wave','mooring','pto')
 
 

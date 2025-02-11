@@ -1,0 +1,59 @@
+
+WEC-Sim Input From Standard wecSimInputFile.m Of Case Directory... 
+WEC-Sim: An open-source code for simulating wave energy converters
+Version: 6.1
+
+Initializing the Simulation Class...
+	Case Dir: C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Irregular\RM3 
+Elapsed time is 0.471979 seconds.
+
+WEC-Sim Pre-processing ...   
+	Infinite water depth specified in BEM and "waves.waterDepth" not specified in input file.
+Set water depth to 200m for visualization.
+Elapsed time is 0.360736 seconds.
+
+WEC-Sim Simulation Settings:
+	Start Time                     (sec) = 0
+	End Time                       (sec) = 400
+	Time Step Size                 (sec) = 0.1
+	Ramp Function Time             (sec) = 100
+	Convolution Integral Interval  (sec) = 60
+	 Number of Time Steps     = 4000 
+
+Wave Environment: 
+	Wave Type                            = Irregular Waves (Arbitrary Random Phase)
+	Spectrum Type                        = JONSWAP 
+	Significant Wave Height, Hs      (m) = 2.5
+	Peak Wave Period, Tp           (sec) = 8
+
+List of Body: Number of Bodies = 2 
+
+	***** Body Number 1, Name: float *****
+	Body CG                          (m) = [0,0,-0.72]
+	Body Mass                       (kg) = 725833 
+	Body Moments of Inertia       (kgm2) = [2.09073E+07,2.13061E+07,3.70855E+07]
+	Body Products of Inertia      (kgm2) = [0,0,0]
+
+	***** Body Number 2, Name: spar *****
+	Body CG                          (m) = [0,0,-21.29]
+	Body Mass                       (kg) = 886687 
+	Body Moments of Inertia       (kgm2) = [9.44196E+07,9.44071E+07,2.85422E+07]
+	Body Products of Inertia      (kgm2) = [0,0,0]
+
+List of PTO(s): Number of PTOs = 1 
+
+	***** PTO Name: PTO1 *****
+	PTO Stiffness           (N/m;Nm/rad) = 40000
+	PTO Damping           (Ns/m;Nsm/rad) = 3000
+
+List of Constraint(s): Number of Constraints = 1 
+
+	***** Constraint Name: Constraint1 *****
+
+
+Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Irregular\RM3\RM3.slx...   
+Elapsed time is 0.142242 seconds.
+Elapsed time is 5.636976 seconds.
+
+Post-processing and saving...   
+Elapsed time is 0.476183 seconds.
