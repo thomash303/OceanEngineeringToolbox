@@ -1,12 +1,12 @@
 %% Loading data
-% 
-% temp = tempdir;
-% current = 'OpenModelica\OMEdit';
-% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-% 
-% filedir = [temp current file];
-% 
-% outputData = readtable(filedir);
+
+temp = tempdir;
+current = 'OpenModelica\OMEdit';
+file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+
+filedir = [temp current file];
+
+outputData = readtable(filedir);
 
 
 %% Body

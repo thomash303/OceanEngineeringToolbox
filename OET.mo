@@ -216,35 +216,27 @@ package OET
     model multibodyWECSingleDoF
       extends Modelica.Icons.Package;
       // World component (no gravity, Z-axis pointing downwards)
-      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, label1 = "x", label2 = "z", enableAnimation = false) "World coordinate system without gravity" annotation(
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, label1 = "x", label2 = "z", enableAnimation = true) "World coordinate system without gravity" annotation(
         Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
       // Prismatic joint constraining motion in heave
       // Force and torque element (adapt wave output to a force and apply to the body)
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
-        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = false, rCM_b = {0, 0, 0}, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl") annotation(
+        Placement(transformation(origin = {98, -30}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = false, rCM_b = {0, 0, 0}, animationEnable = true, geometryFile = "/RM3/geometry/plate.stl") annotation(
         Placement(transformation(origin = {12, -14}, extent = {{-10, -10}, {10, 10}})));
       Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}, rCM_b = {0, 0, 0}, I_32 = 4300, geometryFile = "/RM3/geometry/float.stl", animationEnable = false) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
-        Placement(transformation(origin = {102, 10}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Parts.Fixed fixed(animation = false)  annotation(
-        Placement(transformation(origin = {-44, -50}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion(animation = false, useQuaternions = false)  annotation(
-        Placement(transformation(origin = {-14, -38}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
-        Placement(transformation(origin = {40, -36}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {98, -6}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
+        Placement(transformation(origin = {-14, -42}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(freeMotion.frame_a, fixed.frame_b) annotation(
-        Line(points = {{-24, -38}, {-24, -39}, {-34, -39}, {-34, -50}}, color = {95, 95, 95}));
       connect(freeMotion.frame_b, spar.frame_a) annotation(
-        Line(points = {{-4, -38}, {-4, -20}, {2, -20}, {2, -14}}, color = {95, 95, 95}));
-  connect(prismatic.frame_a, spar.frame_b) annotation(
-        Line(points = {{30, -36}, {22, -36}, {22, -14}}, color = {95, 95, 95}));
-  connect(prismatic.frame_b, float.frame_a) annotation(
-        Line(points = {{50, -36}, {60, -36}, {60, -16}}, color = {95, 95, 95}));
+        Line(points = {{-4, -42}, {2, -42}, {2, -14}}, color = {95, 95, 95}));
+      connect(freeMotion.frame_a, world.frame_b) annotation(
+        Line(points = {{-24, -42}, {-30, -42}, {-30, -20}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -1234,8 +1226,7 @@ This component has a filled rectangular icon.
         HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
       Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
-        HideResult = true,
-        Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
+        Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}})));
       HydrostaticForce hydrostaticForce(enableHydrostaticForce = enableHydrostaticForce, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
         Placement(transformation(origin = {2, 0}, extent = {{-18, -18}, {18, 18}})));
     equation
@@ -1785,8 +1776,11 @@ This component has a filled rectangular icon.
       parameter Modelica.Units.SI.AngularAcceleration z_0Init[3] = {0,0,0} "Initial angular acceleration vector between word and centre of mass" annotation(Dialog(tab = "Initial Conditions"));
       parameter Boolean animationEnable = false "Enable animation with stl geometry file" annotation(
         Dialog(group = "Body Data"));
+      
+      parameter String file = "file://";
+      parameter String geometryDirectory = "file://" + "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox" + "/RM3/geometry/float.stl";
       // Mass
-      BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, r_0(start = r_0Init), v_0(start = v_0Init), a_0(start = a_0Init), angles_start = angles_0Init, w_0_start = w_0Init, z_0_start = z_0Init, useQuaternions = false) annotation(
+      BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, r_0(start = r_0Init), v_0(start = v_0Init), a_0(start = a_0Init), angles_start = angles_0Init, w_0_start = w_0Init, z_0_start = z_0Init, useQuaternions = true) annotation(
         Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
       parameter Modelica.Units.SI.Length ra_CM[3] = {0, 0, 0} "Position vector between joint A and the centre of mass" annotation(
         Dialog(group = "Mass"));
@@ -1806,13 +1800,13 @@ This component has a filled rectangular icon.
         Dialog(group = "Mass"));
       parameter Modelica.Units.SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
         Dialog(group = "Mass"));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = ra_CM) annotation(
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation(r = ra_CM, animation = false) annotation(
         Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = rCM_b) annotation(
+      Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1(r = rCM_b, animation = false) annotation(
         Placement(transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(length = 1, width = 1, height = 1, animation = animationEnable, shapeType = filePath + geometryFile) annotation(
+      Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape(length = 1, width = 1, height = 1, animation = true, shapeType = geometryDirectory, color = {255, 255, 0}) annotation(
         Placement(transformation(origin = {40, -36}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation(
+      Modelica.Mechanics.MultiBody.Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true, resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world, animation = false) annotation(
         Placement(transformation(origin = {50, 52}, extent = {{-10, -10}, {10, 10}})));
     equation
       connect(body.frame_a, frame_c) annotation(
