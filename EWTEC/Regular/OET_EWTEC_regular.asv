@@ -1,12 +1,12 @@
-% %% Loading data
-% 
-% temp = tempdir;
-% current = 'OpenModelica\OMEdit';
-% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-% 
-% filedir = [temp current file];
-% 
-% outputData = readtable(filedir);
+%% Loading data
+
+temp = tempdir;
+current = 'OpenModelica\OMEdit';
+file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+
+filedir = [temp current file];
+
+outputData = readtable(filedir);
 
 
 %% Body
@@ -148,7 +148,7 @@ figure('Name','Surge velocity response')
 plot(body(1).time, body(1).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on
-plot(output.bodies(1).time, output.bodies(1).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(2).time, output.bodies(2).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
 
@@ -163,7 +163,7 @@ figure('Name','Pitch velocity response')
 plot(body(1).time, body(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on;
-plot(output.bodies(1).time, output.bodies(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(2).time, output.bodies(2).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
 xlabel('Time (s)', 'Interpreter','latex');

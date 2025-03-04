@@ -9,14 +9,16 @@
 % data.t = t1;
 % data.k = k1;
 
-%% Loading data
-A1 = data.A;
-B1 = data.B;
-C1 = data.C;
-D1 = data.D;
+% %% Loading data
+% A1 = data.A;
+% B1 = data.B;
+% C1 = data.C;
+% D1 = data.D;
 
-t = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.t;
-k = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(2,2,:);
+t1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.t;
+k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(1,6,:);
+
+
 
 
 %% General
@@ -30,47 +32,47 @@ rho = 1000;
 % C1 = hydro.coefficients.radiation.stateSpace.noB2B.C1(1,1:2);
 % D1 = zeros(1,1);
 
-sys_ss1 = ss(A1,B1,C1,D1);
-fprintf('Orginal Transfer function:\n');
-sys_tf1 = tf(sys_ss1)
-poles1 = pole(sys_tf1);
-fprintf('Poles of the transfer function:\n');
-fprintf('%.4f\n', poles1);
-
-zeros1 = tzero(sys_tf1);
-fprintf('Zeros of the transfer function:\n');
-fprintf('%.4f\n', zeros1);
+% sys_ss1 = ss(A1,B1,C1,D1);
+% fprintf('Orginal Transfer function:\n');
+% sys_tf1 = tf(sys_ss1)
+% poles1 = pole(sys_tf1);
+% fprintf('Poles of the transfer function:\n');
+% fprintf('%.4f\n', poles1);
+% 
+% zeros1 = tzero(sys_tf1);
+% fprintf('Zeros of the transfer function:\n');
+% fprintf('%.4f\n', zeros1);
 
 % % IRF
 % t1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.t;
 % k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(1,1,:);
 % k1 = permute(k1,[3,1,2]);
 
-% IRF from state space
-dt = t1(2) - t1(1);
-
-for k = 1:length(t1)
-    k1_ss(k) = ((C1*expm(A1*0.06*(k-1)))*B1);
-end
-
-k1_ss = k1_ss/rho;
-
-% R2
-R2i1 = norm(k1-mean(k1));  
-R21 = 1-(norm(k1-(k1_ss).')/R2i1)^2;
-fprintf('R2 in Surge: %.4f\n', R21)
-
-% Plotting
-plot(t1,k1)
-hold on
-plot(t1, k1_ss, 'r--', 'LineWidth', 1.5); 
-hold on
-
-xlabel('Time (s)');
-ylabel('Response');
-title('Impulse Response Comparison in Surge (1,1)');
-legend('Original', 'Fitted State-Space Model');
-grid on;
+% % IRF from state space
+% dt = t1(2) - t1(1);
+% 
+% for k = 1:length(t1)
+%     k1_ss(k) = ((C1*expm(A1*0.06*(k-1)))*B1);
+% end
+% 
+% k1_ss = k1_ss/rho;
+% 
+% % R2
+% R2i1 = norm(k1-mean(k1));  
+% R21 = 1-(norm(k1-(k1_ss).')/R2i1)^2;
+% fprintf('R2 in Surge: %.4f\n', R21)
+% 
+% % Plotting
+% plot(t1,k1)
+% hold on
+% plot(t1, k1_ss, 'r--', 'LineWidth', 1.5); 
+% hold on
+% 
+% xlabel('Time (s)');
+% ylabel('Response');
+% title('Impulse Response Comparison in Surge (1,1)');
+% legend('Original', 'Fitted State-Space Model');
+% grid on;
 
 % %% Fitting a new state space
 % data = iddata(k1(:), [], dt); % Impulse response data
@@ -99,11 +101,11 @@ grid on;
 
 %% Fitting a new TF
 
-SSopt = ssestOptions('EnforceStability',true);
-fprintf('Newly Fit Transfer function:\n');
-
-% Results in a TF with much lower coefficients
-sys1_est = ss(tf1_est);
+% SSopt = ssestOptions('EnforceStability',true);
+% fprintf('Newly Fit Transfer function:\n');
+% 
+% % Results in a TF with much lower coefficients
+% sys1_est = ss(tf1_est);
 
 %----->>>>>>>> Alix Modification Start
 
@@ -120,26 +122,26 @@ Data = iddata(u1_op, u1_ip,dt); % unit step response input and output passed
 
 %-----<<<<<<<< Alix Modification End
 
-tf1_est = tfest(Data,3) 
+tf1_est = tfest(Data,4) 
 poles2 = pole(tf1_est);
 fprintf('Poles of the transfer function:\n');
 fprintf('%.4f\n', poles2);
 ss_new = ss(tf1_est);
 
-figure;
+% figure;
 
-
-[y,t]=impulse(tf1_est, t1); hold on;
-plot(t,y,t1, k1, 'r', 'LineWidth', 1.5);
-legend('Estimated State-Space Model', 'Original Impulse Response');
-xlabel('Time (s)'); ylabel('Response');
-title('Impulse Response Comparison');
-grid on;
+% 
+% [y,t]=impulse(tf1_est, t1); hold on;
+% plot(t,y,t1, k1, 'r', 'LineWidth', 1.5);
+% legend('Estimated State-Space Model', 'Original Impulse Response');
+% xlabel('Time (s)'); ylabel('Response');
+% title('Impulse Response Comparison');
+% grid on;
 
 % Display the estimated state-space matrices
 A = ss_new.A;
 B = ss_new.B;
-C = ss_new.C;
+C = ss_new.C*1000;
 D = ss_new.D;
 disp('State-space matrices:');
 disp('A = '), disp(A);

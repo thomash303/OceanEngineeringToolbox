@@ -218,15 +218,15 @@ end
 
 % General single PTO and mooring matrices
 
-hydro.pto.linear.cpto = diag([0,0,3000,0,0,0]);
-hydro.pto.linear.kpto = diag([0,0,-40000,0,0,0]);
-
-hydro.mooring.linear.cm = diag([50,60,3000,500,40,60]);
-hydro.mooring.linear.km = diag([100,400,5000,300,200,100]);
-
-hydro.wave.spectrumImport.w = linspace(0,5,51);
-hydro.wave.spectrumImport.S = sin(hydro.wave.spectrumImport.w/1.6);
-hydro.wave.spectrumImport.phase = 2 * pi * rand(1, 51);
+% hydro.pto.linear.cpto = diag([0,0,3000,0,0,0]);
+% hydro.pto.linear.kpto = diag([0,0,-40000,0,0,0]);
+% 
+% hydro.mooring.linear.cm = diag([50,60,3000,500,40,60]);
+% hydro.mooring.linear.km = diag([100,400,5000,300,200,100]);
+% 
+% hydro.wave.spectrumImport.w = linspace(0,5,51);
+% hydro.wave.spectrumImport.S = sin(hydro.wave.spectrumImport.w/1.6);
+% hydro.wave.spectrumImport.phase = 2 * pi * rand(1, 51);
 
 % Spectrum import
 
