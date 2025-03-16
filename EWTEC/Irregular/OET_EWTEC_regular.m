@@ -1,12 +1,12 @@
 %% Loading data
-
-temp = tempdir;
-current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-
-filedir = [temp current file];
-
-outputData = readtable(filedir);
+% 
+% temp = tempdir;
+% current = 'OpenModelica\OMEdit';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% 
+% filedir = [temp current file];
+% 
+% outputData = readtable(filedir);
 
 
 %% Body
@@ -39,7 +39,7 @@ nKin = size(kinematicNames,2);
 % Dynamics
 dynamicNames = {'excitationForce', 'radiationForce' 'hydrostaticForce'};
 
-excitationForce = 'excitationRegularWave';
+excitationForce = 'excitationIrregularWave';
 
 
 dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '_hydrostatic_hydrostaticForce'};
@@ -143,27 +143,40 @@ dyUnits = {'N','N','N','Nm','Nm','Nm'};
 
 
 %% Plot
-% Surge velocity (need to change back to 1, only did 3 for visual)
-figure('Name','Surge velocity response')
-plot(body(1).time, body(1).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
+% % Surge velocity (need to change back to 1, only did 3 for visual)
+% figure('Name','Surge velocity response')
+% plot(body(1).time, body(1).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
+%     ,blue);
+% hold on
+% plot(output.bodies(1).time, output.bodies(1).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
+%     ,orange);
+
+% 
+% xlabel('Time (s)', 'Interpreter','latex');
+% ylabel('Velocity (m/s)', 'Interpreter','latex');
+% title('RM3 Surge Velocity Response', 'Interpreter','latex');
+% legend('OET', 'WEC-Sim', 'Interpreter'...
+%     ,'latex', 'location', 'best');
+
+% Pitch position
+figure('Name','Pitch position response')
+plot(body(1).time, body(1).position(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
-hold on
-plot(output.bodies(2).time, output.bodies(2).velocity(:,1), 'LineWidth', LineWidth, 'Color' ...
+hold on;
+plot(output.bodies(1).time, output.bodies(1).position(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
-
 xlabel('Time (s)', 'Interpreter','latex');
-ylabel('Velocity (m/s)', 'Interpreter','latex');
-title('RM3 Surge Velocity Response', 'Interpreter','latex');
-legend('OET', 'WEC-Sim', 'Interpreter'...
-    ,'latex', 'location', 'best');
+ylabel('Position (rad)', 'Interpreter','latex');
+title('RM3 Pitch Position Response', 'Interpreter','latex');
+legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'best');
 
 % Pitch velocity
 figure('Name','Pitch velocity response')
 plot(body(1).time, body(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on;
-plot(output.bodies(2).time, output.bodies(2).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(1).time, output.bodies(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
 xlabel('Time (s)', 'Interpreter','latex');
@@ -171,7 +184,7 @@ ylabel('Velocity (rad/s)', 'Interpreter','latex');
 title('RM3 Pitch Velocity Response', 'Interpreter','latex');
 legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'best');
 
-% Heave velocity
+% Heave velocity Full
 figure('Name','Heave velocity response')
 plot(body(1).time, body(1).velocity(:,3), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
@@ -184,6 +197,27 @@ plot(body(2).time, body(2).velocity(:,3), '--', 'LineWidth', LineWidth, 'Color' 
 hold on
 plot(output.bodies(2).time, output.bodies(2).velocity(:,3), '--', 'LineWidth', LineWidth, 'Color' ...
     ,orange);
+
+xlabel('Time (s)', 'Interpreter','latex');
+ylabel('Velocity (m/s)', 'Interpreter','latex');
+title('RM3 Heave Velocity Response', 'Interpreter','latex');
+legend('OET', 'WEC-Sim', 'Interpreter'...
+    ,'latex', 'location', 'best');
+
+
+% % Heave velocity Truncated
+% figure('Name','Heave velocity response')
+% plot(body(1).time(11252:13127), body(1).velocity(11252:13127,3), 'LineWidth', LineWidth, 'Color' ...
+%     ,blue);
+% hold on
+% plot(output.bodies(1).time(1501:1751), output.bodies(1).velocity(1501:1751,3), 'LineWidth', LineWidth, 'Color' ...
+%     ,orange);
+% hold on;
+% plot(body(2).time(11252:13127), body(2).velocity(11252:13127,3), '--', 'LineWidth', LineWidth, 'Color' ...
+%     ,blue);
+% hold on
+% plot(output.bodies(2).time(1501:1751), output.bodies(2).velocity(1501:1751,3), '--', 'LineWidth', LineWidth, 'Color' ...
+%     ,orange);
 
 xlabel('Time (s)', 'Interpreter','latex');
 ylabel('Velocity (m/s)', 'Interpreter','latex');

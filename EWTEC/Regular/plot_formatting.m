@@ -1,6 +1,3 @@
-close all;
-clear all;
-clc;
 
 %% Set default settings
 Fsize = 12;

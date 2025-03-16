@@ -16,7 +16,7 @@
 % D1 = data.D;
 
 t1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.t;
-k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(1,6,:);
+k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(1,1,:);
 
 
 
@@ -86,7 +86,7 @@ rho = 1000;
 % xlabel('Time (s)'); ylabel('Response');
 % title('Impulse Response Comparison');
 % grid on;
-% 
+
 % % Display the estimated state-space matrices
 % A = sys1_est.A;
 % B = sys1_est.B;
@@ -122,7 +122,7 @@ Data = iddata(u1_op, u1_ip,dt); % unit step response input and output passed
 
 %-----<<<<<<<< Alix Modification End
 
-tf1_est = tfest(Data,4) 
+tf1_est = tfest(Data,3) 
 poles2 = pole(tf1_est);
 fprintf('Poles of the transfer function:\n');
 fprintf('%.4f\n', poles2);
@@ -130,13 +130,16 @@ ss_new = ss(tf1_est);
 
 % figure;
 
+k1 = permute(k1,[3,1,2]);
+
 % 
-% [y,t]=impulse(tf1_est, t1); hold on;
-% plot(t,y,t1, k1, 'r', 'LineWidth', 1.5);
-% legend('Estimated State-Space Model', 'Original Impulse Response');
-% xlabel('Time (s)'); ylabel('Response');
-% title('Impulse Response Comparison');
-% grid on;
+figure('Name','IRF')
+[y,t]=impulse(tf1_est, t1); hold on;
+plot(t, y, 'b--', t1, k1, 'r:', 'LineWidth', 1.5);
+legend('Estimated State-Space Model', 'Original Impulse Response');
+xlabel('Time (s)'); ylabel('Response');
+title('Impulse Response Comparison');
+grid on;
 
 % Display the estimated state-space matrices
 A = ss_new.A;

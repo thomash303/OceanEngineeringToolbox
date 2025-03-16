@@ -1,12 +1,12 @@
 %% Loading data
 
-temp = tempdir;
-current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-
-filedir = [temp current file];
-
-outputData = readtable(filedir);
+% temp = tempdir;
+% current = 'OpenModelica\OMEdit';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% 
+% filedir = [temp current file];
+% 
+% outputData = readtable(filedir);
 
 
 %% Body
@@ -45,6 +45,9 @@ dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '
 forces = {'_F_1_','_F_2_','_F_3_','_F_4_','_F_5_','_F_6_'};
 nDy = size(dynamicNames,2); 
 
+
+[~, uidx] = unique(outputData.time, 'stable');
+outputData = outputData(uidx, :);
 
 for i = 1:bodies
     body(i).body = bodyName{i};

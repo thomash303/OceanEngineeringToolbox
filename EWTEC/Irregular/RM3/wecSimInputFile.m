@@ -32,12 +32,12 @@ simu.stateSpace = 1;
 %  waves.spectrumType = 'PM';                % Specify Wave Spectrum Type
 %  waves.direction=[0];
 
-% Irregular Waves using JS Spectrum with Equal Energy and Seeded Phase
-waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
-waves.height = 2.5;                       % Significant Wave Height [m]
-waves.period = 8;                         % Peak Period [s]
-waves.spectrumType = 'JS';                % Specify Wave Spectrum Type
-waves.bem.option = 'EqualEnergy';         % Uses 'EqualEnergy' bins (default) 
+% % Irregular Waves using JS Spectrum with Equal Energy and Seeded Phase
+% waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
+% waves.height = 2.5;                       % Significant Wave Height [m]
+% waves.period = 8;                         % Peak Period [s]
+% waves.spectrumType = 'JS';                % Specify Wave Spectrum Type
+% waves.bem.option = 'EqualEnergy';         % Uses 'EqualEnergy' bins (default) 
 
 % % Irregular Waves using PM Spectrum with Traditional and State Space 
 % waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
@@ -51,9 +51,9 @@ waves.bem.option = 'EqualEnergy';         % Uses 'EqualEnergy' bins (default)
 % waves = waveClass('spectrumImport');      % Create the Wave Variable and Specify Type
 % waves.spectrumFile = 'spectrumData.mat';  % Name of User-Defined Spectrum File [:,2] = [f, Sf]
 
-% % Waves with imported wave elevation time-history  
-% waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
-% waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
+% Waves with imported wave elevation time-history  
+waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
+waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
 
 %% Body Data
 % Float
@@ -79,6 +79,6 @@ constraint(1).location = [0 0 0];               % Constraint Location [m]
 
 % Translational PTO
 pto(1) = ptoClass('PTO1');                      % Initialize PTO Class for PTO1
-pto(1).stiffness = 40000;                           % PTO Stiffness [N/m]
-pto(1).damping = 3000;                       % PTO Damping [N/(m/s)]
+pto(1).stiffness = 0;                           % PTO Stiffness [N/m]
+pto(1).damping = 0;%1200000;                       % PTO Damping [N/(m/s)]
 pto(1).location = [0 0 0];                      % PTO Location [m]

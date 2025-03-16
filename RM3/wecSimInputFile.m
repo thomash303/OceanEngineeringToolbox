@@ -14,23 +14,23 @@ simu.stateSpace = 1;
 % % noWaveCIC, no waves with radiation CIC  
 % waves = waveClass('noWaveCIC');       % Initialize Wave Class and Specify Type  
 
-% % % Regular Waves  
-% waves = waveClass('regular');           % Initialize Wave Class and Specify Type                                 
-% waves.height = 2.5;                     % Wave Height [m]
-% waves.period = 8;                       % Wave Period [s]
+% % Regular Waves  
+waves = waveClass('regular');           % Initialize Wave Class and Specify Type                                 
+waves.height = 2.5;                     % Wave Height [m]
+waves.period = 8;                       % Wave Period [s]
 
 % % Regular Waves with CIC
 % waves = waveClass('regularCIC');          % Initialize Wave Class and Specify Type                                 
 % waves.height = 2.5;                       % Wave Height [m]
 % waves.period = 8;                         % Wave Period [s]
 
-% Irregular Waves using PM Spectrum 
- waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
- waves.height = 2.5;                       % Significant Wave Height [m]
- waves.period = 8;                         % Peak Period [s]
- waves.spectrumType = 'JS';                % Specify Wave Spectrum Type
- waves.direction = [0];
- waves.gamma = 3.3;
+% % Irregular Waves using PM Spectrum 
+%  waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
+%  waves.height = 2.5;                       % Significant Wave Height [m]
+%  waves.period = 8;                         % Peak Period [s]
+%  waves.spectrumType = 'JS';                % Specify Wave Spectrum Type
+%  waves.direction = [0];
+%  waves.gamma = 3.3;
 
 % % Irregular Waves using JS Spectrum with Equal Energy and Seeded Phase
 % waves = waveClass('irregular');           % Initialize Wave Class and Specify Type
@@ -68,21 +68,21 @@ body(1).mass = 'equilibrium';
 body(1).inertia = [20907301 21306090.66 37085481.11];  % Moment of Inertia [kg*m^2]     
 
 % 
-% % Spar/Plate
-% body(2) = bodyClass('hydroData/rm3.h5'); 
-% body(2).geometryFile = 'geometry/plate.stl'; 
-% body(2).mass = 'equilibrium';                   
-% body(2).inertia = [94419614.57 94407091.24 28542224.82];
+% Spar/Plate
+body(2) = bodyClass('hydroData/rm3.h5'); 
+body(2).geometryFile = 'geometry/plate.stl'; 
+body(2).mass = 'equilibrium';                   
+body(2).inertia = [94419614.57 94407091.24 28542224.82];
 
 %% PTO and Constraint Parameters
 % Floating (3DOF) Joint
 constraint(1) = constraintClass('Constraint1'); % Initialize Constraint Class for Constraint1
 constraint(1).location = [0 0 0];               % Constraint Location [m]
 
-
+% 
 % Translational PTO
-% pto(1) = ptoClass('PTO1');                      % Initialize PTO Class for PTO1
-% pto(1).stiffness = 0;                           % PTO Stiffness [N/m]
-% pto(1).damping =  0;%1200000;                       % PTO Damping [N/(m/s)]
-% pto(1).location = [0 0 0];                      % PTO Location [m]
+pto(1) = ptoClass('PTO1');                      % Initialize PTO Class for PTO1
+pto(1).stiffness = 0;                           % PTO Stiffness [N/m]
+pto(1).damping =  0;%1200000;                       % PTO Damping [N/(m/s)]
+pto(1).location = [0 0 0];                      % PTO Location [m]
 

@@ -1,16 +1,16 @@
 %% Loading data
 
-% temp = tempdir;
-% current = 'OpenModelica\OMEdit';
-% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-% 
-% filedir = [temp current file];
-% 
-% outputData = readtable(filedir);
+temp = tempdir;
+current = 'OpenModelica\OMEdit';
+file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+
+filedir = [temp current file];
+
+outputData = readtable(filedir);
 
 
 %% Body
-% body = {};
+body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
@@ -37,8 +37,8 @@ nKin = size(kinematicNames,2);
 % Dynamics
 dynamicNames = {'excitationForce', 'radiationForce' 'hydrostaticForce'};
 
-excitationForce = 'excitationRegularWave';
-% excitationForce = 'excitationIrregularWave';
+% excitationForce = 'excitationRegularWave';
+excitationForce = 'excitationIrregularWave';
 % excitationForce = 'spectrumImport';
 
 dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '_hydrostatic_hydrostaticForce'};
@@ -47,25 +47,29 @@ nDy = size(dynamicNames,2);
 
 kinematics = {'position', 'velocity' 'acceleration'};
 
-% % Saving OET
-% for i = 1:bodies
-%     body(i).body = bodyName{i};
-%     body(i).time = outputData.time;
-%     for j = 1:nKin
-%         for k = 1:DoF
-%             tempName = [bodyName{i} kinSourceName kinQuantities{j,k}];
-%             body(i).(kinematicNames{j})(:,k) = outputData.(tempName);
-%         end
-%     end
-% 
-%     for j = 1:nDy
-%         for k = 1:DoF
-%             tempName = [bodyName{i} dySourceName{j} forces{k}];
-%             body(i).(dynamicNames{j})(:,k) = outputData.(tempName);
-%         end
-%     end
-% 
-% end
+[~, uidx] = unique(outputData.time, 'stable');
+outputData = outputData(uidx, :);
+
+
+% Saving OET
+for i = 1:bodies
+    body(i).body = bodyName{i};
+    body(i).time = outputData.time;
+    for j = 1:nKin
+        for k = 1:DoF
+            tempName = [bodyName{i} kinSourceName kinQuantities{j,k}];
+            body(i).(kinematicNames{j})(:,k) = outputData.(tempName);
+        end
+    end
+
+    for j = 1:nDy
+        for k = 1:DoF
+            tempName = [bodyName{i} dySourceName{j} forces{k}];
+            body(i).(dynamicNames{j})(:,k) = outputData.(tempName);
+        end
+    end
+
+end
 
 %% Plotting OET and WEC-Sim
 dynamics = {'forceExcitation','forceRadiationDamping','forceRestoring'};

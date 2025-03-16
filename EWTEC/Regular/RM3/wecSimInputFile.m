@@ -9,9 +9,9 @@ simu.mode = 'normal';                   % Specify Simulation Mode ('normal','acc
 simu.explorer = 'on';                   % Turn SimMechanics Explorer (on/off)
 simu.startTime = 0;                     % Simulation Start Time [s]
 simu.rampTime = 100;                    % Wave Ramp Time [s]
-simu.endTime = 600;  %600                   % Simulation End Time [s]
+simu.endTime = 400;  %600                   % Simulation End Time [s]
 simu.solver = 'ode4';                   % simu.solver = 'ode4' for fixed step & simu.solver = 'ode45' for variable step 
-simu.dt = 0.05; 							% Simulation time-step [s]
+simu.dt = 0.1; 							% Simulation time-step [s]
 simu.b2b = 0;
 simu.stateSpace = 1;
 
@@ -60,7 +60,7 @@ waves.period = 8;                       % Wave Period [s]
 % waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
 % waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
 
-%% Both bodies
+% Both bodies
 % Float
 body(1) = bodyClass('hydroData/rm3.h5');      
     % Create the body(1) Variable, Set Location of Hydrodynamic Data File 
@@ -106,7 +106,7 @@ pto(1).location = [0 0 0];                      % PTO Location [m]
 % constraint(1) = constraintClass('Constraint1'); % Initialize Constraint Class for Constraint1
 % constraint(1).location = [0 0 0];               % Constraint Location [m]
 % 
-% %% Spar only 
+%% Spar only 
 % %% Spar
 % % Spar
 % body(1) = bodyClass('hydroData/rm3.h5');      
