@@ -16,7 +16,7 @@
 % D1 = data.D;
 
 t1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.t;
-k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(1,1,:);
+k1 = body(1,1).hydroData.hydro_coeffs.radiation_damping.impulse_response_fun.K(6,6,:);
 
 
 
@@ -122,7 +122,7 @@ Data = iddata(u1_op, u1_ip,dt); % unit step response input and output passed
 
 %-----<<<<<<<< Alix Modification End
 
-tf1_est = tfest(Data,3) 
+tf1_est = tfest(Data,5) 
 poles2 = pole(tf1_est);
 fprintf('Poles of the transfer function:\n');
 fprintf('%.4f\n', poles2);

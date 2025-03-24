@@ -1,12 +1,12 @@
 %% Loading data
 
-temp = tempdir;
-current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-
-filedir = [temp current file];
-
-outputData = readtable(filedir);
+% temp = tempdir;
+% current = 'OpenModelica\OMEdit';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% 
+% filedir = [temp current file];
+% 
+% outputData = readtable(filedir);
 
 
 %% Body
@@ -15,7 +15,7 @@ body = {};
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
 bodies = 2;
-bodyName = {'float', 'spar'};
+bodyName = {'float','spar'};
 
 %% Data Extraction
 

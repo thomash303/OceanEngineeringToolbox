@@ -8,30 +8,32 @@ package OET
       extends Modelica.Icons.Package;
       // World component (no gravity, Z-axis pointing downwards)
       inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, label1 = "x", label2 = "z") "World coordinate system without gravity" annotation(
-        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {-50, -18}, extent = {{-10, -10}, {10, 10}})));
       // Prismatic joint constraining motion in heave
       // Force and torque element (adapt wave output to a force and apply to the body)
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
-        Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {100, -34}, extent = {{-10, -10}, {10, 10}})));
       Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = false) annotation(
         Placement(transformation(origin = {12, -16}, extent = {{-10, -10}, {10, 10}})));
       Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random", Hs = 1) annotation(
-        Placement(transformation(origin = {102, 10}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {100, -8}, extent = {{-10, -10}, {10, 10}})));
       PTO.LinearPTO linearPTO annotation(
-        Placement(transformation(origin = {42, -34}, extent = {{-10, -10}, {10, 10}})));
-      Mooring.LinearMooring linearMooring annotation(
-        Placement(transformation(origin = {-24, -52}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {40, -28}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
+        Placement(transformation(origin = {-18, -30}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(linearPTO.frame_a, spar.frame_b) annotation(
-        Line(points = {{32, -34}, {22, -34}, {22, -16}}, color = {95, 95, 95}));
       connect(linearPTO.frame_b, float.frame_a) annotation(
-        Line(points = {{52, -34}, {60, -34}, {60, -16}}, color = {95, 95, 95}));
-      connect(linearMooring.frame_a, spar.frame_a) annotation(
-        Line(points = {{-34, -52}, {2, -52}, {2, -16}}, color = {95, 95, 95}));
+        Line(points = {{50, -28}, {58, -28}, {58, -16}, {60, -16}}, color = {95, 95, 95}));
+  connect(linearPTO.frame_a, spar.frame_b) annotation(
+        Line(points = {{30, -28}, {22, -28}, {22, -16}}, color = {95, 95, 95}));
+  connect(freeMotion.frame_b, spar.frame_a) annotation(
+        Line(points = {{-8, -30}, {2, -30}, {2, -16}}, color = {95, 95, 95}));
+  connect(freeMotion.frame_a, world.frame_b) annotation(
+        Line(points = {{-28, -30}, {-40, -30}, {-40, -18}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -223,26 +225,26 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
         Placement(transformation(origin = {98, -30}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, -21.29}, enableHydrostaticForce = true, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 21.29, 0, 0, 0}) annotation(
-        Placement(transformation(origin = {12, -14}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, ra_CM = {0, 0, 20.57}, offset = {0, 0, 0.72, 0, 0, 0}) annotation(
+      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableHydrostaticForce = true, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 21.29, 0, 0, 0}, ra_CM = {0, 0, -21.29}) annotation(
+        Placement(transformation(origin = {20, -16}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
+      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
         Placement(transformation(origin = {98, -6}, extent = {{-10, -10}, {10, 10}})));
-      Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
-        Placement(transformation(origin = {-20, -44}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
-        Placement(transformation(origin = {40, -38}, extent = {{-10, -10}, {10, 10}})));
+  PTO.LinearPTO_mod linearPTO_mod annotation(
+        Placement(transformation(origin = {44, -40}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
+        Placement(transformation(origin = {-10, -32}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(freeMotion.frame_a, world.frame_b) annotation(
-        Line(points = {{-30, -44}, {-30, -20}}, color = {95, 95, 95}));
-      connect(freeMotion.frame_b, spar.frame_a) annotation(
-        Line(points = {{-10, -44}, {2, -44}, {2, -14}}, color = {95, 95, 95}));
-  connect(prismatic.frame_b, float.frame_a) annotation(
-        Line(points = {{50, -38}, {60, -38}, {60, -16}}, color = {95, 95, 95}));
-  connect(prismatic.frame_a, spar.frame_b) annotation(
-        Line(points = {{30, -38}, {22, -38}, {22, -14}}, color = {95, 95, 95}));
+      connect(linearPTO_mod.frame_b, float.frame_a) annotation(
+        Line(points = {{54, -40}, {60, -40}, {60, -16}}, color = {95, 95, 95}));
+      connect(linearPTO_mod.frame_a, spar.frame_b) annotation(
+        Line(points = {{34, -40}, {30, -40}, {30, -16}}, color = {95, 95, 95}));
+  connect(freeMotion.frame_b, spar.frame_a) annotation(
+        Line(points = {{0, -32}, {10, -32}, {10, -16}}, color = {95, 95, 95}));
+  connect(freeMotion.frame_a, world.frame_b) annotation(
+        Line(points = {{-20, -32}, {-30, -32}, {-30, -20}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -360,6 +362,73 @@ package OET
       annotation(
         Diagram(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -100}, {100, 100}})));
     end RM3Visual;
+    
+    model OSWEC
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, label1 = "x", label2 = "z", enableAnimation = true) "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-40, -20}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/OSWECHydroCoeff.mat")  annotation(
+        Placement(transformation(origin = {98, -30}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.HydrodynamicBody base(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 999, I_22 = 999, I_33 = 999, enableHydrostaticForce = true, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 10, 0, 0, 0}, ra_CM = {0, 0, -10}, rCM_b = {0, 0, 1.1}) annotation(
+        Placement(transformation(origin = {20, -16}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.HydrodynamicBody flap(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 1850000, I_22 = 1850000, I_33 = 1850000, geometryFile = "/RM3/geometry/flap.stl", animationEnable = false, offset = {0, 0, 3.9, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 5}) annotation(
+        Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
+      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
+        Placement(transformation(origin = {98, -6}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Parts.Fixed fixed annotation(
+        Placement(transformation(origin = {-16, -44}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Revolute revolute(n = {0, 1, 0})  annotation(
+        Placement(transformation(origin = {46, -40}, extent = {{-10, -10}, {10, 10}})));
+    equation
+// Connections
+      connect(fixed.frame_b, base.frame_a) annotation(
+        Line(points = {{-6, -44}, {10, -44}, {10, -16}}, color = {95, 95, 95}));
+      connect(revolute.frame_a, base.frame_b) annotation(
+        Line(points = {{36, -40}, {30, -40}, {30, -16}}, color = {95, 95, 95}));
+      connect(revolute.frame_b, flap.frame_a) annotation(
+        Line(points = {{56, -40}, {60, -40}, {60, -16}}, color = {95, 95, 95}));
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+            <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+            <p>This model represents a simplified 1D single-body wave energy converter system, 
+            focusing on the vertical motion of the body in response to wave excitation forces.</p>
+            
+            <p><b>Model Description</b></p>
+            <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+            The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+            
+            <p><b>Key Components</b></p>
+            <ul>
+              <li><code>world</code>: Defines the world coordinate system without gravity</li>
+              <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+              <li><code>prismatic</code>: Allows vertical motion of the body</li>
+              <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+              <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+            </ul>
+            
+            <p><b>Assumptions and Simplifications</b></p>
+            <ul>
+              <li>The model considers only vertical motion (1D) of the WEC</li>
+              <li>Gravity is not included in the world model</li>
+              <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+            </ul>
+            
+            <p><b>Notes</b></p>
+            <ul>
+              <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+              <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+              <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+              <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+            </ul>
+          </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 600, Tolerance = 1e-08, Interval = 0.02));
+    end OSWEC;
     annotation(
       Icon(graphics = {Polygon(points = {{-40, 40}, {40, 0}, {-40, -40}, {-40, 40}}, lineColor = {0, 0, 0}, fillColor = // Red color for the polygon
       {0, 0, 0}, fillPattern = // Red fill
@@ -761,8 +830,8 @@ This component has a filled rectangular icon.
       parameter Modelica.Units.SI.Length d = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.depth", 1, 1)) "Water depth [m]" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
       // allow user option to adjust in wave
-      parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
-        Dialog(group = "Wave Spectrum Parameters"));
+      /*parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
+                                Dialog(group = "Wave Spectrum Parameters"));*/
       // use can adjust, but they shouldn't
     end waveData;
 
@@ -857,6 +926,19 @@ This component has a filled rectangular icon.
       parameter Real stateStartInter[(nbodies + 1), 1] = cat(1, one, transpose(n_states_full_read_Uncoupled)) "Intermediate vector";
       parameter Integer stateStart = integer(sum(stateStartInter[1:bodyIndex]));
     end radiationDataTester;
+
+    model bodyData
+      extends DataImport.multibodyData;
+    
+    protected
+        parameter Modelica.Units.SI.Volume vol[1, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.vol" + bodyIndexString, 1, 1) "Body volume";
+    
+        parameter Modelica.Units.SI.Height cg[3, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cg" + bodyIndexString, 3, 1) "Center of gravity"; 
+        
+        parameter Modelica.Units.SI.Height cb[3, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cb" + bodyIndexString, 3, 1) "Center of buoyancy"; 
+    equation
+
+    end bodyData;
   end DataImport;
 
   package Hydro
@@ -929,7 +1011,7 @@ This component has a filled rectangular icon.
         HideResult = true,
         choices(checkBox = true),
         Dialog(group = "Damping/Drag"));
-      // Sensor (validation)
+  // Sensor (validation)
     equation
 //Conections
       connect(hydrostatic.frame_a, body.frame_c) annotation(
@@ -1010,9 +1092,12 @@ This component has a filled rectangular icon.
 
     model HydrostaticForce "Hydrostatic Force and Torque Calculation"
       // Import hydro coefficients
-      extends DataImport.FilePath;
-      extends DataImport.BodyIndex;
-      extends DataImport.hydrostaticData;
+      //extends DataImport.FilePath;
+      //extends DataImport.BodyIndex;
+      extends DataImport.massNoB2BData;
+      extends DataImport.hydrostaticData;  
+      extends DataImport.bodyData;
+      extends DataImport.physicalConstantData;
       // Inherit frame_a
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
       // Position connectors
@@ -1029,12 +1114,25 @@ This component has a filled rectangular icon.
         Dialog(group = "Hydrostatic"));
       Real offset[6];
       // = {0,0,21.29,0,0,0};
+      constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+      //Modelica.Units.SI.Force fg = M[1,1]*g;
+     // Modelica.Units.SI.Force fb = vol[1,1]*rho*g;
+     // Modelica.Units.SI.Force Fg[3] = {0,0,fg};
+     // Modelica.Units.SI.Force Fb[3] = {0,0,fb};
+     // Modelica.Units.SI.Force Fnet[3] = Fg - Fb;
+     // Modelica.Units.SI.Position cgbM[3,1] = cb - cg;
+     // Modelica.Units.SI.Position cgb[3] = cgbM[:,1];
+      //Modelica.Units.SI.Torque Tnet[3];
+     // Real ll[3];
+      
     protected
       Real displacement[6] = cat(1, u_abs, theta_abs) "Combined displacement vector [m, rad]";
       Modelica.Units.SI.Force f_element[3];
       Modelica.Units.SI.Torque t_element[3];
       //Real offset[6] = {0,0,0,0,0,0};
     equation
+    //ll = {cgb[3]*sin(theta_abs[2]),0,cgb[3]*cos(theta_abs[2])};
+    // Tnet = cross(Fb,-ll);
 // Use the switch to conditionally output the hydrostatic force torque element
       if enableHydrostaticForce then
 // Calculate the hydrostatic force/torque vector
@@ -1063,23 +1161,23 @@ This component has a filled rectangular icon.
         HideResult = true,
         Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
       // Damping coefficients
-      parameter Real Cvtx = 0.01 "Translational damping coefficient for x-axis [-]" annotation(
+      parameter Real Cvtx = 0 "Translational damping coefficient for x-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cvty = 0.01 "Translational damping coefficient for y-axis [-]" annotation(
+      parameter Real Cvty = 0 "Translational damping coefficient for y-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cvtz = 0.01 "Translational damping coefficient for z-axis [-]" annotation(
+      parameter Real Cvtz = 0 "Translational damping coefficient for z-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cvrx = 0.01 "Rotational damping coefficient for x-axis [-]" annotation(
+      parameter Real Cvrx = 0 "Rotational damping coefficient for x-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cvry = 0.01 "Rotational damping coefficient for y-axis [-]" annotation(
+      parameter Real Cvry = 0 "Rotational damping coefficient for y-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cvrz = 0.01 "Rotational damping coefficient for z-axis [-]" annotation(
+      parameter Real Cvrz = 1000 "Rotational damping coefficient for z-axis [-]" annotation(
         HideResult = true);
       parameter Real Cv[6, 6] = diagonal({Cvtx, Cvty, Cvtz, Cvrx, Cvry, Cvrz}) "Combined damping coefficient matrix";
       // Drag coefficients
-      parameter Real Cdtx = 100000 "Translational drag coefficient for x-axis [-]" annotation(
+      parameter Real Cdtx = 0 "Translational drag coefficient for x-axis [-]" annotation(
         HideResult = true);
-      parameter Real Cdty = 10000 "Translational drag coefficient for y-axis [-]" annotation(
+      parameter Real Cdty = 0 "Translational drag coefficient for y-axis [-]" annotation(
         HideResult = true);
       parameter Real Cdtz = 0 "Translational drag coefficient for z-axis [-]" annotation(
         HideResult = true);
@@ -1139,7 +1237,7 @@ This component has a filled rectangular icon.
         Line(points = {{-14, -36}, {-100, -36}, {-100, 0}}, color = {95, 95, 95}));
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitation")}),
-        Diagram);
+        Diagram(coordinateSystem(extent = {{-120, 60}, {20, -40}})));
     end Excitation;
 
     model FilePath "Block to locally change file name"
@@ -1767,7 +1865,7 @@ This component has a filled rectangular icon.
           */
 // Note a now defined as local translational acceleration
       f_iner = (m + Ainf11)*a + Ainf12*z_a;
-      t_iner = (I + Ainf22)*z_a + cross(w_a, (I + Ainf22)*w_a) + Ainf21*a;
+      t_iner = (I + Ainf22)*z_a  + cross(w_a, (I + Ainf22)*w_a) + Ainf21*a; // may need to readd Ainf22 into crossporudct with I
       f_element = f_iner;
       t_element = t_iner;
       frame_a.f = f_element;
@@ -2052,7 +2150,7 @@ This component has a filled rectangular icon.
 // Calculate and apply ramping to the excitation force
 // if time < Trmp then
 // Ramp up the excitation force during the initial phase
-        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
+        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp;
 //else
 // Apply full excitation force after the ramping period
 //F[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
@@ -2078,7 +2176,7 @@ This component has a filled rectangular icon.
       // Parameters to call
       parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-      Modelica.Units.SI.Height A "Wave amplitude";
+      parameter Modelica.Units.SI.Height A "Wave amplitude";
       parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
         Dialog(group = "Simulation Parameters"));
       parameter Boolean enableExcitationForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -2124,11 +2222,14 @@ This component has a filled rectangular icon.
         
         */
 // Assign excitation force to output
-//frame_a.f[3] = f_element[3];
+//frame_a.f[3] = 0;
 //frame_a.f[1] = 0;
-//frame_a.f[2] = 0;
+//frame_a.f[2] = -f_element[2];
       frame_a.f = -f_element;
-      frame_a.t = -t_element;
+frame_a.t = -t_element;
+//frame_a.t[3] = 0;
+//frame_a.t[1] = 0;
+//frame_a.t[2] = -t_element[2];
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Regular Wave")}),
         Diagram(coordinateSystem(extent = {{-120, 20}, {-40, -60}})));
@@ -2147,9 +2248,9 @@ This component has a filled rectangular icon.
       // Parameters to call
       parameter Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
         Dialog(group = "Simulation Parameters"));
-      Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
-      Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component";
-      Real phi[n_omega] "Wave components phase shift";
+      parameter Modelica.Units.SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
+      parameter Modelica.Units.SI.Length zeta[n_omega] "Wave amplitude component";
+      parameter Real phi[n_omega] "Wave components phase shift";
       parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
         Dialog(group = "Simulation Parameters"));
       parameter Boolean enableExcitationForce "Switch to enable/disable hydrostatic force calculation" annotation(
@@ -2415,6 +2516,33 @@ This component has a filled rectangular icon.
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(extent = {{-150, 145}, {150, 105}}, textString = "%name", textColor = {0, 0, 255}), Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Hydro Body")}),
         Diagram);
     end HydrodynamicBody_mm;
+
+    model Buoyancy
+      extends DataImport.massNoB2BData;
+      extends DataImport.bodyData;
+      extends DataImport.physicalConstantData;
+      // Inherit frame_a
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
+    
+      
+    
+      constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+      Modelica.Units.SI.Force fg = M[1,1]*g;
+      Modelica.Units.SI.Force fb = vol[1,1]*rho*g;
+      Modelica.Units.SI.Force Fg[3] = {0,0,fg};
+      Modelica.Units.SI.Force Fb[3] = {0,0,fb};
+      Modelica.Units.SI.Force Fnet[3] = Fg - Fb;
+      Modelica.Units.SI.Position cgbM[3,1] = cb - cg;
+      Modelica.Units.SI.Position cgb[3] = cgbM[:,1];
+      Modelica.Units.SI.Torque Tnet[3] = cross(Fb,cgb);
+      
+    equation
+    
+    
+      frame_a.f = Fnet;
+      frame_a.t = Tnet;
+
+    end Buoyancy;
   end Hydro;
 
   package Wave
@@ -3081,7 +3209,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
-      Modelica.Units.SI.Distance A = Hs/2 "Wave amplitude";
+      parameter Modelica.Units.SI.Distance A = Hs/2 "Wave amplitude";
       Modelica.Units.SI.Distance SSE "Sea surface elevation";
       Real ramp "Ramping function" annotation(
         HideResult = true);
@@ -3257,18 +3385,18 @@ This component has a filled rectangular icon.
       // if waveSelector == "spectrumImport"
     equation
       if waveSelector == "Regular" then
-//  A = regularWave.A;
+    //  A = regularWave.A;
         SSE = regularWave.SSE;
       elseif waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" then
-//omega = irregularWave.omega;
-//zeta = irregularWave.zeta;
-// phi = irregularWave.phi;
+    //omega = irregularWave.omega;
+    //zeta = irregularWave.zeta;
+    // phi = irregularWave.phi;
         SSE = irregularWave.SSE;
-//
+    //
       elseif waveSelector == "spectrumImport" then
-//omegaS = spectrumImport.omega;
-//zetaS = spectrumImport.zeta;
-//phiS = spectrumImport.phi;
+    //omegaS = spectrumImport.omega;
+    //zetaS = spectrumImport.zeta;
+    //phiS = spectrumImport.phi;
         SSE = spectrumImport.SSE;
       end if;
       annotation(
@@ -3652,7 +3780,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Linear PTO Force Parameters"));
       // I should eventually inherit these
       Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
-      parameter Real Cpto[6] = {0, 0, 1200000, 0, 0, 0};
+      parameter Real Cpto[6] = {0, 0, 1, 0, 0, 0};
       parameter Real Kpto[6] = {0, 0, 0, 0, 0, 0};
       //protected
       Real displacement1[6] = cat(1, u_abs1, theta_abs1) "Combined displacement vector [m, rad]";
@@ -3815,6 +3943,68 @@ This component has a filled rectangular icon.
       annotation(
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "PTO Force")}));
     end LinearPTOForce_Rel;
+
+    model LinearPTO_mod
+    
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+    
+  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1}, useAxisFlange = true)  annotation(
+        Placement(transformation(origin = {4, -28}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.Translational.Components.SpringDamper springDamper(c = 0, d = 1200000)  annotation(
+        Placement(transformation(origin = {2, 10}, extent = {{-10, -10}, {10, 10}})));
+    equation
+  connect(springDamper.flange_a, prismatic.support) annotation(
+        Line(points = {{-8, 10}, {0, 10}, {0, -22}}, color = {0, 127, 0}));
+  connect(springDamper.flange_b, prismatic.axis) annotation(
+        Line(points = {{12, 10}, {12, -22}}, color = {0, 127, 0}));
+  connect(prismatic.frame_b, frame_a) annotation(
+        Line(points = {{14, -28}, {-100, -28}, {-100, 0}}, color = {95, 95, 95}));
+  connect(prismatic.frame_a, frame_b) annotation(
+        Line(points = {{-6, -28}, {100, -28}, {100, 0}}, color = {95, 95, 95}));
+    end LinearPTO_mod;
+    
+    model LinearPTOForce_mod
+      // Import hydro coefficients
+      extends DataImport.FilePath;
+      //extends DataImport.linearPTOData;
+      // Inherit frame_b
+      extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
+    
+     
+     
+      // Enable/disable dampingdrag force
+      parameter Boolean enableLinearPTOForce = true "Switch to enable/disable linear PTO force calculation" annotation(
+        choices(checkBox = true),
+        HideResult = true,
+        Dialog(group = "Linear PTO Force Parameters"));
+      // I should eventually inherit these
+      Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
+      parameter Real Cpto = 100;
+      parameter Real Kpto = 0;
+      //protected
+      Real displacement "Combined displacement vector [m, rad]";
+      Real velocity "Combined velocity vector [m/s, rad/s]";
+    
+    
+      Modelica.Units.SI.Force f_element[3];
+      Modelica.Units.SI.Torque t_element[3];
+  Modelica.Mechanics.MultiBody.Joints.Revolute revolute(useAxisFlange = true)  annotation(
+        Placement(transformation(origin = {8, -18}, extent = {{-10, -10}, {10, 10}})));
+    equation
+    // Use the switch to conditionally output the damping drag force and torque
+      if enableLinearPTOForce then
+    // Calculate the PTO force/torque vector
+        F = Cpto.*(abs(velocity1) - abs(velocity2)) + Kpto.*(displacement1 - displacement2);
+      else
+        F = zeros(6);
+      end if;
+      frame_a.f = -f_element;
+      frame_a.t = -t_element;
+      frame_b.f = f_element;
+      frame_b.t = t_element;
+      annotation(
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "PTO Force")}));
+    end LinearPTOForce_mod;
   end PTO;
 
   package Experimental

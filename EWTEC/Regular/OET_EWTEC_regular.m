@@ -14,10 +14,8 @@ body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
-% bodies = 2;
-% bodyName = {'float', 'spar'};
 bodies = 2;
-bodyName = {'float','spar'};
+bodyName = {'float', 'spar'};
 
 %% Data Extraction
 
@@ -39,8 +37,9 @@ nKin = size(kinematicNames,2);
 % Dynamics
 dynamicNames = {'excitationForce', 'radiationForce' 'hydrostaticForce'};
 
-excitationForce = 'excitationRegularWave';
+% excitationForce = 'excitationRegularWave';
 
+excitationForce = 'excitationIrregularWave';
 
 dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '_hydrostatic_hydrostaticForce'};
 forces = {'_F_1_','_F_2_','_F_3_','_F_4_','_F_5_','_F_6_'};
@@ -85,7 +84,7 @@ end
 % 
 % end
 
-% save('RM3_Regular_validation.mat','body')
+% save('RM3_Regular_validation.mat','body')fff
 
 %% Plotting OET and WEC-Sim
 % dynamics = {'forceExcitation','forceRadiationDamping','forceRestoring'};
@@ -160,49 +159,49 @@ dyUnits = {'N','N','N','Nm','Nm','Nm'};
 
 % Pitch position
 figure('Name','Pitch position response')
-plot(body(1).time(1:11252), body(1).position(1:11252,5), 'LineWidth', LineWidth, 'Color' ...
+plot(body(1).time(11252:18752), body(1).position(11252:18752,5), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on;
-plot(output.bodies(1).time(1:1501), output.bodies(1).position(1:1501,5), 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(1).time(1501:2501), output.bodies(1).position(1501:2501,5), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
 xlabel('Time (s)', 'Interpreter','latex');
 ylabel('Position (rad)', 'Interpreter','latex');
 title('RM3 Pitch Position Response', 'Interpreter','latex');
-legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'best');
+legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'northwest');
 
-% Pitch velocity
-figure('Name','Pitch velocity response')
-plot(body(1).time, body(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
-    ,blue);
-hold on;
-plot(output.bodies(1).time, output.bodies(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
-    ,orange);
-
-xlabel('Time (s)', 'Interpreter','latex');
-ylabel('Velocity (rad/s)', 'Interpreter','latex');
-title('RM3 Pitch Velocity Response', 'Interpreter','latex');
-legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'best');
+% % Pitch velocity
+% figure('Name','Pitch velocity response')
+% plot(body(1).time, body(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
+%     ,blue);
+% hold on;
+% plot(output.bodies(1).time, output.bodies(1).velocity(:,5), 'LineWidth', LineWidth, 'Color' ...
+%     ,orange);
+% 
+% xlabel('Time (s)', 'Interpreter','latex');
+% ylabel('Velocity (rad/s)', 'Interpreter','latex');
+% title('RM3 Pitch Velocity Response', 'Interpreter','latex');
+% legend('OET', 'WEC-Sim', 'Interpreter','latex', 'location', 'best');
 
 % Heave velocity Full
 figure('Name','Heave velocity response')
-plot(body(1).time(1:11252), body(1).velocity(1:11252,3), 'LineWidth', LineWidth, 'Color' ...
+plot(body(1).time(11252:18752), body(1).velocity(11252:18752,3), 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on
-plot(output.bodies(1).time(1:1501), output.bodies(1).velocity(1:1501,3), 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(1).time(1501:2501), output.bodies(1).velocity(1501:2501,3), 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 hold on;
-plot(body(2).time(1:11252), body(2).velocity(1:11252,3), '--', 'LineWidth', LineWidth, 'Color' ...
+plot(body(2).time(11252:18752), body(2).velocity(11252:18752,3), '--', 'LineWidth', LineWidth, 'Color' ...
     ,blue);
 hold on
-plot(output.bodies(2).time(1:1501), output.bodies(2).velocity(1:1501,3), '--', 'LineWidth', LineWidth, 'Color' ...
+plot(output.bodies(2).time(1501:2501), output.bodies(2).velocity(1501:2501,3), '--', 'LineWidth', LineWidth, 'Color' ...
     ,orange);
 
 xlabel('Time (s)', 'Interpreter','latex');
 ylabel('Velocity (m/s)', 'Interpreter','latex');
 title('RM3 Heave Velocity Response', 'Interpreter','latex');
 legend('OET', 'WEC-Sim', 'Interpreter'...
-    ,'latex', 'location', 'best');
+    ,'latex', 'location', 'northwest');
 
 
 % % Heave velocity Truncated
@@ -219,11 +218,11 @@ legend('OET', 'WEC-Sim', 'Interpreter'...
 % plot(output.bodies(2).time(1501:1751), output.bodies(2).velocity(1501:1751,3), '--', 'LineWidth', LineWidth, 'Color' ...
 %     ,orange);
 
-xlabel('Time (s)', 'Interpreter','latex');
-ylabel('Velocity (m/s)', 'Interpreter','latex');
-title('RM3 Heave Velocity Response', 'Interpreter','latex');
-legend('OET', 'WEC-Sim', 'Interpreter'...
-    ,'latex', 'location', 'best');
+% xlabel('Time (s)', 'Interpreter','latex');
+% ylabel('Velocity (m/s)', 'Interpreter','latex');
+% title('RM3 Heave Velocity Response', 'Interpreter','latex');
+% legend('OET', 'WEC-Sim', 'Interpreter'...
+%     ,'latex', 'location', 'best');
 
 
 % % Format

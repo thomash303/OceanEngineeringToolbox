@@ -19,10 +19,10 @@ simu.stateSpace = 1;
 % % noWaveCIC, no waves with radiation CIC  
 % waves = waveClass('noWaveCIC');       % Initialize Wave Class and Specify Type  
 
-% % Regular Waves  
-waves = waveClass('regularCIC');           % Initialize Wave Class and Specify Type                                 
-waves.height = 2;                     % Wave Height [m]
-waves.period = 8;                       % Wave Period [s]
+% % % Regular Waves  
+% waves = waveClass('regularCIC');           % Initialize Wave Class and Specify Type                                 
+% waves.height = 2;                     % Wave Height [m]
+% waves.period = 8;                       % Wave Period [s]
 
 % % Regular Waves with CIC
 % waves = waveClass('regularCIC');          % Initialize Wave Class and Specify Type                                 
@@ -56,9 +56,9 @@ waves.period = 8;                       % Wave Period [s]
 % waves = waveClass('spectrumImport');      % Create the Wave Variable and Specify Type
 % waves.spectrumFile = 'spectrumData.mat';  % Name of User-Defined Spectrum File [:,2] = [f, Sf]
 
-% % Waves with imported wave elevation time-history  
-% waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
-% waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
+% Waves with imported wave elevation time-history  
+waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
+waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
 
 % Both bodies
 % Float
@@ -85,7 +85,7 @@ constraint(1).location = [0 0 0];               % Constraint Location [m]
 % Translational PTO
 pto(1) = ptoClass('PTO1');                      % Initialize PTO Class for PTO1
 pto(1).stiffness = 0;                           % PTO Stiffness [N/m]
-pto(1).damping = 0;                       % PTO Damping [N/(m/s)]
+pto(1).damping = 1200000;                       % PTO Damping [N/(m/s)]
 pto(1).location = [0 0 0];                      % PTO Location [m]
 
 
@@ -105,8 +105,8 @@ pto(1).location = [0 0 0];                      % PTO Location [m]
 % % Floating (3DOF) Joint
 % constraint(1) = constraintClass('Constraint1'); % Initialize Constraint Class for Constraint1
 % constraint(1).location = [0 0 0];               % Constraint Location [m]
-% 
-%% Spar only 
+
+% Spar only 
 % %% Spar
 % % Spar
 % body(1) = bodyClass('hydroData/rm3.h5');      
