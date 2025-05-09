@@ -5,12 +5,12 @@ Version: 6.1
 
 Initializing the Simulation Class...
 	Case Dir: C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3 
-Elapsed time is 0.605537 seconds.
+Elapsed time is 0.552552 seconds.
 
 WEC-Sim Pre-processing ...   
 	Infinite water depth specified in BEM and "waves.waterDepth" not specified in input file.
 Set water depth to 200m for visualization.
-Elapsed time is 0.108839 seconds.
+Elapsed time is 0.187911 seconds.
 
 WEC-Sim Simulation Settings:
 	Start Time                     (sec) = 0
@@ -24,7 +24,7 @@ Wave Environment:
 	Wave Type                           = Waves with imported wave elevation time-history
 	Wave Elevation Time-Series File    	= elevationData.mat  
 
-List of Body: Number of Bodies = 2 
+List of Body: Number of Bodies = 1 
 
 	***** Body Number 1, Name: float *****
 	Body CG                          (m) = [0,0,-0.72]
@@ -32,26 +32,359 @@ List of Body: Number of Bodies = 2
 	Body Moments of Inertia       (kgm2) = [2.09073E+07,2.13061E+07,3.70855E+07]
 	Body Products of Inertia      (kgm2) = [0,0,0]
 
-	***** Body Number 2, Name: spar *****
-	Body CG                          (m) = [0,0,-21.29]
-	Body Mass                       (kg) = 886687 
-	Body Moments of Inertia       (kgm2) = [9.44196E+07,9.44071E+07,2.85422E+07]
-	Body Products of Inertia      (kgm2) = [0,0,0]
-
-List of PTO(s): Number of PTOs = 1 
-
-	***** PTO Name: PTO1 *****
-	PTO Stiffness           (N/m;Nm/rad) = 0
-	PTO Damping           (Ns/m;Nsm/rad) = 1.2E+06
+List of PTO(s): No PTO in the system
 
 List of Constraint(s): Number of Constraints = 1 
 
 	***** Constraint Name: Constraint1 *****
 
 
-Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3\RM3.slx...   
-Elapsed time is 0.112212 seconds.
-Elapsed time is 4.471722 seconds.
+Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3\RM3float.slx...   
+Elapsed time is 0.131987 seconds.
+Elapsed time is 5.552007 seconds.
 
 Post-processing and saving...   
-Elapsed time is 0.480569 seconds.
+{Index exceeds the number of array elements. Index must not exceed 1.
+
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('responseClass/plotResponse', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\objects\responseClass.m', 389)" style="font-weight:bold">responseClass/plotResponse</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\objects\responseClass.m',389,0)">line 389</a>)
+            t=obj.bodies(bodyNum).time;
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('userDefinedFunctions', 'C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3\userDefinedFunctions.m', 14)" style="font-weight:bold">userDefinedFunctions</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3\userDefinedFunctions.m',14,0)">line 14</a>)
+output.plotResponse(2,3);
+^^^^^^^^^^^^^^^^^^^^^^^^
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('stopWecSim', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\functions\stopWecSim.m', 34)" style="font-weight:bold">stopWecSim</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\functions\stopWecSim.m',34,0)">line 34</a>)
+    userDefinedFunctions;
+    ^^^^^^^^^^^^^^^^^^^^
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('run', 'C:\Program Files\MATLAB\R2024b\toolbox\matlab\lang\run.m', 112)" style="font-weight:bold">run</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2024b\toolbox\matlab\lang\run.m',112,0)">line 112</a>)
+evalin('caller', strcat(scriptStem, ';'));
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error in <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('wecSim', 'C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\wecSim.m', 56)" style="font-weight:bold">wecSim</a> (<a href="matlab: opentoline('C:\Users\thogan1\Documents\GitHub\WEC-Sim\source\wecSim.m',56,0)">line 56</a>)
+run('stopWecSim');
+^^^^^^^^^^^^^^^^^
+} 
+OET_EWTEC_regular
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+OET_EWTEC_regular
+[Warning: Column headers from the file were modified to make them valid MATLAB identifiers
+before creating variable names for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'VariableNamingRule' to 'preserve' to use the original column headers as table variable
+names.] 
+OET_EWTEC_regular
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 8\hogan8.fig',1)
+OET_EWTEC_regular
+[Warning: Due to low available disk space or excessive disk usage, automatically deleting run
+'Run 20: RM3'.
+Suggested Actions:
+    • Turn off automatic run deletion - <a href="matlab:Simulink.sdi.setDeleteRunsOnLowSpace(false);">Fix</a>
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, automatically deleting run
+'Run 21: RM3'.
+Suggested Actions:
+    • Turn off automatic run deletion - <a href="matlab:Simulink.sdi.setDeleteRunsOnLowSpace(false);">Fix</a>
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 7\hogan7.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 7\hogan7.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 7\hogan7.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 12\hogan12.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 12\hogan12.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 12\hogan12.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 12\hogan12.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 10\hogan10.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 9\hogan9.fig',1)
+uiopen('C:\Users\thogan1\OneDrive - University of New Brunswick\Grad Studies\Thesis\Conferences\EWTEC 2025\OET Paper\Figures\Figure 12\hogan12.fig',1)
+plot(DataSetWecSim(200).waveElevation(:))
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 
+[Warning: Due to low available disk space or excessive disk usage, turning off recording of
+all data.
+Suggested Actions:
+    • Open Simulation Data Inspector preferences and change Storage options
+] 

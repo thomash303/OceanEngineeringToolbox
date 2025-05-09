@@ -230,21 +230,21 @@ package OET
       Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
-        Placement(transformation(origin = {98, -6}, extent = {{-10, -10}, {10, 10}})));
-  PTO.LinearPTO_mod linearPTO_mod annotation(
-        Placement(transformation(origin = {44, -40}, extent = {{-10, -10}, {10, 10}})));
+        Placement(transformation(origin = {130, -28}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
         Placement(transformation(origin = {-10, -32}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion1 annotation(
+        Placement(transformation(origin = {48, -46}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(linearPTO_mod.frame_b, float.frame_a) annotation(
-        Line(points = {{54, -40}, {60, -40}, {60, -16}}, color = {95, 95, 95}));
-      connect(linearPTO_mod.frame_a, spar.frame_b) annotation(
-        Line(points = {{34, -40}, {30, -40}, {30, -16}}, color = {95, 95, 95}));
-  connect(freeMotion.frame_b, spar.frame_a) annotation(
+      connect(freeMotion.frame_b, spar.frame_a) annotation(
         Line(points = {{0, -32}, {10, -32}, {10, -16}}, color = {95, 95, 95}));
-  connect(freeMotion.frame_a, world.frame_b) annotation(
+      connect(freeMotion.frame_a, world.frame_b) annotation(
         Line(points = {{-20, -32}, {-30, -32}, {-30, -20}}, color = {95, 95, 95}));
+  connect(freeMotion1.frame_b, float.frame_a) annotation(
+        Line(points = {{58, -46}, {60, -46}, {60, -16}}, color = {95, 95, 95}));
+  connect(freeMotion1.frame_a, spar.frame_b) annotation(
+        Line(points = {{38, -46}, {30, -46}, {30, -16}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -344,7 +344,7 @@ package OET
     model RM3Visual
       import Modelica.Mechanics.MultiBody;
       // Define the world frame
-      inner MultiBody.World world(animateGravity = false, animateGround = false) annotation(
+      inner MultiBody.World world(animateGravity = true, animateGround = false) annotation(
         Placement(transformation(extent = {{-100, -20}, {-80, 0}})));
       // Fixed frame to attach the shape
       MultiBody.Parts.Fixed fixed(animation = false) annotation(
