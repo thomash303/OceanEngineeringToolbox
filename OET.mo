@@ -1,6 +1,64 @@
+within;
 package OET
+/*  Modelica Ocean Engineering Toolbox v0.3
+    Copyright (C) 2024  Thomas Hogan, Ajay Menon, Alix Haider, and Kush Bubbar
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    Your copy of the GNU General Public License can be viewed
+    here <https://www.gnu.org/licenses/>.
+*/
+  
+/*  Library structure (needs to be updated):
+     OET (Package)
+     |  
+     |->  Wave Profile (PACKAGE)
+     |    |-> Regular Wave (PACKAGE)
+     |    |   |-> LinearWave (MODEL)                         [!- Monochromatic regular wave]
+     |    |
+     |    |-> Irregular Wave (PACKAGE)
+     |    |   |-> Pierson Moskowitz Spectrum (MODEL)          [!- Fully-developed sea state]
+     |    |   |-> Bretschneider Spectrum (MODEL)             [!- Modified PM spectrum for developing sea state]
+     |    |   |-> JONSWAP Spectrum (MODEL)                    [!- Developing sea state with limited fetch]
+     |    |
+     |->  Structures (PACKAGE)
+     |    |-> RigidBody (MODEL)                               [!- Solves motion using the Cummins equation]
+     |
+     |->  Internal (PACKAGE)
+     |    |-> Functions (PACKAGE)
+     |    |   |-> waveNumber (FUNCTION)                       [!- Wave number iterations from frequency and depth]
+     |    |   |-> randomNumberGen (FUNCTION)                  [!- Random numbers through XOR shift generator]
+     |    |   |-> frequencySelector (FUNCTION)                [!- Select wave frequencies from a range]
+     |    |   |-> spectrumGenerator_PM (FUNCTION)             [!- Generate Pierson Moskowitz spectrum for frequency components]
+     |    |   |-> spectrumGenerator_BRT (FUNCTION)            [!- Generate Bretschneider spectrum for frequency components]
+     |    |   |-> spectrumGenerator_JONSWAP (FUNCTION)        [!- Generate JONSWAP spectrum for frequency components]
+     |    |
+     |    |-> Connectors (PACKAGE)
+     |    |   |-> WaveOutConn (CONNECTOR)                     [!- Output transfer wave elevation and excitation force]
+     |    |   |-> WaveInConn (CONNECTOR)                      [!- Input transfer wave elevation and excitation force]
+     |    |   |-> DataCollector (CONNECTOR)                   [!- Transfer 'Rigid Body' dynamics and forces]
+     |    |
+     |    |-> TestDevelopment (MODEL)                         [!- Developer component to test all models, functions, connectors]
+     |
+     |->  Tutorial (PACKAGE)
+     |    |-> Sample1 (MODEL)                                 [!- Example model to simulate a rigid body in regular waves]
+     |    |-> Sample2 (MODEL)                                 [!- Example model to simulate a rigid body in irregular waves]
+     |
+     |->  Simulations (PACKAGE)
+          |-> * Directory for users to build custom simulation models *
+*/
+
   extends Modelica.Icons.Package;
 
+  //within OET;
   package Example
     extends Modelica.Icons.Package;
 
@@ -429,6 +487,17 @@ package OET
         Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
         experiment(StartTime = 0, StopTime = 600, Tolerance = 1e-08, Interval = 0.02));
     end OSWEC;
+
+    model Environment_Tester
+  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "random")  annotation(
+        Placement(transformation(origin = {-36, 2}, extent = {{-10, -10}, {10, 10}})));
+  inner Hydro.FilePath fileDirectory annotation(
+        Placement(transformation(origin = {58, 2}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.HydrodynamicBody hydrodynamicBody(enableHydrostaticForce = true, enableRadiationForce = true, enableDampingDragForce = false, offset = {0, 0, 0, 0, 0, 0})  annotation(
+        Placement(transformation(origin = {-30, -48}, extent = {{-10, -10}, {10, 10}})));
+    equation
+
+    end Environment_Tester;
     annotation(
       Icon(graphics = {Polygon(points = {{-40, 40}, {40, 0}, {-40, -40}, {-40, 40}}, lineColor = {0, 0, 0}, fillColor = // Red color for the polygon
       {0, 0, 0}, fillPattern = // Red fill
@@ -831,7 +900,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       // allow user option to adjust in wave
       /*parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
-                                Dialog(group = "Wave Spectrum Parameters"));*/
+                                      Dialog(group = "Wave Spectrum Parameters"));*/
       // use can adjust, but they shouldn't
     end waveData;
 
@@ -1217,13 +1286,17 @@ This component has a filled rectangular icon.
         HideResult = true,
         Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
       parameter String waveSelector = environment.waveSelector;
+      parameter String frequencySelection = environment.frequencySelection;
       // Regular
       ExcitationRegularWave excitationRegularWave(A = environment.regularWave.A, omegaPeak = environment.regularWave.omegaPeak, Trmp = environment.Trmp, ramp = environment.regularWave.ramp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if environment.waveSelector == "Regular" annotation(
         Placement(transformation(origin = {-4, -4}, extent = {{-10, -10}, {10, 10}})));
       //if environment.waveSelector == "Regular"
       // Irregular
-      ExcitationIrregularWave excitationIrregularWave(n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.omega, zeta = environment.irregularWave.zeta, phi = environment.irregularWave.phi, Trmp = environment.Trmp, ramp = environment.irregularWave.ramp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" annotation(
+      ExcitationIrregularWave excitationIrregularWaveRand(n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.RandomGen.omega, zeta = environment.irregularWave.RandomGen.zeta, phi = environment.irregularWave.RandomGen.phi, Trmp = environment.Trmp, ramp = environment.irregularWave.RandomGen.ramp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if (waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP") and frequencySelection == "random" annotation(
         Placement(transformation(origin = {-2, 42}, extent = {{-10, -10}, {10, 10}})));
+        
+      ExcitationIrregularWave excitationIrregularWaveEE(n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.EeGen.omega, zeta = environment.irregularWave.EeGen.zeta, phi = environment.irregularWave.EeGen.phi, Trmp = environment.Trmp, ramp = environment.irregularWave.EeGen.ramp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if (waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP") and frequencySelection == "equalEnergy" annotation(
+        Placement(transformation(origin = {-10, 18}, extent = {{-10, -10}, {10, 10}})));
       //  if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP"
       // Spectrum import
       ExcitationIrregularWave excitationSpectrumImport(n_omega = environment.spectrumImport.n_omega, omega = environment.spectrumImport.omega, zeta = environment.spectrumImport.zeta, phi = environment.spectrumImport.phi, Trmp = environment.Trmp, ramp = environment.spectrumImport.ramp, filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) if waveSelector == "spectrumImport";
@@ -1231,8 +1304,10 @@ This component has a filled rectangular icon.
     equation
       connect(excitationRegularWave.frame_a, frame_a) annotation(
         Line(points = {{-14, -4}, {-100, -4}, {-100, 0}}, color = {95, 95, 95}));
-      connect(excitationIrregularWave.frame_a, frame_a) annotation(
+      connect(excitationIrregularWaveRand.frame_a, frame_a) annotation(
         Line(points = {{-12, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));
+      connect(excitationIrregularWaveEE.frame_a, frame_a) annotation(
+        Line(points = {{-20, 18}, {-20, 42}, {-100, 42}, {-100, 0}}, color = {95, 95, 95}));    
       connect(excitationSpectrumImport.frame_a, frame_a) annotation(
         Line(points = {{-14, -36}, {-100, -36}, {-100, 0}}, color = {95, 95, 95}));
       annotation(
@@ -2150,7 +2225,7 @@ This component has a filled rectangular icon.
 // Calculate and apply ramping to the excitation force
 // if time < Trmp then
 // Ramp up the excitation force during the initial phase
-        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp;
+        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp; // move into first loop
 //else
 // Apply full excitation force after the ramping period
 //F[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
@@ -2658,8 +2733,9 @@ frame_a.t = -t_element;
           input Real omega_int[n_omega_int] "Integration frquencies for the intermediate spectrum";
           input Real S_int[n_omega_int] "Intermediate spectrum";
           output Real omega[n_omega] "Output vector of selected frequency components [rad/s]";
-          output Real S[n_omega] "Output spectrum";
+        
         protected
+          Real S[n_omega] "Output spectrum";
           Real domega = Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGenerator(omegaMin = omegaMin, omegaMax = omegaMax, n_omega = n_omega_int) "Frequency step for the intermediate spectrum";
           Real cumEnergy_int[n_omega_int] "Vector of cumulative spectrum interval areas in the intermediate spectrum";
           Real totEnergy "Total energy in the spectrum";
@@ -3377,7 +3453,7 @@ frame_a.t = -t_element;
       RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp) if waveSelector == "Regular" annotation(
         Placement(transformation(origin = {-26, 10}, extent = {{-10, -10}, {10, 10}})));
       //  //if waveSelector == "Regular"
-      IrregularWave_test irregularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" annotation(
+      IrregularWave irregularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" annotation(
         Placement(transformation(origin = {30, 6}, extent = {{-10, -10}, {10, 10}})));
       // if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP"
       SpectrumImport spectrumImport(Trmp = Trmp, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "spectrumImport" annotation(
@@ -3385,18 +3461,18 @@ frame_a.t = -t_element;
       // if waveSelector == "spectrumImport"
     equation
       if waveSelector == "Regular" then
-    //  A = regularWave.A;
+//  A = regularWave.A;
         SSE = regularWave.SSE;
       elseif waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" then
-    //omega = irregularWave.omega;
-    //zeta = irregularWave.zeta;
-    // phi = irregularWave.phi;
+//omega = irregularWave.omega;
+//zeta = irregularWave.zeta;
+// phi = irregularWave.phi;
         SSE = irregularWave.SSE;
     //
-      elseif waveSelector == "spectrumImport" then
-    //omegaS = spectrumImport.omega;
-    //zetaS = spectrumImport.zeta;
-    //phiS = spectrumImport.phi;
+elseif waveSelector == "spectrumImport" then
+//omegaS = spectrumImport.omega;
+//zetaS = spectrumImport.zeta;
+//phiS = spectrumImport.phi;
         SSE = spectrumImport.SSE;
       end if;
       annotation(
@@ -3656,6 +3732,407 @@ frame_a.t = -t_element;
     
 
     end waveParameters_test;
+
+    model IrregularWave_new
+    
+    
+      extends DataImport.FilePath;
+      extends DataImport.waveData;
+      extends DataImport.frequencyData;
+      // Physical constants
+      constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+      constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+      // Wave basic characteristics
+      parameter String waveSelector = "PiersonMoskowitz" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "PiersonMoskowitz", choice = "JONSWAP"));
+      constant Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
+        Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
+      parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      Real ramp "Ramping function" annotation(
+        HideResult = true);
+      parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+        HideResult = true);
+      parameter String frequencySelection = "random" annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "random", choice = "equalEnergy"));
+      parameter Modelica.Units.SI.AngularFrequency omega[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation";
+     parameter Modelica.Units.SI.Distance zeta[n_omega] = sqrt(2*S.*domega)"Wave amplitude component";
+      Modelica.Units.SI.Distance SSE "Sea surface elevation";
+      // Irregular wave spectrum parameters
+      parameter Modelica.Units.SI.AngularFrequency omegaMin = w[1] "Lowest frequency component" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      parameter Modelica.Units.SI.AngularFrequency omegaMax = w[end] "Highest frequency component" annotation(
+        Dialog(group = "Wave Spectrum Parameters"));
+      // Intermediate calculations
+     parameter Real phi[n_omega] = 2*pi.*Wave.WaveFunctions.RandomFrequencyFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
+     parameter Modelica.Units.SI.WaveNumber k[n_omega] = Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega) "Wave number component";
+      parameter Modelica.Units.SI.Time Tp[n_omega] = 2*pi./omega"Wave period components" annotation(
+        HideResult = true);
+      parameter Units.SpectrumEnergyDensity S[n_omega] = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB) "Wave energy spectrum";
+      // Random phase selection
+      parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Phase Selection"));
+      // readd , enable = frequencySelection == "random"
+      parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts" annotation(
+        HideResult = true,
+        Dialog(group = "Random Phase Selection"));
+      parameter Modelica.Units.SI.AngularFrequency domega[n_omega] = fill(Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGenerator(omegaMin, omegaMax, n_omega), n_omega) "Frequency step size [rad/s]";
+      parameter Units.SpectrumEnergyDensity S_int[n_omega_int] = zeros(n_omega_int) "Integratation wave energy spectrum [m^2*s/rad]";
+    protected
+      // Random frequency selection
+      parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(
+        HideResult = true,
+        Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+      // Equal Energy Parameters
+      parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration" annotation(
+        HideResult = true,
+        Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+      // if frequencySelection == "equalEnergy"
+      //Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+      parameter Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] = zeros(n_omega_int) "Integration frequency step size (equal energy only) [rad/s]";
+      //Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
+      // Derived parameters
+      // JONSWAP parameters
+      parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
+        HideResult = true,
+        Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+      parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP" annotation(
+        HideResult = true,
+        Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+      parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
+        HideResult = true,
+        Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+    equation
+    
+    
+      if time < Trmp then
+        ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
+    // Ramp up the excitation force during the initial phase
+      else
+        ramp = 1;
+      end if;
+      SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+      annotation(
+        defaultComponentName = "irregularWave",
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Irregular Wave")}),
+        Diagram);
+    
+    
+    
+
+    end IrregularWave_new;
+
+    package newStuff
+    model randomGen
+      // Physical constants
+      constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+      constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+        parameter Modelica.Units.SI.Length d = 1000 ;//remove this
+        parameter String waveSelector = "PiersonMoskowitz";
+        constant Integer n_omega "Number of frequency components (default is 100 for irregular)";
+        parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height";
+        parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency";
+        Real ramp "Ramping function";
+        parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]";
+        parameter String frequencySelection = "random";
+        parameter Modelica.Units.SI.AngularFrequency omega[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation";
+        parameter Modelica.Units.SI.Distance zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
+        Modelica.Units.SI.Distance SSE "Sea surface elevation";
+        // Irregular wave spectrum parameters
+        parameter Modelica.Units.SI.AngularFrequency omegaMin = w[1] "Lowest frequency component";
+        parameter Modelica.Units.SI.AngularFrequency omegaMax = w[end] "Highest frequency component";
+        // Intermediate calculations
+        parameter Real phi[n_omega] = 2*pi.*Wave.WaveFunctions.RandomFrequencyFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
+        parameter Modelica.Units.SI.WaveNumber k[n_omega] = Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega) "Wave number component";
+        parameter Modelica.Units.SI.Time Tp[n_omega] = 2*pi./omega "Wave period components";
+        parameter Units.SpectrumEnergyDensity S[n_omega] = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB) "Wave energy spectrum";
+        // Random phase selection
+        parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
+        // readd , enable = frequencySelection == "random"
+        parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
+      // Random frequency selection
+      parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection";
+      parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection";
+        parameter Modelica.Units.SI.AngularFrequency domega[n_omega] = fill(Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepGenerator(omegaMin, omegaMax, n_omega), n_omega) "Frequency step size [rad/s]";
+        // Derived parameters
+        // JONSWAP parameters
+        parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3";
+        parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP";
+        parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP";
+      equation
+        if time < Trmp then
+          ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
+// Ramp up the excitation force during the initial phase
+        else
+          ramp = 1;
+        end if;
+        SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+        
+          annotation(
+        defaultComponentName = "RandomGen");
+      end randomGen;
+
+      model IrregularWaves_new
+      
+        extends DataImport.FilePath;
+        extends DataImport.waveData;
+        extends DataImport.frequencyData;
+        // Physical constants
+        constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+        constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+        // Wave basic characteristics
+        parameter String waveSelector = "PiersonMoskowitz" annotation(
+          Dialog(group = "Wave Spectrum Parameters"),
+          choices(choice = "PiersonMoskowitz", choice = "JONSWAP"));
+        constant Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
+          Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
+        parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        //Real ramp "Ramping function" annotation(
+         // HideResult = true);
+        parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+          HideResult = true);
+        parameter String frequencySelection = "random" annotation(
+          Dialog(group = "Wave Spectrum Parameters"),
+          choices(choice = "random", choice = "equalEnergy"));
+        parameter Modelica.Units.SI.AngularFrequency omega[n_omega] = Wave.WaveFunctions.RandomFrequencyFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation";
+       //parameter Modelica.Units.SI.Distance zeta[n_omega]"Wave amplitude component";
+        Modelica.Units.SI.Distance SSE "Sea surface elevation";
+        // Irregular wave spectrum parameters
+        parameter Modelica.Units.SI.AngularFrequency omegaMin = w[1] "Lowest frequency component" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        parameter Modelica.Units.SI.AngularFrequency omegaMax = w[end] "Highest frequency component" annotation(
+          Dialog(group = "Wave Spectrum Parameters"));
+        // Intermediate calculations
+       //parameter Real phi[n_omega] "Wave components phase shift";
+       //parameter Modelica.Units.SI.WaveNumber k[n_omega] "Wave number component";
+        //parameter Modelica.Units.SI.Time Tp[n_omega] "Wave period components" //(
+          //HideResult = true);
+        //parameter Units.SpectrumEnergyDensity S[n_omega] "Wave energy spectrum";
+        // Random phase selection
+        parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts" annotation(
+          HideResult = true,
+          Dialog(group = "Random Phase Selection"));
+        // readd , enable = frequencySelection == "random"
+        parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts" annotation(
+          HideResult = true,
+          Dialog(group = "Random Phase Selection"));
+       // parameter Modelica.Units.SI.AngularFrequency domega[n_omega] "Frequency step size [rad/s]";
+        //parameter Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
+        
+        // ***********************
+        
+  randomGen RandomGen(omegaMin = omegaMin, omegaMax = omegaMax, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, Trmp = Trmp) if frequencySelection == "random" annotation(
+          Placement(transformation(origin = {-48, -2}, extent = {{-10, -10}, {10, 10}})));
+  
+      // **********************
+      
+        // Random frequency selection
+        parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection" annotation(
+          HideResult = true,
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(
+          HideResult = true,
+          Dialog(group = "Random Frequency Selection", enable = frequencySelection == "random"));
+        // Equal Energy Parameters
+        parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration" annotation(
+          HideResult = true,
+          Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+        // if frequencySelection == "equalEnergy"
+        //Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+       // parameter Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] = zeros(n_omega_int) "Integration frequency step size (equal energy only) [rad/s]";
+        //Units.SpectrumEnergyDensity S_int[n_omega_int] "Integratation wave energy spectrum [m^2*s/rad]";
+        // Derived parameters
+        // JONSWAP parameters
+        parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
+          HideResult = true,
+          Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+        parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP" annotation(
+          HideResult = true,
+          Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+        parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
+          HideResult = true,
+          Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+  eeGen EeGen(omegaMin = omegaMin, omegaMax = omegaMax, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, Trmp = Trmp) if frequencySelection == "equalEnergy" annotation(
+          Placement(transformation(origin = {20, -14}, extent = {{-10, -10}, {10, 10}})));
+      
+      equation
+        if frequencySelection == "random" then
+      
+        SSE = RandomGen.SSE;
+      
+        elseif frequencySelection == "equalEnergy" then
+          SSE = EeGen.SSE;
+        
+        end if;
+        annotation(
+          defaultComponentName = "irregularWave",
+          Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Irregular Wave")}),
+          Diagram);
+      
+      
+
+      end IrregularWaves_new;
+
+      model eeGen
+      
+        // Physical constants
+        constant Real pi = Modelica.Constants.pi "Mathematical constant pi";
+        constant Modelica.Units.SI.Acceleration g = Modelica.Constants.g_n "Acceleration due to gravity [m/s^2]";
+          parameter Modelica.Units.SI.Length d = 1000 ;//remove this
+          parameter String waveSelector = "PiersonMoskowitz";
+          constant Integer n_omega "Number of frequency components (default is 100 for irregular)";
+          parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height";
+          parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency";
+          Real ramp "Ramping function";
+          parameter Modelica.Units.SI.Time Trmp "Interval for ramping up of waves during start phase [s]";
+          parameter String frequencySelection = "random";
+          parameter Modelica.Units.SI.AngularFrequency omega[n_omega] = Wave.WaveFunctions.EqualEnergyFrequencyFunctions.equalEnergyFrequencySelector(omegaMin, omegaMax, n_omega, n_omega_int, omega_int, S_int) "Frequency components selected for simulation";
+          parameter Modelica.Units.SI.Distance zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
+          Modelica.Units.SI.Distance SSE "Sea surface elevation";
+          // Irregular wave spectrum parameters
+          parameter Modelica.Units.SI.AngularFrequency omegaMin = w[1] "Lowest frequency component";
+          parameter Modelica.Units.SI.AngularFrequency omegaMax = w[end] "Highest frequency component";
+          // Intermediate calculations
+          parameter Real phi[n_omega] = 2*pi.*Wave.WaveFunctions.RandomFrequencyFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
+         parameter Modelica.Units.SI.WaveNumber k[n_omega] = Wave.WaveFunctions.WaveParameterFunctions.waveNumber(d, omega) "Wave number component";
+          parameter Modelica.Units.SI.Time Tp[n_omega] = 2*pi./omega "Wave period components";
+          parameter Units.SpectrumEnergyDensity S[n_omega] = Wave.newStuff.spectrumInterpolator(n_omega = n_omega, n_omega_int = n_omega_int, omega_int = omega_int, S_int = S_int, omega = omega) "Wave energy spectrum";
+          // Random phase selection
+            parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration" annotation(
+          HideResult = true,
+          Dialog(group = "Equal Energy Frequency Selection", enable = frequencySelection == "equalEnergy"));
+        // if frequencySelection == "equalEnergy"
+        //Modelica.Units.SI.AngularFrequency domega "Frequency step size [rad/s]";
+        parameter Modelica.Units.SI.AngularFrequency omega_int[n_omega_int] = Wave.WaveFunctions.SpectrumFunctions.Calculations.integrationFrequencyGen(omegaMin, omegaMax, n_omega_int) "Integration frequency step size (equal energy only) [rad/s]";
+        parameter Units.SpectrumEnergyDensity S_int[n_omega_int] = Wave.WaveFunctions.SpectrumFunctions.spectrumGenerator(waveSelector = waveSelector, Hs = Hs, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB) "Integratation wave energy spectrum [m^2*s/rad]";
+          parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
+          // readd , enable = frequencySelection == "random"
+          parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
+        // Random frequency selection
+        parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection";
+        parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection";
+          parameter Modelica.Units.SI.AngularFrequency domega[n_omega] = OET.Wave.WaveFunctions.SpectrumFunctions.Calculations.frequencyStepDifference(omega = omega, n_omega = n_omega) "Frequency step size [rad/s]";
+          // Derived parameters
+          // JONSWAP parameters
+          parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3";
+          parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP";
+          parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP";
+        equation
+          if time < Trmp then
+            ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
+      // Ramp up the excitation force during the initial phase
+          else
+            ramp = 1;
+          end if;
+          SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+      
+        annotation(
+          defaultComponentName = "EeGen");
+      end eeGen;
+
+      function spectrumInterpolator
+        parameter input Integer n_omega "Number of frequency compenents to define the output spectrum";
+        parameter input Integer n_omega_int "Number of steps to define the intermediate spectrum";
+        input Real omega_int[n_omega_int] "Integration frquencies for the intermediate spectrum";
+        input Real S_int[n_omega_int] "Intermediate spectrum";
+        input Real omega[n_omega] "Output vector of selected frequency components [rad/s]";
+        output Real S[n_omega] "Output spectrum";
+      
+      algorithm
+        S[1] := S_int[1];
+        S[end] := S_int[end];
+        for i in 2:(n_omega - 1) loop
+          S[i] := Modelica.Math.Vectors.interpolate(omega_int, S_int, omega[i]);
+        end for;
+
+      end spectrumInterpolator;
+      
+      
+      
+      
+      
+      
+    end newStuff;
+    
+    model Environment_new
+      outer Hydro.FilePath fileDirectory;
+      // All
+      parameter String waveSelector annotation(
+        Dialog(group = "Wave Spectrum Parameters"),
+        choices(choice = "Regular", choice = "PiersonMoskowitz", choice = "JONSWAP", choice = "spectrumImport"));
+      parameter String frequencySelection = "random" annotation(
+        Dialog(group = "Wave Spectrum Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP")),
+        choices(choice = "random", choice = "equalEnergy"));
+      parameter Modelica.Units.SI.Height Hs = 2.5 "Significant Wave Height [m]" annotation(
+        Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport"));
+      parameter Modelica.Units.SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency [rad/s]" annotation(
+        Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport"));
+      parameter Modelica.Units.SI.Time Trmp = 50 "Interval for ramping up of waves during start phase [s]" annotation(
+        Dialog(group = "Simulation Parameters"));
+      Modelica.Units.SI.Length SSE "Sea surface elevation [m]";
+      /*
+                                    // Regular
+                                    Modelica.Units.SI.Height A = regularWave.A "Wave amplitude";
+                                    */
+      /*
+                                    // Irregular
+                                    constant Integer n_omega = irregularWave.n_omega  "Number of frequency components"; // if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP"
+                                    Modelica.Units.SI.AngularFrequency omega[n_omega] = irregularWave.omega"Frequency components selected for simulation [rad/s]";
+                                    Modelica.Units.SI.Length zeta[n_omega] = irregularWave.zeta "Wave amplitude component [m]";
+                                    Real phi[n_omega] = irregularWave.phi "Wave components phase shift";
+                                   */
+      /*
+                                    // Spectrum Import
+                                    parameter Integer n_omegaS = spectrumImport.n_omega  "Number of frequency components"; // if waveSelector == "spectrumImport"
+                                    Modelica.Units.SI.AngularFrequency omegaS[n_omegaS] = spectrumImport.omega"Frequency components selected for simulation [rad/s]";
+                                    Modelica.Units.SI.Length zetaS[n_omegaS] = spectrumImport.zeta "Wave amplitude component [m]";
+                                    Real phiS[n_omegaS] = spectrumImport.phi "Wave components phase shift";
+                                    // Models
+                                    
+                                    */
+      RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp) if waveSelector == "Regular" annotation(
+        Placement(transformation(origin = {-26, 10}, extent = {{-10, -10}, {10, 10}})));
+      //  //if waveSelector == "Regular"
+      newStuff.IrregularWaves_new irregularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" annotation(
+        Placement(transformation(origin = {30, 6}, extent = {{-10, -10}, {10, 10}})));
+      // if waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP"
+      SpectrumImport spectrumImport(Trmp = Trmp, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "spectrumImport" annotation(
+        Placement(transformation(origin = {-14, -30}, extent = {{-10, -10}, {10, 10}})));
+      // if waveSelector == "spectrumImport"
+    equation
+      if waveSelector == "Regular" then
+    //  A = regularWave.A;
+        SSE = regularWave.SSE;
+      elseif waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" then
+        //omega = irregularWave.omega;
+        //zeta = irregularWave.zeta;
+        //phi = irregularWave.phi;
+        SSE = irregularWave.SSE;
+    //
+      elseif waveSelector == "spectrumImport" then
+    //omegaS = spectrumImport.omega;
+    //zetaS = spectrumImport.zeta;
+    //phiS = spectrumImport.phi;
+        SSE = spectrumImport.SSE;
+      end if;
+      annotation(
+        defaultComponentName = "environment",
+        defaultComponentPrefixes = "inner",
+        missingInnerMessage = "No \"environment\" component is defined. Drag the OET.Wave.Environment model into the top level of your model.",
+        Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Environment")}),
+        Diagram);
+    end Environment_new;
   end Wave;
 
   package Mooring
@@ -3969,10 +4446,7 @@ frame_a.t = -t_element;
       //extends DataImport.linearPTOData;
       // Inherit frame_b
       extends Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
-    
-     
-     
-      // Enable/disable dampingdrag force
+    // Enable/disable dampingdrag force
       parameter Boolean enableLinearPTOForce = true "Switch to enable/disable linear PTO force calculation" annotation(
         choices(checkBox = true),
         HideResult = true,
@@ -3993,7 +4467,7 @@ frame_a.t = -t_element;
     equation
     // Use the switch to conditionally output the damping drag force and torque
       if enableLinearPTOForce then
-    // Calculate the PTO force/torque vector
+// Calculate the PTO force/torque vector
         F = Cpto.*(abs(velocity1) - abs(velocity2)) + Kpto.*(displacement1 - displacement2);
       else
         F = zeros(6);
@@ -6069,6 +6543,8 @@ frame_a.t = -t_element;
 
     end waveKin;
   end Morison;
+  //within OET
+  //within OET;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle
     {0, 0, 0}, fillPattern = // Light gray fill

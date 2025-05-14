@@ -1,0 +1,5 @@
+within OceanEngineeringToolbox.DataImport.ImportRecords;
+
+record hydrostaticData
+  "Record importing the hydrostatic force data"
+end hydrostaticData;

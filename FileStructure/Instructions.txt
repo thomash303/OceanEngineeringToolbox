@@ -1,0 +1,3 @@
+Instructions for Properly Creating Modelica Package Hierarchy (https://marcobonvini.com/modelica/2017/01/05/modelica-in-action-packages.html):
+
+When creating new package, the Name in Modelica should be the same as the desired folder name. In this example FileStructure is the top level, and has sub-packages Records, Models, and Connectors. Be sure to uncheck the "Save contents in one file box" so that Modelica will automatically create the package.{mo,order} files. The top level file should have an empty within. When making sub-packages, use the "Insert in class" to get the proper folder hierarchy display.
