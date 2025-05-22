@@ -1,0 +1,8 @@
+within OceanEngineeringToolbox.Mooring.LinearMooring.Forces;
+
+model linearMooringForceImport
+  "Model representing the linear mooring force (coefficients imported from structure)"
+  
+equation
+
+end linearMooringForceImport;

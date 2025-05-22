@@ -1,0 +1,7 @@
+within OceanEngineeringToolbox.DataImport.ImportRecords.MooringImport;
+
+partial class LinearMooringData
+  "Partial class importing the linear mooring force data"
+  
+  // This has yet to be developed
+end LinearMooringData;

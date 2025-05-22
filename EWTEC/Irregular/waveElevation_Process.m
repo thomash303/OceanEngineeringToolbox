@@ -2,7 +2,8 @@
 
 temp = tempdir;
 current = 'OpenModelica\OMEdit';
-file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+file = '\OceanEngineeringToolbox.Tutorial.RM3\RM3_res.csv';
 
 filedir = [temp current file];
 

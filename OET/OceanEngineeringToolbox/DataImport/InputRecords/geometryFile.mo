@@ -1,6 +1,7 @@
 within OceanEngineeringToolbox.DataImport.InputRecords;
 
-record geometryFile
-  "Record containing the user input file path to the geometry data"
-
-end geometryFile;
+partial class GeometryFile
+  "Partial class containing the user input file path to the geometry data"
+  parameter String geometryFile "Geometry file name" annotation(
+    Dialog(group = "Body Data"));
+end GeometryFile;

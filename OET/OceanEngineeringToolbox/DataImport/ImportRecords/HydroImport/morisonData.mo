@@ -1,5 +1,7 @@
 within OceanEngineeringToolbox.DataImport.ImportRecords.HydroImport;
 
-record morisonData
-  "Record importing the MOrison force data"
+partial class morisonData
+  "Partial class importing the MOrison force data"
+  
+  // This has yet to be developed.
 end morisonData;

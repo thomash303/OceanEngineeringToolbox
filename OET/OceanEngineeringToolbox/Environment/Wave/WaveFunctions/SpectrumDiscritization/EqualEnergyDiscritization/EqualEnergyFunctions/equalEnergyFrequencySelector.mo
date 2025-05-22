@@ -1,7 +1,0 @@
-within OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.EqualEnergyFunctions;
-
-function equalEnergyFrequencySelector
-  "Function calculating the equal energy frequency regions"
-algorithm
-
-end equalEnergyFrequencySelector;

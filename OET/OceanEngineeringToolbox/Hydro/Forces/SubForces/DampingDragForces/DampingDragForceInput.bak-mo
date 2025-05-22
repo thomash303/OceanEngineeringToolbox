@@ -1,0 +1,9 @@
+within OceanEngineeringToolbox.Hydro.Forces.SubForces.DampingDragForces;
+
+model DampingDragForceInput
+  "Model representing the damping/drag force (coefficients input in Modelica)"
+  
+  // This has yet to be developed.
+equation
+
+end DampingDragForceInput;

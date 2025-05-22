@@ -1,0 +1,9 @@
+within OceanEngineeringToolbox.Hydro.Forces.SubForces.DampingDragForces;
+
+model DampingDragForce
+  "Model representing the damping/drag force"
+  
+  // This has yet to be developed.
+equation
+
+end DampingDragForce;

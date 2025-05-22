@@ -1,12 +1,12 @@
 %% Loading data
 
-% temp = tempdir;
-% current = 'OpenModelica\OMEdit';
-% file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
-% 
-% filedir = [temp current file];
-% 
-% outputData = readtable(filedir);
+temp = tempdir;
+current = 'OpenModelica\OMEdit';
+%file = '\OET.Example.multibodyWECSingleDoF\multibodyWECSingleDoF_res.csv';
+file = '\OceanEngineeringToolbox.Tutorial.RM3\RM3_res.csv';
+filedir = [temp current file];
+
+outputData = readtable(filedir);
 
 
 %% Body
@@ -14,9 +14,10 @@ body = {};
 
 DoF = 6;
 modes = ["Surge", "Sway", "Heave", "Roll", "Pitch", "Yaw"];
-bodies = 2;
-bodyName = {'float','spar'};
-
+% bodies = 2;
+bodies = 1;
+% bodyName = {'float','spar'};
+bodyName = {'spar'};
 %% Data Extraction
 
 % duration = size(outputData.time,1);
@@ -38,12 +39,13 @@ nKin = size(kinematicNames,2);
 dynamicNames = {'excitationForce', 'radiationForce' 'hydrostaticForce'};
 
 % excitationForce = 'excitationRegularWave';
-excitationForce = 'excitationIrregularWave';
+excitationForce = 'excitationForceIrregularWaveEqualEnergy';
 % excitationForce = 'spectrumImport';
 
 dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForce', '_hydrostatic_hydrostaticForce'};
 forces = {'_F_1_','_F_2_','_F_3_','_F_4_','_F_5_','_F_6_'};
-nDy = size(dynamicNames,2); 
+% nDy = size(dynamicNames,2); 
+nDy = 1;
 
 kinematics = {'position', 'velocity' 'acceleration'};
 
@@ -72,7 +74,8 @@ for i = 1:bodies
 end
 
 %% Plotting OET and WEC-Sim
-dynamics = {'forceExcitation','forceRadiationDamping','forceRestoring'};
+% dynamics = {'forceExcitation','forceRadiationDamping','forceRestoring'};
+dynamics = {'forceExcitation'};
 rows = 2; % Number of rows
 cols = 3; % Number of columns
 
@@ -94,7 +97,7 @@ for i = 1:bodies
             plot(body(i).time,body(i).(kinematicNames{j})(:,k));
             hold on
             tempNameWS = kinematics{j};
-            plot(output.bodies(i).time, output.bodies(i).(kinematics{j})(:, k));
+            plot(output.bodies(i+1).time, output.bodies(i+1).(kinematics{j})(:, k)); %remove +1 for WS
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
@@ -109,7 +112,7 @@ for i = 1:bodies
             plot(body(i).time,body(i).(dynamicNames{j})(:,k));
             hold on
             tempNameWS = dynamics{j};
-            plot(output.bodies(i).time, output.bodies(i).(tempNameWS)(:, k)); 
+            plot(output.bodies(i+1).time, output.bodies(i+1).(tempNameWS)(:, k)); 
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([dynamicNames{j} ' (' dyUnits{k} ')']); 

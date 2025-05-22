@@ -1,5 +1,7 @@
 within OceanEngineeringToolbox.DataImport.ImportRecords.PTOImport;
 
-record LuTPTOData
-  "Record importing the LuT PTO force data"
+partial class LuTPTOData
+  "Partial class importing the LuT PTO force data"
+  
+  // This has yet to be developed.
 end LuTPTOData;

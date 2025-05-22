@@ -282,27 +282,27 @@ package OET
       // Force and torque element (adapt wave output to a force and apply to the body)
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
-        Placement(transformation(origin = {98, -30}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableHydrostaticForce = true, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 21.29, 0, 0, 0}, ra_CM = {0, 0, -21.29}) annotation(
+        Placement(transformation(origin = {110, -26}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.HydrodynamicBody spar(enableRadiationForce = false, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableHydrostaticForce = false, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 21.29, 0, 0, 0}, ra_CM = {0, 0, -21.29}) annotation(
         Placement(transformation(origin = {20, -16}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
+      Hydro.HydrodynamicBody float(enableRadiationForce = false, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = false, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
-        Placement(transformation(origin = {130, -28}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
         Placement(transformation(origin = {-10, -32}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion1 annotation(
-        Placement(transformation(origin = {48, -46}, extent = {{-10, -10}, {10, 10}})));
+  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz")  annotation(
+        Placement(transformation(origin = {132, -4}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
+        Placement(transformation(origin = {44, -38}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(freeMotion.frame_b, spar.frame_a) annotation(
-        Line(points = {{0, -32}, {10, -32}, {10, -16}}, color = {95, 95, 95}));
       connect(freeMotion.frame_a, world.frame_b) annotation(
         Line(points = {{-20, -32}, {-30, -32}, {-30, -20}}, color = {95, 95, 95}));
-  connect(freeMotion1.frame_b, float.frame_a) annotation(
-        Line(points = {{58, -46}, {60, -46}, {60, -16}}, color = {95, 95, 95}));
-  connect(freeMotion1.frame_a, spar.frame_b) annotation(
-        Line(points = {{38, -46}, {30, -46}, {30, -16}}, color = {95, 95, 95}));
+      connect(freeMotion.frame_b, spar.frame_a) annotation(
+        Line(points = {{0, -32}, {10, -32}, {10, -16}}, color = {95, 95, 95}));
+  connect(prismatic.frame_b, float.frame_a) annotation(
+        Line(points = {{54, -38}, {60, -38}, {60, -16}}, color = {95, 95, 95}));
+  connect(prismatic.frame_a, spar.frame_b) annotation(
+        Line(points = {{34, -38}, {30, -38}, {30, -16}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -822,7 +822,7 @@ This component has a filled rectangular icon.
 
     model massNoB2BData
       extends DataImport.multibodyData;
-    protected
+    //protected
       parameter Modelica.Units.SI.Mass M[1, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (including ballast)";
       parameter Modelica.Units.SI.Mass Ainf[bodyDoF, bodyDoF] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.coefficients.radiation.stateSpace.noB2B.Ainf" + bodyIndexString, bodyDoF, bodyDoF) "Added mass at maximum (cut-off) frequency";
       parameter Modelica.Units.SI.Mass m[3, 3] = diagonal({M[1, 1], M[1, 1], M[1, 1]}) "Mass matrix of the body (including ballast)";

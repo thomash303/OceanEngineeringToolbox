@@ -1,0 +1,8 @@
+within OceanEngineeringToolbox.Mooring.LinearMooring;
+
+model linearMooring
+  "Model representing a linear mooring"
+equation
+
+// add pre tension
+end linearMooring;

@@ -1,5 +1,7 @@
 within OceanEngineeringToolbox.DataImport.ImportRecords.MooringImport;
 
-record LuTMooringData
-  "Record importing the LuT mooring force data"
+partial class LuTMooringData
+  "Partial class importing the LuT mooring force data"
+  
+  // This has yet to be developed.
 end LuTMooringData;

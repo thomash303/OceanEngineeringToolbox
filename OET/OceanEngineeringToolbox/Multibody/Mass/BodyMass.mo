@@ -4,13 +4,17 @@ model BodyMass
   "Model containing the modified MSL mass"
   // Importing from the MSL
   import Modelica.Mechanics.MultiBody.{Types,Frames,Interfaces,Visualizers};
+  import Modelica.Units.Conversions.to_unit1;
   import Modelica.Units.{SI,Conversions};
   import Modelica.Mechanics.MultiBody.World;
+  import Modelica.Constants;
+  import Modelica.Math.Vectors;
   
   // Extending from the OceanEngineeringToolbox
-  //extends DataImport.FilePath;
-  //extends DataImport.BodyIndex;
-  //extends DataImport.massNoB2BData;
+  extends DataImport.InputRecords.FilePath;
+  extends DataImport.InputRecords.BodyIndex;
+  extends DataImport.ImportRecords.MultibodyImport.multibodyData;
+  extends DataImport.ImportRecords.MultibodyImport.massNoB2BData;
 
 parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_a to center of mass, resolved in frame_a";
   Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
@@ -22,11 +26,11 @@ parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_
     Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
   parameter SI.Inertia I_33(min = 0) = 0.001 "Element (3,3) of inertia tensor" annotation(
     Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
-  parameter SI.Inertia I_21(min = -Modelica.Constants.inf) = 0 "Element (2,1) of inertia tensor" annotation(
+  parameter SI.Inertia I_21(min = -Constants.inf) = 0 "Element (2,1) of inertia tensor" annotation(
     Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
-  parameter SI.Inertia I_31(min = -Modelica.Constants.inf) = 0 "Element (3,1) of inertia tensor" annotation(
+  parameter SI.Inertia I_31(min = -Constants.inf) = 0 "Element (3,1) of inertia tensor" annotation(
     Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
-  parameter SI.Inertia I_32(min = -Modelica.Constants.inf) = 0 "Element (3,2) of inertia tensor" annotation(
+  parameter SI.Inertia I_32(min = -Constants.inf) = 0 "Element (3,2) of inertia tensor" annotation(
     Dialog(group = "Inertia tensor (resolved in center of mass, parallel to frame_a)"));
   SI.Position r_0[3](start = {0, 0, 0}, each stateSelect = if enforceStates then StateSelect.always else StateSelect.avoid) "Position vector from origin of world frame to origin of frame_a" annotation(
     Dialog(tab = "Initialization", showStartAttribute = true));
@@ -63,7 +67,7 @@ parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_
     Dialog(tab = "Initialization"));
   parameter SI.Diameter sphereDiameter = world.defaultBodyDiameter "Diameter of sphere" annotation(
     Dialog(tab = "Animation", group = "if animation = true", enable = animation));
-  input Types.Color sphereColor = Modelica.Mechanics.MultiBody.Types.Defaults.BodyColor "Color of sphere" annotation(
+  input Types.Color sphereColor = Types.Defaults.BodyColor "Color of sphere" annotation(
     Dialog(colorSelector = true, tab = "Animation", group = "if animation = true", enable = animation));
   parameter SI.Diameter cylinderDiameter = sphereDiameter/Types.Defaults.BodyCylinderDiameterFraction "Diameter of cylinder" annotation(
     Dialog(tab = "Animation", group = "if animation = true", enable = animation));
@@ -81,15 +85,12 @@ parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_
     Evaluate = true,
     Dialog(tab = "Advanced", enable = not useQuaternions));
   final parameter SI.Inertia I[3, 3] = [I_11, I_21, I_31; I_21, I_22, I_32; I_31, I_32, I_33] "Inertia tensor";
-  final parameter Frames.Orientation R_start = Modelica.Mechanics.MultiBody.Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
+  final parameter Frames.Orientation R_start = Frames.axesRotations(sequence_start, angles_start, zeros(3)) "Orientation object from world frame to frame_a at initial time";
   SI.AngularVelocity w_a[3](start = Frames.resolve2(R_start, w_0_start), fixed = fill(w_0_fixed, 3), each stateSelect = if enforceStates then (if useQuaternions then StateSelect.always else StateSelect.never) else StateSelect.avoid) "Absolute angular velocity of frame_a resolved in frame_a";
   SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
   SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
-  Real aCheck[3];
-  Real vCheck[3];
-  Real f_iner[3];
-  Real t_iner[3];
+
 protected
   SI.Force f_element[3];
   SI.Torque t_element[3];
@@ -104,7 +105,7 @@ protected
   SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
   SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
   // Declarations for animation
-  Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Modelica.Math.Vectors.length(r_CM) > sphereDiameter/2 then Modelica.Math.Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+  Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Vectors.length(r_CM) > sphereDiameter/2 then Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
   Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
 initial equation
   if angles_fixed then
@@ -170,10 +171,8 @@ equation
         Inserting the first three equations in the last two results in:
       */
 // Note a now defined as local translational acceleration
-  f_iner = (m + Ainf11)*a + Ainf12*z_a;
-  t_iner = (I + Ainf22)*z_a  + cross(w_a, I*w_a) + Ainf21*a;
-  f_element = f_iner;
-  t_element = t_iner;
+  f_element = (m + Ainf11)*a + Ainf12*z_a;
+  t_element = (I + Ainf22)*z_a  + cross(w_a, I*w_a) + Ainf21*a;
   frame_a.f = f_element;
   frame_a.t = t_element;
   annotation(

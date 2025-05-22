@@ -1,5 +1,7 @@
 within OceanEngineeringToolbox.DataImport.ImportRecords.HydroImport;
 
-record dampingDragData
-  "Record importing the damping/drag force data"
+partial class dampingDragData
+  "Partial class importing the damping/drag force data"
+  
+  // This has yet to be developed.
 end dampingDragData;
