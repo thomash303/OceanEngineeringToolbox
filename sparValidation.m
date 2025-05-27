@@ -97,7 +97,7 @@ for i = 1:bodies
             plot(body(i).time,body(i).(kinematicNames{j})(:,k));
             hold on
             tempNameWS = kinematics{j};
-            plot(output.bodies(i+1).time, output.bodies(i+1).(kinematics{j})(:, k)); %remove +1 for WS
+            plot(output.bodies(i).time, output.bodies(i).(kinematics{j})(:, k)); 
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
@@ -112,7 +112,7 @@ for i = 1:bodies
             plot(body(i).time,body(i).(dynamicNames{j})(:,k));
             hold on
             tempNameWS = dynamics{j};
-            plot(output.bodies(i+1).time, output.bodies(i+1).(tempNameWS)(:, k)); 
+            plot(output.bodies(i).time, output.bodies(i).(tempNameWS)(:, k)); 
             title([num2str(modes(k))]); 
             xlabel('Time (s)');
             ylabel([dynamicNames{j} ' (' dyUnits{k} ')']); 

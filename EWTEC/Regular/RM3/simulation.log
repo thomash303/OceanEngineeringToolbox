@@ -5,12 +5,12 @@ Version: 6.1
 
 Initializing the Simulation Class...
 	Case Dir: C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3 
-Elapsed time is 0.509145 seconds.
+Elapsed time is 0.994730 seconds.
 
 WEC-Sim Pre-processing ...   
 	Infinite water depth specified in BEM and "waves.waterDepth" not specified in input file.
 Set water depth to 200m for visualization.
-Elapsed time is 0.111067 seconds.
+Elapsed time is 0.200677 seconds.
 
 WEC-Sim Simulation Settings:
 	Start Time                     (sec) = 0
@@ -50,8 +50,8 @@ List of Constraint(s): Number of Constraints = 1
 
 
 Simulating the WEC device defined in the SimMechanics model C:\Users\thogan1\Documents\GitHub\OceanEngineeringToolbox\EWTEC\Regular\RM3\RM3.slx...   
-Elapsed time is 0.129984 seconds.
-Elapsed time is 5.094797 seconds.
+Elapsed time is 0.446538 seconds.
+Elapsed time is 6.575694 seconds.
 
 Post-processing and saving...   
-Elapsed time is 0.772210 seconds.
+Elapsed time is 0.675902 seconds.

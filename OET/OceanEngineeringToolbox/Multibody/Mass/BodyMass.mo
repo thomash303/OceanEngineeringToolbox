@@ -3,20 +3,17 @@ within OceanEngineeringToolbox.Multibody.Mass;
 model BodyMass
   "Model containing the modified MSL mass"
   // Importing from the MSL
-  import Modelica.Mechanics.MultiBody.{Types,Frames,Interfaces,Visualizers};
-  import Modelica.Units.Conversions.to_unit1;
+  import Modelica.Mechanics.MultiBody.{Types,Frames,Interfaces,Visualizers, World};
   import Modelica.Units.{SI,Conversions};
-  import Modelica.Mechanics.MultiBody.World;
   import Modelica.Constants;
   import Modelica.Math.Vectors;
   
   // Extending from the OceanEngineeringToolbox
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
-  extends DataImport.ImportRecords.MultibodyImport.multibodyData;
   extends DataImport.ImportRecords.MultibodyImport.massNoB2BData;
 
-parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_a to center of mass, resolved in frame_a";
+  parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_a to center of mass, resolved in frame_a";
   Interfaces.Frame_a frame_a "Coordinate system fixed at body" annotation(
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
   // parameter SI.Mass m(min = 0, start = 1) "Mass of rigid body";
@@ -90,7 +87,8 @@ parameter SI.Position r_CM[3](start = {0, 0, 0}) = {0, 0, 0} "Vector from frame_
   SI.AngularAcceleration z_a[3](start = Frames.resolve2(R_start, z_0_start), fixed = fill(z_0_fixed, 3)) "Absolute angular acceleration of frame_a resolved in frame_a";
   SI.Acceleration g_0[3] "Gravity acceleration resolved in world frame";
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
-
+  Real aCheck[3];
+  Real vCheck[3];
 protected
   SI.Force f_element[3];
   SI.Torque t_element[3];
@@ -105,7 +103,7 @@ protected
   SI.AngularVelocity phi_d[3](each stateSelect = if enforceStates then (if useQuaternions then StateSelect.never else StateSelect.always) else StateSelect.avoid) "= der(phi)";
   SI.AngularAcceleration phi_dd[3] "= der(phi_d)";
   // Declarations for animation
-  Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Vectors.length(r_CM) > sphereDiameter/2 then Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
+  Visualizers.Advanced.Shape cylinder(shapeType = "cylinder", color = cylinderColor, specularCoefficient = specularCoefficient, length = if Vectors.length(r_CM) > sphereDiameter/2 then Vectors.length(r_CM) - (if cylinderDiameter > 1.1*sphereDiameter then sphereDiameter/2 else 0) else 0, width = cylinderDiameter, height = cylinderDiameter, lengthDirection = Conversions.to_unit1(r_CM), widthDirection = {0, 1, 0}, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation;
   Visualizers.Advanced.Shape sphere(shapeType = "sphere", color = sphereColor, specularCoefficient = specularCoefficient, length = sphereDiameter, width = sphereDiameter, height = sphereDiameter, lengthDirection = {1, 0, 0}, widthDirection = {0, 1, 0}, r_shape = r_CM - {1, 0, 0}*sphereDiameter/2, r = frame_a.r_0, R = frame_a.R) if world.enableAnimation and animation and sphereDiameter > 0;
 initial equation
   if angles_fixed then
@@ -157,8 +155,12 @@ equation
   v_0 = der(frame_a.r_0);
   a_0 = der(v_0);
   r = Frames.resolve2(frame_a.R, r_0);
-  a = Frames.resolve2(frame_a.R, a_0);
   v = Frames.resolve2(frame_a.R, v_0);
+  a = Frames.resolve2(frame_a.R, a_0);
+  
+  // Are not used, but for some reason this is necessary.
+  vCheck = der(r);
+  aCheck = der(v);
 // rotational kinematic differential equations
   w_a = Frames.angularVelocity2(frame_a.R);
   z_a = der(w_a);
@@ -175,6 +177,8 @@ equation
   t_element = (I + Ainf22)*z_a  + cross(w_a, I*w_a) + Ainf21*a;
   frame_a.f = f_element;
   frame_a.t = t_element;
+
+  
   annotation(
     Icon(coordinateSystem(preserveAspectRatio = true, extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, 30}, {-3, -30}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.HorizontalCylinder, fillColor = {0, 127, 255}, radius = 10), Text(extent = {{150, -100}, {-150, -70}}, textString = "m=%m"), Text(extent = {{-150, 110}, {150, 70}}, textString = "%name", textColor = {0, 0, 255}), Ellipse(extent = {{-20, 60}, {100, -60}}, lineColor = {0, 24, 48}, fillPattern = FillPattern.Sphere, fillColor = {0, 127, 255})}),
     Documentation(info = "<html>

@@ -38,8 +38,8 @@ protected
   SI.Force f_element[3];
   SI.Torque t_element[3];
 
-  parameter SI.Position s_refTrans[3] "Reference position";
-  parameter SI.Angle s_refRot[3] "Reference angle";
+  //parameter SI.Position s_refTrans[3] "Reference position";
+  //parameter SI.Angle s_refRot[3] "Reference angle";
   Real position[6] = cat(1, u_abs, theta_abs) "Combined position vector";  
   Real displacement[6] = position - s_ref "Combined displacement vector";
   Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";

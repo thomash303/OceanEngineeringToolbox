@@ -35,8 +35,8 @@ protected
 equation
 // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
   for i in 1:bodyDoF loop
-    ExcCoeffRe[i] = Vectors.interpolate(w, F_excRe[i], omegaPeak)*rho*g_n;
-    ExcCoeffIm[i] = Vectors.interpolate(w, F_excIm[i], omegaPeak)*rho*g_n;
+    ExcCoeffRe[i] = Vectors.interpolate(w, F_excRe[i], omegaPeak)*1000*9.8;
+    ExcCoeffIm[i] = Vectors.interpolate(w, F_excIm[i], omegaPeak)*1000*9.8;
   end for;
   // This is a bug, for some reason I have to multiply by ramp at front and end
   F = (ramp.*(ExcCoeffRe.*A*cos(omegaPeak*time)) - (ExcCoeffIm.*A*sin(omegaPeak*time)).*ramp);

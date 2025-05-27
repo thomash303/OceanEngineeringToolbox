@@ -11,7 +11,7 @@ model Environment
 // Spectrum Parameters
   parameter String waveSelector = "Regular" annotation(
     Dialog(group = "Wave Spectrum Parameters"),
-    choices(choice = "Regular", choice = "PiersonMoskowitz", choice = "JONSWAP", choice = "spectrumImport"));
+    choices(choice = "None", choice = "Regular", choice = "PiersonMoskowitz", choice = "JONSWAP", choice = "spectrumImport"));
   parameter String frequencySelection = "random" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP")),
     choices(choice = "random", choice = "equalEnergy"));
@@ -35,7 +35,9 @@ model Environment
   Wave.SpectrumImport spectrumImport(Trmp = Trmp, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "spectrumImport" annotation(
     Placement(transformation(origin = {0, -54}, extent = {{-12, -12}, {12, 12}})));
 equation
-  if waveSelector == "Regular" then
+  if waveSelector == "None" then
+    SSE = 0;
+  elseif waveSelector == "Regular" then
     SSE = regularWave.SSE;
   elseif waveSelector == "PiersonMoskowitz" or waveSelector == "JONSWAP" then
     SSE = irregularWave.SSE;

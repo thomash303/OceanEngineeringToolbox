@@ -34,8 +34,8 @@ equation
   // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
   for i in 1:bodyDoF loop
     for j in 1:n_omega loop
-      ExcCoeffRe[i, j] = Vectors.interpolate(w, F_excRe[i, :], omega[j])*rho*g_n;
-      ExcCoeffIm[i, j] = Vectors.interpolate(w, F_excIm[i, :], omega[j])*rho*g_n;
+      ExcCoeffRe[i, j] = Vectors.interpolate(w, F_excRe[i, :], omega[j]);
+      ExcCoeffIm[i, j] = Vectors.interpolate(w, F_excIm[i, :], omega[j]);
     end for;
     // Calculate excitation force vectors
     F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp; 

@@ -18,7 +18,7 @@
 *.pyc
 
 ## Simulation files
-*.mat
+#*.mat
 
 ## Package files
 *.gz

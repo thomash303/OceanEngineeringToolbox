@@ -59,7 +59,7 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Excitation"));
   // Radiation
-  Forces.Radiation radiation(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex) if enableRadiationForce annotation(
+    Forces.Radiation radiation(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex) if enableRadiationForce annotation(
     Placement(transformation(origin = {34, 48}, extent = {{-18, -18}, {18, 18}})));
   parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
     choices(checkBox = true),

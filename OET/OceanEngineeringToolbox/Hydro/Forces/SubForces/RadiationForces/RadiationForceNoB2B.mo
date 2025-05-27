@@ -28,7 +28,6 @@ model RadiationForceNoB2B
   // Force/torque vector
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
 
-
 protected
   SI.Force f_element[3];
   SI.Torque t_element[3];

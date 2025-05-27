@@ -3,6 +3,7 @@
 - MATLAB/Simulink
 - WEC-Sim
 - Python (optional)
+- HDF viewer (optional)
 
 
 > [!CAUTION]
