@@ -1,5 +1,0 @@
-within OceanEngineeringToolbox.DataImport.ImportRecords;
-
-record radiationB2BData
-  "Record importing the radiation force data (with B2B interactions)"
-end radiationB2BData;

@@ -1,9 +1,0 @@
-within OceanEngineeringToolbox.Hydro.Forces.SubForces.DampingDragForces;
-
-model DampingDragForceImported
-  "Model representing the damping/drag force (coefficients imported with hydrodynamic data)"
-  
-  // This has yet to be developed.
-equation
-
-end DampingDragForceImported;

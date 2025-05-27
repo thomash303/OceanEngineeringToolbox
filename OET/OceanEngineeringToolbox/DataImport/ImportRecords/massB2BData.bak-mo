@@ -1,5 +1,0 @@
-within OceanEngineeringToolbox.DataImport.ImportRecords;
-
-record massB2BData
-  "Record importing the mass data (with B2B interactions)"
-end massB2BData;

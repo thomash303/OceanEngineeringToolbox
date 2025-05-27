@@ -1,8 +1,0 @@
-within OceanEngineeringToolbox.Mooring.LinearMooring;
-
-model linearMooringImport
-  "Model representing a linear mooring (coefficients imported from structure)"
-equation
-
-// add pre tension
-end linearMooringImport;

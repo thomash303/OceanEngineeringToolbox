@@ -1,5 +1,0 @@
-within OceanEngineeringToolbox.DataImport.ImportRecords;
-
-record excitationData
-  "Record importing the excitation force data"
-end excitationData;

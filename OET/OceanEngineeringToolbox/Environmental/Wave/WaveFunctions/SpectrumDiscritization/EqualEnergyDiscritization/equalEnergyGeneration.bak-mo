@@ -1,7 +1,0 @@
-within OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization;
-
-model equalEnergyGeneration
-  "Model representing equal energy frequency discritization"
-equation
-
-end equalEnergyGeneration;
