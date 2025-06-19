@@ -1,0 +1,4 @@
+within OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumGeneration;
+
+package SpectrumGenerationCalculations
+end SpectrumGenerationCalculations;

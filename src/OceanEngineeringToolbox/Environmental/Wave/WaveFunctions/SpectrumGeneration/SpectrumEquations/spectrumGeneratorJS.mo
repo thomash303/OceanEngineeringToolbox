@@ -8,8 +8,7 @@ function spectrumGeneratorJS
   import Modelica.Units.SI;
   
   input SI.Height Hs "Significant wave height";
-  input SI.AngularFrequency omegaPeak "Peak spectral frequency" annotation(
-    Dialog(group = "Wave Spectrum Parameters"));
+  input SI.AngularFrequency omegaPeak "Peak spectral frequency";
   input SI.AngularFrequency omega[n_omega] "Array of frequency components";
   input Integer n_omega "Number of frequency components (default is 100 for irregular)";
   input Real sigmaA "Minimum spectral width parameter";

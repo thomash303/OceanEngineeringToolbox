@@ -14,8 +14,8 @@ model equalEnergyGenerator
   
   // Spectrum Parameters  
   parameter String waveSelector = "PiersonMoskowitz";
-  parameter SI.Length Hs = 2.5 "Significant Wave Height";
-  parameter SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency";
+  parameter SI.Length Hs "Significant Wave Height";
+  parameter SI.AngularFrequency omegaPeak "Peak angular frequency";
     
   // Pierson-Moskowitz parameters
   parameter Real alphaPM = 0.0081 "Energy scale";
@@ -25,6 +25,12 @@ model equalEnergyGenerator
   parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP";
   parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP";
 
+  // Ochi-Hubble Parameters
+  parameter SI.Height HsOH[componentSpectra] "Significant wave heights";
+  parameter SI.AngularFrequency omegaPeakOH[componentSpectra] "Peak spectral frequencies";
+  parameter Real lambdaOH[componentSpectra] "Peak shape parameter";
+  final parameter Integer componentSpectra = 2; 
+  
   // Ramp
   Real ramp "Ramping function";
   parameter SI.Time Trmp "Interval for ramping up of waves during start phase";
@@ -43,7 +49,7 @@ model equalEnergyGenerator
   parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
   parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumCalculations.spectrumInterpolator(n_omega = n_omega, n_omega_int = n_omega_int, omega_int = omega_int, S_int = S_int, omega = omega) "Wave energy spectrum";
   SI.Height SSE "Sea surface elevation";
-  parameter WaveUnits.spectrumEnergyDensity S_int[n_omega_int] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB) "Integratation wave energy spectrum"; 
+  parameter WaveUnits.spectrumEnergyDensity S_int[n_omega_int] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Integratation wave energy spectrum"; 
 
   // Random phase selection
   parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
@@ -54,7 +60,6 @@ model equalEnergyGenerator
 protected
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component";
-  parameter SI.Time Tp[n_omega] = 2*pi./omega "Wave period components";
 
 equation
   if time < Trmp then
