@@ -33,13 +33,14 @@ model Environment
   parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
 
-  // Ochi-Hubble Parameters
-  parameter SI.Height HsOH[componentSpectra] = {0,0} "Significant wave heights" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble"));
-  parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0,0} "Peak spectral frequencies" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble"));
-  parameter Real lambdaOH[componentSpectra] = {0,0} "Peak shape parameter" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); 
+  // Ochi-Hubble Parameters (including sample values from original paper)
+  // Default parameters computed from most likely sea state
+  parameter SI.Height HsOH[componentSpectra] = {0.84*Hs,0.54*Hs} "Significant wave heights" annotation(
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {4.14,3.27}
+  parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0.7*exp(-0.046*Hs),1.15*exp(-0.039*Hs)} "Peak spectral frequencies" annotation(
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {0.58, 1} 
+  parameter Real lambdaOH[componentSpectra] = {3,1.54*exp(-0.062*Hs)} "Peak shape parameter" annotation(
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {2.67, 1.37}
   
   // Ramp
   parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
