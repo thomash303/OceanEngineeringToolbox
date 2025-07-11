@@ -2,17 +2,15 @@ within OceanEngineeringToolbox.Multibody;
 
 model Body
   "Model containing modified MSL body component (joint offset and hydrodynamic added mass effects)"
-  
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.{Parts, Visualizers, Sensors, Types};
 
-  // Extending from the OceanEngineeringToolbox
+// Extending from the OceanEngineeringToolbox
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.animationFile;
   extends DataImport.InputRecords.BodyIndex;
   extends Frame.PartialThreeFrames;
-  
   // Mass
   parameter SI.Mass M[1,1];
   Mass.BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, useQuaternions = true) annotation(

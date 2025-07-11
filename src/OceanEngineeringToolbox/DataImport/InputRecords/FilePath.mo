@@ -2,9 +2,9 @@ within OceanEngineeringToolbox.DataImport.InputRecords;
 
 partial class FilePath
   "Partial class containing the user input file path to the hydrodynamic data"
-  parameter String filePath "File path" annotation(
+  replaceable parameter String filePath "File path" annotation(
     Dialog(group = "Body Data"));
-  parameter String hydroCoeffFile "Hydro coefficient file name" annotation(
+  replaceable parameter String hydroCoeffFile "Hydro coefficient file name" annotation(
     Dialog(group = "Body Data"));
 protected
   parameter String fileDir = filePath + hydroCoeffFile "Full file directory";

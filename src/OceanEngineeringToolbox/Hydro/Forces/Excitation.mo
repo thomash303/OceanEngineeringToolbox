@@ -12,7 +12,6 @@ model Excitation
   
   // Calling an outer model at the top-level deployment
   outer Environmental.Environment environment;
- 
   
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(

@@ -156,7 +156,7 @@ for i = 1:hydro.bodies.Nb
      Cf = [];
      Df = [];
     
-     % State-space matrices including B2B interaction
+     % State-space matrices not including B2B interaction
      hydro.bodies.LDoF =  hydro.bodies.dof(1);
      for ii = 1:hydro.bodies.nDoF
          for jj = hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i) % this will need to change if body has < 6DoF

@@ -2,9 +2,12 @@ within OceanEngineeringToolbox.DataImport.ImportRecords.MultibodyImport;
 
 partial class massNoB2BData
   "Partial class importing the mass data (without B2B interactions)"
+  
+  // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Utilities.Streams.readRealMatrix;
   
+  // Extending and inheriting from the OET
   extends InputRecords.FilePath;
   extends InputRecords.BodyIndex;
   extends multibodyData;
