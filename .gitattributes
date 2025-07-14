@@ -1,0 +1,2 @@
+*.mo linguist-language=Modelica
+*.h5 filter=lfs diff=lfs merge=lfs -text
