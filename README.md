@@ -24,7 +24,7 @@ Former members of the development team include:
 - Alix Shahbaz Haider
 
 #### Citing This Work
-Publications conttibuting to the development of the OET include:
+Publications contributing to the development of the OET include:
 
 1. T. Hogan and K. Bubbar, "Augmenting the Modelica Ocean Engineering Toolbox to support multibody dynamic simulations," in *Proceedings of the 16th European Wave and Tidal Energy Conference*, Madeira, Portugal, 2025, accepted.
 2. A. Menon, A. S. Haider, and K. Bubbar. "[Advancing the Modelica Ocean Engineering Toolbox with the Capability to Generate Accurate Wave Excitation Forces.](https://www.researchgate.net/publication/383006516_Advancing_the_Modelica_Ocean_Engineering_Toolbox_With_the_Capability_to_Generate_Accurate_Wave_Excitation_Forces)" in *Proceedings of the 43rd International Conference on Offshore Mechanics and Arctic Engineering*, OMAE 2024, Singapore, 2024.
@@ -32,3 +32,6 @@ Publications conttibuting to the development of the OET include:
 
 Publications citing the OET include:
 1. T. Hogan and K. Bubbar, "Ocean Wave Energy Converter Mid-Fidelity Numerical Simulation Tools: A Review," in *Proceedings of the 16th European Wave and Tidal Energy Conference*, Madeira, Portugal, 2025, accepted.
+
+#### Acknowledgements
+This work is independently developed but draws inspiration from NREL and Sandia National Laboratories’ open-source wave energy converter simulation tool, WEC-Sim, as well as preliminary work at NTNU, to illustrate that an Ocean Engineering library in Modelica is a feasible concept.
