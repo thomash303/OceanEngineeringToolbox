@@ -1,9 +1,10 @@
 #### Dependencies
 - OpenModelica
-- MATLAB/Simulink
+- MATLAB/Simulink. System ID tool
 - WEC-Sim
 - Python (optional)
 - HDF viewer (optional)
+only for windows,
 
 
 > [!CAUTION]
