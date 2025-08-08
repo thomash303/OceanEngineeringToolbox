@@ -8,7 +8,7 @@ Wind = {};
 Rot = {};
 Cor = {};
 Turb = {};
-
+Plot = {};
 
 %% Step 2: -- Defining input parameters -- 
 
@@ -34,6 +34,7 @@ Rot.cone = 5;               % cone angle (deg)
 Cor.tipLoss = true;          % Enable/disable tip loss (bool)
 Cor.thrustCorrection = true; % Enable/disable thrust correction (bool)
 Cor.hubLoss = true;          % Enable/disable hub loss (bool)
+Cor.dynamicStall = true;     % Enable/disable dynamic stall (bool)
 Cor.dynamicWake = true;      % Enable/disable dynamic wake (bool)
 Cor.yawModel = true;         % Enable/disable yaw model (bool)
 
@@ -50,17 +51,23 @@ Turb.pitch = 0.01;            % Pitch angle [rad]
 Turb.nB = 3;                 % Number of blades
 Turb.nBE = 17;               % Number of blade elements
 Turb.nDoF = 3;               % Translational DoF
+Turb.n = [0, 0, -1];         % Rotor shaft axis unit vector
 
 % Generator parameters
-Turb.RPM = 27.1;             % Rotor angular speed [rpm]
+Turb.RPM = 6;             % Rotor angular speed [rpm]
 
 % Airfoil data
 Turb.airfoilFile = 'NACA_63415.txt'; % File storing airfoil coefficient data
 
 
 %% Step 3: -- Call BEMT algorithm --
-%[RES] = unsteadyBEMTAlgorithm(Sim, Fluid, Wind, Rot, Cor, Turb);
+% This is a handle class, not a value class
+bemt = unsteadyBEMTAlgorithm(Sim, Fluid, Wind, Rot, Cor, Turb);
+bemt.runSimulation();
 
 %% Step 4: -- Visulize Results --
+% Plotting selection
+Plot.blade = 1;
+Plot.element = 1;
 
-% need to make some plotting code
+bemt.plotResults(Plot);

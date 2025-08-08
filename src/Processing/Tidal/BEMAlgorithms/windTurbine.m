@@ -14,6 +14,7 @@ classdef windTurbine
         nBE             % Number of blade elements
         nDoF            % Number of translational degrees of freedom
         sigma           % Solidity distribution (1 x nBE)
+        n               % Rotor shaft axis unit vector
         
         % Aerodynamic coefficients
         alphaCoef       % Angles of attack (vector)
@@ -30,7 +31,7 @@ classdef windTurbine
     
 
     methods
-        function obj = windTurbine(R, r, chord, twist, pitch, nB, nBE, nDoF, RPM, airfoilFile)
+        function obj = windTurbine(R, r, chord, twist, pitch, nB, nBE, nDoF, RPM, n, airfoilFile)
             % Constructor for windTurbine class
             % Inputs:
             %   R           - Rotor radius [m]
@@ -43,6 +44,7 @@ classdef windTurbine
             %   nDoF        - Number of translational DoFs
             %   nDoF        - Number of translational DoFs
             %   RPM         - Angular speed [RPM]
+            %   n           - rotor shaft axis unit vector
             %   airfoilFile - File path to airfoil data
 
             obj.R = R;
@@ -54,6 +56,7 @@ classdef windTurbine
             obj.nBE = nBE;
             obj.nDoF = nDoF;
             obj.omega = RPM * 2 * pi / 60;
+            obj.n = n;
             obj.airfoilFile = airfoilFile;
 
             % Load airfoil data from text file
