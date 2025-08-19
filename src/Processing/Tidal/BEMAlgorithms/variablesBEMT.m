@@ -15,6 +15,8 @@ classdef variablesBEMT
         ct
         Ct
         Cq
+        Cd
+        Cl
 
         %% Unsteady BEMT (time, nDoF, blade element)
         rb_4
@@ -22,7 +24,7 @@ classdef variablesBEMT
         Wqs_y
         Wqs_z
         Wqs
-        W0
+        W
         V0_1
         V0_3
         V0_4
@@ -30,13 +32,14 @@ classdef variablesBEMT
         Velas_4
         Vrel_4
         lambda
+        psi
 
-        Wn_3
-        Wn_4
-        nnW_3
+        Wprev_3
         n
-        v_prime_indiction_3
+        Vprime
+        Vprime_fg
         Wint
+        gamma
 
         %% Loads
         D
@@ -47,11 +50,12 @@ classdef variablesBEMT
         tau2
 
         %% Aerodynamic Loads
+        py
+        pz
         fy
         fz
-        fthrust
-        torque
-        power
+        Ty
+        Py
 
         %% Inputs 
         N
@@ -64,6 +68,7 @@ classdef variablesBEMT
     methods
         function obj = variablesBEMT(N, nB, nBE, nDoF)
             % Initialize all variables with zeros of the correct sizes
+
 
             % Initializing BEMT parameters (time, blade, blade element)
             obj.a = zeros(N, nB, nBE);
@@ -80,6 +85,8 @@ classdef variablesBEMT
             obj.ct = zeros(N, nB, nBE);
             obj.Ct = zeros(N, nB, nBE);  
             obj.Cq = zeros(N, nB, nBE);
+            obj.Cd = zeros(N, nB, nBE);
+            obj.Cl = zeros(N, nB, nBE);
 
             % Unsteady BEMT
             obj.rb_4 = zeros(N, nDoF, nB, nBE);
@@ -87,7 +94,7 @@ classdef variablesBEMT
             obj.Wqs_y = zeros(N, nB, nBE);
             obj.Wqs_z = zeros(N, nB, nBE);
             obj.Wqs = zeros(N, nDoF, nB, nBE);
-            obj.W0 = zeros(N, nDoF, nB, nBE);
+            obj.W = zeros(N, nDoF, nB, nBE);
             obj.V0_1 = zeros(N, nDoF, nB, nBE);
             obj.V0_3 = zeros(N, nDoF, nB, nBE);
             obj.V0_4 = zeros(N, nDoF, nB, nBE);
@@ -95,13 +102,14 @@ classdef variablesBEMT
             obj.Velas_4 = zeros(N, nDoF, nB, nBE);
             obj.Vrel_4 = zeros(N, nDoF, nB, nBE);
             obj.lambda = zeros(N, nB, nBE);
+            obj.psi = zeros(N, nB);
 
-            obj.Wn_3 = zeros(N, nDoF, nDoF, nB, nBE);
-            obj.Wn_4 = zeros(N, nDoF, nDoF, nB, nBE);
-            obj.nnW_3 = zeros(N, nDoF, nDoF, nB, nBE);
+            obj.Wprev_3 = zeros(N, nDoF, nDoF, nB, nBE);
             obj.n = [0; 0; -1];  % Unit vector (constant)
-            obj.v_prime_indiction_3 = zeros(N, nDoF, nDoF, nB, nBE);
+            obj.Vprime = zeros(N, nDoF, nDoF, nB, nBE);
+            obj.Vprime_fg = zeros(N, nDoF, nDoF, nB, nBE);
             obj.Wint = zeros(N, nDoF, nB, nBE);
+            obj.gamma = zeros(N, nB, nBE);
 
             % Loads
             obj.D = zeros(N, nB, nBE);
@@ -112,11 +120,20 @@ classdef variablesBEMT
             obj.tau2 = zeros(N, nB, nBE);
 
             % Aerodynamic Loads
+            obj.py = zeros(N, nB, nBE);
+            obj.pz = zeros(N, nB, nBE);
             obj.fy = zeros(N, nB, nBE);
             obj.fz = zeros(N, nB, nBE);
-            obj.fthrust = zeros(N, nB, nBE);
-            obj.torque = zeros(N, nB, nBE);
-            obj.power = zeros(N, nB, nBE);
+            obj.Ty = zeros(N, nB, nBE);
+            obj.Py = zeros(N, nB, nBE);
+
+            % Initial azimuthal position of the blades
+            spacing = 360 / nB; % angular spacing [deg]
+
+            for i = 2:nB
+                obj.psi(1,i) = obj.psi(1,i-1) + spacing;
+            end
+
         end
     end
 end

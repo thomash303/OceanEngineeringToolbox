@@ -3,8 +3,9 @@ classdef windTurbine
     
     properties
         % Blade geometry
-        R               % Rotor radius [m]
-        r               % Radial positions [m] (1 x nBE)
+        Rr              % Rotor radius [m]
+        Rh              % Hub radius [m]
+        Rb              % Radial positions [m] (1 x nBE)
         chord           % Chord distribution [m] (1 x nBE)
         twist           % Twist distribution [rad] (1 x nBE)
         pitch           % Pitch angle [m]
@@ -15,27 +16,23 @@ classdef windTurbine
         nDoF            % Number of translational degrees of freedom
         sigma           % Solidity distribution (1 x nBE)
         n               % Rotor shaft axis unit vector
-        
-        % Aerodynamic coefficients
-        alphaCoef       % Angles of attack (vector)
-        liftCoef        % Lift coefficient (vector)
-        dragCoef        % Drag coefficient (vector)
-        
-        % Airfoil data
-        airfoilFile     % Filename (char)
-        airfoilData     % Data loaded from airfoil file
 
         % Generator parameters
         omega           % angular velocity [rad/s]
+
+
+        % Influence length
+        dr;
     end
     
 
     methods
-        function obj = windTurbine(R, r, chord, twist, pitch, nB, nBE, nDoF, RPM, n, airfoilFile)
+        function obj = windTurbine(Rr, Rh, Rb, chord, twist, pitch, nB, nBE, nDoF, RPM, n)
             % Constructor for windTurbine class
             % Inputs:
-            %   R           - Rotor radius [m]
-            %   r           - Radial positions array [m]
+            %   Rr          - Rotor radius [m]
+            %   Rh          - Hub radius [m]
+            %   Rb          - Radial positions array [m]
             %   chord       - Chord distribution array [m]
             %   twist       - Twist distribution array [deg]
             %   pitch       - Pitch angle [rad]
@@ -45,10 +42,10 @@ classdef windTurbine
             %   nDoF        - Number of translational DoFs
             %   RPM         - Angular speed [RPM]
             %   n           - rotor shaft axis unit vector
-            %   airfoilFile - File path to airfoil data
 
-            obj.R = R;
-            obj.r = r;
+            obj.Rr = Rr;
+            obj.Rh = Rh;
+            obj.Rb = Rb;
             obj.chord = chord;
             obj.twist = twist * pi / 180;
             obj.pitch = pitch;
@@ -57,43 +54,25 @@ classdef windTurbine
             obj.nDoF = nDoF;
             obj.omega = RPM * 2 * pi / 60;
             obj.n = n;
-            obj.airfoilFile = airfoilFile;
-
-            % Load airfoil data from text file
-            try
-                polarData = parseXFoilPolar(airfoilFile);
-            catch ME
-                error('Failed to load airfoil data from %s: %s', airfoilFile, ME.message);
-            end
-
-            % Read coefficient curves
-            obj.alphaCoef = polarData.dataTable.alpha;
-            obj.liftCoef  = polarData.dataTable.CL;
-            obj.dragCoef  = polarData.dataTable.CD;
-
 
             % Compute solidity
-            obj.sigma = chord .* nB ./ (2 * pi * r);
+            obj.sigma = chord .* nB ./ (2 * pi * Rb);
+
+
+            % Compute influence lengths
+            obj.dr = zeros(1, nBE);
+            % Root
+            obj.dr(1) = (obj.Rb(2) - obj.Rb(1)) / 2;
+            
+            % Interior stations
+            for i = 2:nBE-1
+                obj.dr(i) = (obj.Rb(i+1) - obj.Rb(i-1)) / 2;
+            end
+            
+            % Tip
+            obj.dr(nBE) = (obj.Rb(obj.nBE) - obj.Rb(obj.nBE-1)) / 2;
         end
     
-        function [Cl, Cd] = fAeroCoeff(obj, alpha, Re)
-            % fAeroCoeff Compute lift and drag coefficients from angle of attack
-            % Inputs:
-            %   alpha - Angle of attack (deg)
-            %   Re    - Reynolds number (unused for now)
-            % Outputs:
-            %   Cl    - Lift coefficient
-            %   Cd    - Drag coefficient
-            
-            % can use Re to peform a 2D interpolation with alpha if
-            % desired, only changes required would be to modify
-            % pre-processing file to add call multiple data files,
-            % restructure data format, and then perform a 2D interpolation
-            % adding Re into the function
-
-            Cl = interp1(obj.alphaCoef, obj.liftCoef, alpha, 'linear');
-            Cd = interp1(obj.alphaCoef, obj.dragCoef, alpha, 'linear');
-        end   
     end
 end
 

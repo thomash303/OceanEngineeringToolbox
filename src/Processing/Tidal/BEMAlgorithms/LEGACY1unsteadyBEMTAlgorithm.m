@@ -24,20 +24,20 @@ classdef unsteadyBEMTAlgorithm < handle
             obj.fluid = fluidProperties(Fluid.rho, Fluid.kinVisc);
 
             % Incoming wind
-            obj.wind = incomingWind(Wind.windSpeed_nom, Wind.hhub_nom, Wind.alphaPowerLaw, Wind.a, Wind.towerShadow);
+            obj.wind = incomingWind(Wind.windSpeed_nom);
 
             % Coordinate transformation
-            obj.rot = coordTransformations(Rot.yaw, Rot.tilt, Rot.cone);
-
-            % Wind turbine
-            obj.turb = windTurbine(Turb.Rr, Turb.Rh, Turb.Rb,Turb.chord, Turb.twist, Turb.pitch, ...
-                                   Turb.nB, Turb.nBE, Turb.nDoF, Turb.RPM, Turb.n);
+            obj.rot = coordTransformations(Rot.yaw, Rot.tilt, Rot.wing, Rot.cone);
 
             % Aerodynamic corrections
             obj.cor = aeroCorrections(Cor.prandtlCorrection, Cor.prandtlTipLoss, ...
                                       Cor.prandtlHubLoss, Cor.glauertCorrection, ...
                                       Cor.dynamicStall, ...
-                                      Cor.dynamicWake, Cor.skewedWake, Cor.ac , Cor.airfoilFile, Cor.linThresh, obj.wind, obj.rot, obj.turb);
+                                      Cor.dynamicWake, Cor.skewedWake, Cor.ac);
+
+            % Wind turbine
+            obj.turb = windTurbine(Turb.Rr, Turb.Rh, Turb.Rb,Turb.chord, Turb.twist, Turb.pitch, ...
+                                   Turb.nB, Turb.nBE, Turb.nDoF, Turb.RPM, Turb.n, Turb.airfoilFile);
 
             % Variables
             obj.var = variablesBEMT(obj.sim.N, obj.turb.nB, obj.turb.nBE, obj.turb.nDoF);
@@ -50,45 +50,36 @@ classdef unsteadyBEMTAlgorithm < handle
             % Main unsteady BEM time-stepping loop
 
 
-            for t = 2:obj.sim.N-1
-                %display(t)
-
+            for t = 2:obj.sim.N
                 for inB = 1:obj.turb.nB
+
                     % Update azimuthal position
-                    obj.var.psi(t, inB) = mod(obj.var.psi(t-1, inB) + obj.turb.omega * obj.sim.dt, 2*pi);
-                    %display(inB)
+                    obj.var.psi(t, inB) = mod(obj.var.psi(t-1, inB) + obj.turb.omega * obj.sim.dt, 360);
+
                     % Update rotation matrices for this blade
-                    obj.rot.updateAzimuthal(obj.var.psi(t,inB));
+                    obj.rot.updateAzimuthal(obj.var.psi(t,obj.turb.nB));
 
                     for inBE = 1:obj.turb.nBE
-                        %display(inBE)
+                        
                         % ------------------------------
                         % Blade element position
-                        obj.var.rb_4(t,:,inB,inBE) = [obj.turb.Rb(inBE); 0; 10]; % assume blade offset from hub
-                        obj.var.rb_1(t,:,inB,inBE) = obj.rot.R14 * obj.var.rb_4(t,:,inB,inBE)';
+                        obj.var.rb_4(t,:,inB,inBE) = [obj.turb.Rb(inBE); 0; 0];
+                        obj.var.rb_1(t,:,inB,inBE) = (obj.rot.R14') * obj.var.rb_4(t,:,inB,inBE)';
 
                         % Incoming wind
-                        obj.var.V0_1(t,:,inB,inBE) = obj.wind.fgetWindSpeed(obj.var.rb_1(t,:,inB,inBE));
+                        obj.var.V0_1(t,:,inB,inBE) = obj.wind.getWindSpeed(obj.var.rb_1(t,:,inB,inBE));
                         obj.var.V0_3(t,:,inB,inBE) = obj.rot.R13 * obj.var.V0_1(t,:,inB,inBE)';
                         obj.var.V0_4(t,:,inB,inBE) = obj.rot.R14 * obj.var.V0_1(t,:,inB,inBE)';
 
                         obj.var.V0_3(t,:,inB,inBE) = [0; obj.var.V0_3(t,2,inB,inBE); obj.var.V0_3(t,3,inB,inBE)];
                         obj.var.V0_4(t,:,inB,inBE) = [0; obj.var.V0_4(t,2,inB,inBE); obj.var.V0_4(t,3,inB,inBE)];
 
-                        % Induced velocity in frame 3
-                        obj.var.Wprev_3(t,:,inB,inBE) = obj.rot.R34' *  obj.var.W(t-1,:,inB,inBE)';
-
                         % Velocity seen by the blade
-                        obj.var.Vrot_4(t,:,inB,inBE) = [0; -obj.turb.omega * obj.turb.Rb(inBE) * cosd(obj.rot.cone); 0];
+                        obj.var.Vrot_4(t,:,inB,inBE) = [0; obj.turb.omega * obj.turb.Rb(inBE) * obj.turb.Rb(inBE); 0];
                         obj.var.Velas_4(t,:,inB,inBE) = [0; 0; 0];
                         obj.var.Vrel_4(t,:,inB,inBE) = obj.var.V0_4(t,:,inB,inBE) + ...
                             obj.var.Vrot_4(t,:,inB,inBE) + ...
-                            obj.var.Velas_4(t,:,inB,inBE) + obj.var.W(t-1,:,inB,inBE);
-
-                        % Wind velocity in the wake
-                        obj.var.Vprime(t,:,inB,inBE) = obj.var.V0_3(t,:,inB,inBE)' + obj.var.n * (obj.var.n' * obj.var.Wprev_3(t,:,inB,inBE)');
-
-                        obj.var.a(t,inB,inBE) = min(norm(obj.var.V0_3(t,:,inB,inBE)) - norm(obj.var.Vprime(t,:,inB,inBE))) / norm(obj.var.V0_3(t,:,inB,inBE), 0.5);
+                            obj.var.Velas_4(t,:,inB,inBE) + obj.var.W0(t,:,inB,inBE);
 
                         % Local tip-speed ratio
                         obj.var.lambda(t,inB,inBE) = -obj.turb.omega^2 * obj.turb.Rb(inBE) * ...
@@ -109,51 +100,79 @@ classdef unsteadyBEMTAlgorithm < handle
                             obj.turb.Rb(inBE), obj.var.phi(t,inB,inBE));
 
                         % Glauert correction
-                        fg = obj.cor.fglauertCorrection(obj.var.a(t,inB,inBE));
-                        
-                        % Wind velocity in the wake (fg)
-                        obj.var.Vprime_fg(t,:,inB,inBE) = obj.var.V0_3(t,:,inB,inBE)' + fg * obj.var.n * (obj.var.n' * obj.var.Wprev_3(t,:,inB,inBE)');
-            
+                        Fg = obj.cor.fglauertCorrection(obj.var.a(t-1,inB,inBE));
+                        % does not actually use last step, just did so code
+                        % would run
+
                         % Angle of attack
-                        obj.var.alpha(t,inB,inBE) = obj.var.phi(t,inB,inBE) - (obj.turb.twist(inBE) + obj.turb.pitch);
+                        obj.var.alpha(t,inB,inBE) = obj.var.phi(t,inB,inBE) - ...
+                            (obj.turb.twist(inBE) + obj.turb.pitch);
 
                         % Airfoil coefficients
-                        [obj.var.Cl(t,inB,inBE), obj.var.Cd(t,inB,inBE)] = obj.cor.fAeroCoeff(obj.var.alpha(t,inB,inBE), obj.var.Re(t,inB,inBE));
+                        [Cl, Cd] = obj.turb.fAeroCoeff(obj.var.alpha(t,inB,inBE), obj.var.Re(t,inB,inBE));
 
                         % Dynamic stall
-                        obj.var.Cl(t,inB,inBE) = obj.cor.fdynamicStall(obj.var.alpha(t,inB,inBE), obj.var.Cl(t,inB,inBE), obj.sim.dt, obj.turb.chord(inBE), obj.var.Vrel_4(t,:,inB,inBE));
+                        Cl = obj.cor.fdynamicStall(Cl,1,1,1);
 
-                        obj.var.L(t,inB,inBE) = 1 / 2 * obj.fluid.rho * norm(obj.var.Vrel_4(t,:,inB,inBE))^2 * obj.var.Cl(t,inB,inBE) * obj.turb.chord(inBE);
-                        obj.var.D(t,inB,inBE) = 1 / 2 * obj.fluid.rho * norm(obj.var.Vrel_4(t,:,inB,inBE))^2 * obj.var.Cd(t,inB,inBE) * obj.turb.chord(inBE);
-                        
-                        % Tangential
-                        obj.var.py(t,inB,inBE) = obj.var.L(t,inB,inBE) * sin(obj.var.phi(t,inB,inBE)) - obj.var.D(t,inB,inBE) * cos(obj.var.phi(t,inB,inBE));
-                        % Normal (thrust)
-                        obj.var.pz(t,inB,inBE) = obj.var.L(t,inB,inBE) * cos(obj.var.phi(t,inB,inBE)) + obj.var.D(t,inB,inBE) * sin(obj.var.phi(t,inB,inBE));
-                        
-                        % Tangential  
-                        obj.var.fy(t,inB,inBE) = obj.var.py(t,inB,inBE) * obj.turb.dr(inBE);
-                        % Normal (thrust)
-                        obj.var.fz(t,inB,inBE) = obj.var.pz(t,inB,inBE) * obj.turb.dr(inBE);
+                        % Force coefficients
+                        obj.var.cn(t,inB,inBE) = Cl * cosd(obj.var.phi(t,inB,inBE)) + ...
+                                                 Cd * sind(obj.var.phi(t,inB,inBE));
+                        obj.var.ct(t,inB,inBE) = Cl * sind(obj.var.phi(t,inB,inBE)) + ...
+                                                 Cd * cosd(obj.var.phi(t,inB,inBE));
 
-                        % Torque
-                        obj.var.Ty(t,inB,inBE) = obj.var.py(t,inB,inBE) * obj.turb.Rb(inBE);
-                        % Power 
-                        obj.var.Py(t,inB,inBE) = obj.var.Ty(t,inB,inBE) * obj.turb.omega;
+                        % Thrust and torque coefficients
+                        obj.var.Ct(t,inB,inBE) = (obj.var.Vrel_s_norm(t,inB,inBE)^2 / 1^2) * ...
+                                                 obj.turb.sigma(inBE) * obj.var.cn(t,inB,inBE);
+                        obj.var.Cq(t,inB,inBE) = (obj.var.Vrel_s_norm(t,inB,inBE)^2 / 1^2) * ...
+                                                 obj.turb.sigma(inBE) * obj.var.ct(t,inB,inBE);
+
+                        % Induced velocities
+                        obj.var.Wn_4(t,:,inB,inBE) = [0; 0; 1 + obj.var.W0(t-1,3,inB,inBE)];
+                        obj.var.Wn_3(t,:,inB,inBE) = obj.rot.R34' * obj.var.Wn_4(t,:,inB,inBE)';
+                        obj.var.nnW_3(t,:,inB,inBE) = obj.turb.n * (obj.turb.n' * obj.var.Wn_3(t,:,inB,inBE));
+
+                        obj.var.v_prime_indiction_3(t,:,inB,inBE) = obj.var.V0_3(t,:,inB,inBE) + ...
+                                                                    obj.var.nnW_3(t,:,inB,inBE);
+
+                        sgn = 1;
+                        if obj.var.v_prime_indiction_3(t,3,inB,inBE) < 0
+                            sgn = -1;
+                        end
+
+                        obj.var.a(t,inB,inBE) = (norm(obj.var.V0_3(t,:,inB,inBE)) - sgn * ...
+                                                 norm(obj.var.v_prime_indiction_3(t,:,inB,inBE))) / ...
+                                                 norm(obj.var.V0_3(t,:,inB,inBE));
+
+                        % Tangential induction
+                        obj.var.ap(t,inB,inBE) = obj.var.Cq(t,inB,inBE) / (4 * Fp * ...
+                            (1 - obj.var.a(t,inB,inBE)) * obj.var.lambda(t,inB,inBE));
 
                         % Quasi-steady induced velocities
-                        obj.var.Wqs_y(t,inB,inBE) = - obj.turb.nB * obj.var.L(t,inB,inBE) * sin(obj.var.phi(t,inB,inBE)) / ...
-                            (4 * pi * obj.fluid.rho * obj.turb.Rb(inBE) * Fp * norm(obj.var.Vprime_fg(t,:,inB,inBE)));
-                        obj.var.Wqs_z(t,inB,inBE) = - obj.turb.nB * obj.var.L(t,inB,inBE) * cos(obj.var.phi(t,inB,inBE)) / ...
-                            (4 * pi * obj.fluid.rho * obj.turb.Rb(inBE) * Fp * norm(obj.var.Vprime_fg(t,:,inB,inBE)));
+                        obj.var.Wqs_y(t,inB,inBE) = obj.turb.omega * obj.turb.Rb(inBE) * obj.var.ap(t,inB,inBE);
+                        obj.var.Wqs_z(t,inB,inBE) = -norm(obj.var.V0_3(t,:,inB,inBE)) * obj.var.a(t,inB,inBE);
                         obj.var.Wqs(t,:,inB,inBE) = [0; obj.var.Wqs_y(t,inB,inBE); obj.var.Wqs_z(t,inB,inBE)];
 
                         % Dynamic wake
-                        [obj.var.W(t,:,inB,inBE), obj.var.Wint(t,:,inB,inBE)] = obj.cor.fdynamicWake(obj.var.V0_4(t,:,inB,inBE), obj.var.Wqs(t,:,inB,inBE), obj.var.Wqs(t-1,:,inB,inBE), obj.var.Wint(t-1,:,inB,inBE), obj.var.W(t-1,:,inB,inBE), obj.var.a(t,inB,inBE), obj.turb.Rr, obj.turb.Rb(inBE), obj.sim.dt);
-                        
+                        if obj.cor.dynamicWake
+                            obj.var.tau1(t,inB,inBE) = 1.1 / (1 - 1.3 * min(obj.var.a(t,inB,inBE), 0.5)) * ...
+                                obj.turb.Rr / norm(obj.var.V0_4(t,:,inB,inBE));
+                            obj.var.tau2(t,inB,inBE) = (0.39 - 0.26 * ...
+                                (obj.turb.Rb(inBE) / obj.turb.Rr)^2) * obj.var.tau1(t,inB,inBE);
+
+                            H = obj.var.Wqs(t,:,inB,inBE) + 0.6 * obj.var.tau1(t,inB,inBE) * ...
+                                (obj.var.Wqs(t,:,inB,inBE) - obj.var.Wqs(t-1,:,inB,inBE)) / obj.sim.dt;
+                            obj.var.Wint(t,:,inB,inBE) = H + ...
+                                (obj.var.Wqs(t-1,:,inB,inBE) - H) * exp(obj.sim.dt / obj.var.tau1(t,inB,inBE));
+                            obj.var.W0(t,:,inB,inBE) = obj.var.Wint(t,:,inB,inBE) + ...
+                                (obj.var.W0(t-1,:,inB,inBE) - obj.var.Wint(t,:,inB,inBE)) * ...
+                                exp(obj.sim.dt / obj.var.tau2(t,inB,inBE));
+                        else
+                            obj.var.W0(t,:,inB,inBE) = obj.var.Wqs(t,:,inB,inBE);
+                        end
+
                         % Skewed wake 
-                        obj.var.gamma(t,inB,inBE) = obj.cor.fskewedWake(obj.var.psi(t, inB), obj.var.W(t-1,3,:,:), inB, inBE);
-                        obj.var.W(t,:,inB,inBE) = obj.var.gamma(t,inB,inBE) * obj.var.W(t,:,inB,inBE);
+                        gamma = obj.cor.fskewedWake(1);
+                        obj.var.W0(t,:,inB,inBE) = gamma * obj.var.W0(t,:,inB,inBE);
 
                     end
                 end
@@ -177,7 +196,7 @@ classdef unsteadyBEMTAlgorithm < handle
                 'Vrel_4', ...
                 'alpha', ... 
                 'Wqs', ...
-                'W' ...
+                'W0' ...
             };
     
             units = { ...

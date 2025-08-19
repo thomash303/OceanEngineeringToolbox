@@ -14,6 +14,10 @@ classdef simulationSettings
             % Constructor to initialize simulation settings
             % Inputs must be provided explicitly
             
+            % Inputs:
+            %   dt      - Time step size [s]
+            %   t_end   - End time [s]
+            
             obj.dt = dt;
             obj.t_end = t_end;
 
