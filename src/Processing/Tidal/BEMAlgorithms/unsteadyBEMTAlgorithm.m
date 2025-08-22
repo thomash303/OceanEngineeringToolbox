@@ -137,7 +137,7 @@ classdef unsteadyBEMTAlgorithm < handle
                         obj.var.fz(t,inB,inBE) = obj.var.pz(t,inB,inBE) * obj.turb.dr(inBE);
 
                         % Torque
-                        obj.var.Ty(t,inB,inBE) = obj.var.py(t,inB,inBE) * obj.turb.Rb(inBE);
+                        obj.var.Ty(t,inB,inBE) = obj.var.fy(t,inB,inBE) * obj.turb.Rb(inBE);
                         % Power 
                         obj.var.Py(t,inB,inBE) = obj.var.Ty(t,inB,inBE) * obj.turb.omega;
 

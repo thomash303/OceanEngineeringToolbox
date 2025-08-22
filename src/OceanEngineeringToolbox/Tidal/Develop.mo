@@ -71,15 +71,15 @@ model airfoilImport
       Placement(transformation(origin = {-54, 68}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
   Visualizers.FixedShape fixedShape annotation(
       Placement(transformation(origin = {-36, 134}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape1 annotation(
+  Visualizers.FixedShape fixedShape1 annotation(
       Placement(transformation(origin = {-76, 92}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape2 annotation(
+  Visualizers.FixedShape fixedShape2 annotation(
       Placement(transformation(origin = {-82, 70}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape3 annotation(
+  Visualizers.FixedShape fixedShape3 annotation(
       Placement(transformation(origin = {-92, 40}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape4 annotation(
+  Visualizers.FixedShape fixedShape4 annotation(
       Placement(transformation(origin = {46, 24}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Visualizers.FixedShape fixedShape5 annotation(
+  Visualizers.FixedShape fixedShape5 annotation(
       Placement(transformation(origin = {-56, -24}, extent = {{-10, -10}, {10, 10}})));
   equation
   connect(platform.frame_b, yawTilt.frame_a) annotation(
@@ -127,4 +127,52 @@ model airfoilImport
   annotation(
       Diagram(coordinateSystem(extent = {{-140, 140}, {140, -60}})));
 end turbine;
+
+  model animation
+  
+    import Modelica.Mechanics.MultiBody.{World, Parts, Joints, Visualizers, Forces};
+    import Modelica.Blocks.Sources;
+    import Modelica.Mechanics.Rotational;
+    import Modelica.Electrical.Machines.BasicMachines.SynchronousMachines;
+      
+    inner World world(axisLength = 10)  annotation(
+        Placement(transformation(origin = {-78, 72}, extent = {{-10, -10}, {10, 10}})));
+    Parts.Body tower(r_CM = {0, 0, 0}, m = 100)  annotation(
+        Placement(transformation(origin = {14, 38}, extent = {{-10, -10}, {10, 10}})));
+      Parts.Body rotor(m = 15)  annotation(
+        Placement(transformation(origin = {58, -64}, extent = {{-10, -10}, {10, 10}})));
+    Visualizers.FixedShape tower3D(shapeType = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/Tidal/CAD/Turbine_Tower_Simplified.stl", color = {255, 255, 0}, length = 1, width = 1, height = 1)  annotation(
+        Placement(transformation(origin = {-26, 44}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+    Visualizers.FixedShape rotor3D(shapeType = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/Tidal/CAD/Rotor_Nose_Simplified.stl", length = 1, width = 1, height = 1, animation = true)  annotation(
+      Placement(transformation(origin = {-24, -32}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+    Joints.Revolute revolute(useAxisFlange = false, n = {1, 0, 0})  annotation(
+      Placement(transformation(origin = {-54, -20}, extent = {{-10, -10}, {10, 10}})));
+    Parts.FixedTranslation fixedTranslation(r = {-725, -2254.55+ 175, -175}, animation = false)  annotation(
+      Placement(transformation(origin = {66, -32}, extent = {{-10, -10}, {10, 10}})));
+    Sources.Constant const(k = 1)  annotation(
+      Placement(transformation(origin = {-180, -10}, extent = {{-10, -10}, {10, 10}})));
+  Forces.WorldTorque torque annotation(
+      Placement(transformation(origin = {-30, -68}, extent = {{-10, -10}, {10, 10}})));
+  equation
+  torque.torque[2] = 0;
+  torque.torque[3] = 0;
+    connect(tower3D.frame_a, tower.frame_a) annotation(
+      Line(points = {{-16, 44}, {4, 44}, {4, 38}}, color = {95, 95, 95}));
+    connect(revolute.frame_b, tower.frame_a) annotation(
+      Line(points = {{-44, -20}, {-44, 21}, {4, 21}, {4, 38}}, color = {95, 95, 95}));
+    connect(fixedTranslation.frame_b, rotor.frame_a) annotation(
+      Line(points = {{76, -32}, {10, -32}, {10, -64}, {48, -64}}, color = {95, 95, 95}));
+    connect(revolute.frame_a, fixedTranslation.frame_b) annotation(
+      Line(points = {{-64, -20}, {76, -20}, {76, -32}}, color = {95, 95, 95}));
+    connect(rotor3D.frame_a, fixedTranslation.frame_a) annotation(
+      Line(points = {{-14, -32}, {56, -32}}, color = {95, 95, 95}));
+    connect(tower.frame_a, world.frame_b) annotation(
+      Line(points = {{4, 38}, {-68, 38}, {-68, 72}}, color = {95, 95, 95}));
+  connect(const.y, torque.torque[1]) annotation(
+      Line(points = {{-168, -10}, {-42, -10}, {-42, -68}}, color = {0, 0, 127}));
+  connect(torque.frame_b, rotor.frame_a) annotation(
+      Line(points = {{-20, -68}, {48, -68}, {48, -64}}, color = {95, 95, 95}));
+    annotation(
+      Diagram);
+end animation;
 end Develop;

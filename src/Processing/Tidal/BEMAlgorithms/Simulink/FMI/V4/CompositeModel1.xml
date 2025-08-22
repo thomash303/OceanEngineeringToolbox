@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- The root node is the composite-model -->
+<Model Name="CompositeModel1">
+  <!-- List of connected sub-models -->
+  <SubModels>
+    <SubModel ModelFile="FMUunsteadyBEMTs_me_FMU.mo" StartCommand="StartTLMOpenModelica" Name="fMUunsteadyBEMTs_me_FMU" Position="0,0,0" Angle321="0,0,0">
+      <Annotation Origin="{-14,4}" Extent="{-10,-10,10,10}" Rotation="0" Visible="true"/>
+    </SubModel>
+  </SubModels>
+  <!-- List of TLM connections -->
+  <Connections/>
+  <!-- Parameters for the simulation -->
+  <SimulationParams StartTime="0" StopTime="1"/>
+</Model>
