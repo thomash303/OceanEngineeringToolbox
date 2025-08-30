@@ -124,11 +124,11 @@
 % sgtitle(sprintf('Element %d — Incoming Wind and Blade Position', element));
 
 %% Relative Velocity
-
+% 
 % %Velocity Plots for Blade Element
 % t = (0:bemt.sim.N-1) * bemt.sim.dt;
-% blade = 3;    % Blade index
-% element = 15;  % Blade element index
+% blade = 1;    % Blade index
+% element = 2;  % Blade element index
 % 
 % % Extract velocities
 % Vrot = squeeze(bemt.var.Vrot_4(:, :, blade, element));   % rotor velocity
@@ -229,60 +229,68 @@
 % sgtitle(sprintf('Blade %d, Element %d — BEMT Parameters over Time', blade, element));
 
 %% Angle of attack and quasi-static induced velocity
-% % Time vector
-% tVec = (0:bemt.sim.N-1) * bemt.sim.dt;
-% blade = 1;
-% element = 1;
-% 
-% % Extract variables
-% Wqs     = squeeze(bemt.var.Wqs(:, :, blade, element));      % (time, xyz)
-% Vrel_4  = squeeze(bemt.var.Vrel_4(:, :, blade, element));   % (time, xyz)
-% Vrel_4_norm = sqrt(sum(Vrel_4.^2, 2));                     % magnitude of Vrel_4
-% alpha   = squeeze(bemt.var.alpha(:, blade, element));       % (time,)
-% 
-% % Extract lift and drag coefficients
-% Cl = squeeze(bemt.var.Cl(:, blade, element));
-% Cd = squeeze(bemt.var.Cd(:, blade, element));
-% 
-% figure;
-% 
-% % --- Subplot 1: Wqs x, y, z ---
-% subplot(4,1,1);
-% plot(tVec, Wqs(:,1),'r', tVec, Wqs(:,2),'g', tVec, Wqs(:,3),'b','LineWidth',1.2);
-% grid on; xlabel('Time [s]'); ylabel('Wqs [m/s]');
-% title(sprintf('Blade %d, Element %d — Quasi-Steady Induced Velocity', blade, element));
-% legend('x','y','z','Location','best');
-% 
-% % --- Subplot 2: Vrel_4 x, y, z and magnitude ---
-% subplot(4,1,2);
-% plot(tVec, Vrel_4(:,1),'r', tVec, Vrel_4(:,2),'g', tVec, Vrel_4(:,3),'b', tVec, Vrel_4_norm,'k--','LineWidth',1.2);
-% grid on; xlabel('Time [s]'); ylabel('Vrel_4 [m/s]');
-% title(sprintf('Blade %d, Element %d — Relative Velocity (Rotor Frame)', blade, element));
-% legend('x','y','z','|Vrel_4|','Location','best');
-% 
-% % --- Subplot 3: Angle of Attack ---
-% subplot(4,1,3);
-% plot(tVec, rad2deg(alpha),'k','LineWidth',1.5); % convert from rad to deg
-% grid on; xlabel('Time [s]'); ylabel('\alpha [deg]');
-% title(sprintf('Blade %d, Element %d — Angle of Attack', blade, element));
-% 
-% % --- Subplot 4: Airfoil coefficients ---
-% subplot(4,1,4);
-% plot(tVec, Cl, 'r', 'LineWidth', 1.2); hold on;
-% plot(tVec, Cd, 'b', 'LineWidth', 1.2);
-% grid on;
-% xlabel('Time [s]');
-% ylabel('Coefficient');
-% title(sprintf('Blade %d, Element %d — Airfoil Coefficients', blade, element));
-% legend('Cl','Cd','Location','best');
-% 
-% sgtitle(sprintf('Blade %d, Element %d — Wqs, Vrel_4 & Alpha', blade, element));
+% Time vector
+tVec = (0:bemt.sim.N-1) * bemt.sim.dt;
+blade = 1;
+element = 2;
+
+% Extract variables
+Wqs     = squeeze(bemt.var.Wqs(:, :, blade, element));      % (time, xyz)
+Vrel_4  = squeeze(bemt.var.Vrel_4(:, :, blade, element));   % (time, xyz)
+Vrel_4_norm = sqrt(sum(Vrel_4.^2, 2));                     % magnitude of Vrel_4
+alpha   = squeeze(bemt.var.alpha(:, blade, element));       % (time,)
+phi   = squeeze(bemt.var.phi(:, blade, element));       % (time,)
+
+
+% Extract lift and drag coefficients
+Cl = squeeze(bemt.var.Cl(:, blade, element));
+Cd = squeeze(bemt.var.Cd(:, blade, element));
+
+figure;
+
+% --- Subplot 1: Wqs x, y, z ---
+subplot(5,1,1);
+plot(tVec, Wqs(:,1),'r', tVec, Wqs(:,2),'g', tVec, Wqs(:,3),'b','LineWidth',1.2);
+grid on; xlabel('Time [s]'); ylabel('Wqs [m/s]');
+title(sprintf('Blade %d, Element %d — Quasi-Steady Induced Velocity', blade, element));
+legend('x','y','z','Location','best');
+
+% --- Subplot 2: Vrel_4 x, y, z and magnitude ---
+subplot(5,1,2);
+plot(tVec, Vrel_4(:,1),'r', tVec, Vrel_4(:,2),'g', tVec, Vrel_4(:,3),'b', tVec, Vrel_4_norm,'k--','LineWidth',1.2);
+grid on; xlabel('Time [s]'); ylabel('Vrel_4 [m/s]');
+title(sprintf('Blade %d, Element %d — Relative Velocity (Rotor Frame)', blade, element));
+legend('x','y','z','|Vrel_4|','Location','best');
+
+% --- Subplot 3: Angle of Attack ---
+subplot(5,1,3);
+plot(tVec, rad2deg(alpha),'k','LineWidth',1.5); % convert from rad to deg
+grid on; xlabel('Time [s]'); ylabel('\alpha [deg]');
+title(sprintf('Blade %d, Element %d — Angle of Attack', blade, element));
+
+% --- Subplot 4: Airfoil coefficients ---
+subplot(5,1,4);
+plot(tVec, Cl, 'r', 'LineWidth', 1.2); hold on;
+plot(tVec, Cd, 'b', 'LineWidth', 1.2);
+grid on;
+xlabel('Time [s]');
+ylabel('Coefficient');
+title(sprintf('Blade %d, Element %d — Airfoil Coefficients', blade, element));
+legend('Cl','Cd','Location','best');
+
+% --- Subplot 5: Phi ---
+subplot(5,1,5);
+plot(tVec, rad2deg(phi),'k','LineWidth',1.5); % convert from rad to deg
+grid on; xlabel('Time [s]'); ylabel('\alpha [deg]');
+title(sprintf('Blade %d, Element %d — Phi', blade, element));
+
+sgtitle(sprintf('Blade %d, Element %d — Wqs, Vrel_4 & Alpha', blade, element));
 
 %% Quasi-static induced velocity and induced velocity
 % % Time vector
 % tVec = (0:bemt.sim.N-1) * bemt.sim.dt;
-% blade   = 1;
-% element = 1;
+% blade   = 3;
+% element = 15;
 % 
 % % Extract variables
 % Wqs   = squeeze(bemt.var.Wqs(:, :, blade, element));   % (time, xyz)
@@ -324,40 +332,40 @@
 % sgtitle(sprintf('Blade %d, Element %d — Wqs, W & Gamma', blade, element));
 
 %% Aerodynamic loads
-% Time vector
-tVec = (0:bemt.sim.N-1) * bemt.sim.dt;
-blade   = 1;
-element = 1;
-
-% Extract variables
-py = squeeze(bemt.var.py(:, blade, element));
-pz = squeeze(bemt.var.pz(:, blade, element));
-Ty = squeeze(bemt.var.Ty(:, blade, element));
-
-figure;
-
-% --- Subplot 1: py ---
-subplot(3,1,1);
-plot(tVec, py, 'LineWidth', 1.2);
-grid on;
-xlabel('Time [s]');
-ylabel('p_y [N/m]');
-title(sprintf('Blade %d, Element %d — Tangential Force per Unit Span (p_y)', blade, element));
-
-% --- Subplot 2: pz ---
-subplot(3,1,2);
-plot(tVec, pz, 'LineWidth', 1.2);
-grid on;
-xlabel('Time [s]');
-ylabel('p_z [N/m]');
-title(sprintf('Blade %d, Element %d — Normal Force per Unit Span (p_z)', blade, element));
-
-% --- Subplot 3: Ty ---
-subplot(3,1,3);
-plot(tVec, Ty, 'LineWidth', 1.2);
-grid on;
-xlabel('Time [s]');
-ylabel('T_y [Nm]');
-title(sprintf('Blade %d, Element %d — Torque (T_y)', blade, element));
-
-sgtitle(sprintf('Blade %d, Element %d — py, pz, Ty', blade, element));
+% % Time vector
+% tVec = (0:bemt.sim.N-1) * bemt.sim.dt;
+% blade   = 1;
+% element = 1;
+% 
+% % Extract variables
+% py = squeeze(bemt.var.py(:, blade, element));
+% pz = squeeze(bemt.var.pz(:, blade, element));
+% Ty = squeeze(bemt.var.Ty(:, blade, element));
+% 
+% figure;
+% 
+% % --- Subplot 1: py ---
+% subplot(3,1,1);
+% plot(tVec, py, 'LineWidth', 1.2);
+% grid on;
+% xlabel('Time [s]');
+% ylabel('p_y [N/m]');
+% title(sprintf('Blade %d, Element %d — Tangential Force per Unit Span (p_y)', blade, element));
+% 
+% % --- Subplot 2: pz ---
+% subplot(3,1,2);
+% plot(tVec, pz, 'LineWidth', 1.2);
+% grid on;
+% xlabel('Time [s]');
+% ylabel('p_z [N/m]');
+% title(sprintf('Blade %d, Element %d — Normal Force per Unit Span (p_z)', blade, element));
+% 
+% % --- Subplot 3: Ty ---
+% subplot(3,1,3);
+% plot(tVec, Ty, 'LineWidth', 1.2);
+% grid on;
+% xlabel('Time [s]');
+% ylabel('T_y [Nm]');
+% title(sprintf('Blade %d, Element %d — Torque (T_y)', blade, element));
+% 
+% sgtitle(sprintf('Blade %d, Element %d — py, pz, Ty', blade, element));

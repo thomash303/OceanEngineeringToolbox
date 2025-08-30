@@ -3,19 +3,21 @@ classdef incomingWind
     % Simple model for now; can be expanded with spatial/temporal variations
     
     properties
-        windSpeed_nom  % Nominal (baseline) wind speed at the hub in frame 1 [m/s]
-        hhub_nom       % Nominal height of the hub (where windspeed is defined) in frame 1 [m]
-        alphaPowerLaw  % Power law exponent
-        a              % Tower radius [m]
-        towerShadow    % Enable/disable tower shadow (bool)
+        windSpeed_nom       % Nominal (baseline) wind speed at the hub in frame 1 [m/s]
+        hhub_nom            % Nominal height of the hub (where windspeed is defined) in frame 1 [m]
+        alphaPowerLaw       % Power law exponent
+        betaBedRoughness    % Bed roughness coefficient
+        a                   % Tower radius [m]
+        towerShadow         % Enable/disable tower shadow (bool)
     end
 
     methods
-        function obj = incomingWind(windSpeed_nom, hhub_nom, alphaPowerLaw, a, towerShadow)
+        function obj = incomingWind(windSpeed_nom, hhub_nom, alphaPowerLaw, betaBedRoughness, a, towerShadow)
             % Constructor: initialize nominal wind speed
             obj.windSpeed_nom = windSpeed_nom;
             obj.hhub_nom = hhub_nom;
             obj.alphaPowerLaw = alphaPowerLaw;
+            obj.betaBedRoughness = betaBedRoughness;
             obj.a = a;
             obj.towerShadow = towerShadow;
         end
@@ -47,7 +49,7 @@ classdef incomingWind
 
             Vwind = obj.ftowerShade(rb_1);
 
-            windSpeed = Vwind * (z / H) ^ obj.alphaPowerLaw;
+            windSpeed = Vwind * (z / (obj.betaBedRoughness * H)) ^ obj.alphaPowerLaw;
 
         end
 

@@ -1,0 +1,7 @@
+Parameter	Inputs	Description
+Turb Orientation	1	For Upstream Turbine enter 1, for Downstream Turbine enter 0
+Tank	2	For INSEAN Calm Water Basin enter 1, for INSEAN Wave Basin enter 2
+Turb Rotor	2	For Eppler Rotor enter 1, for SCHOTTEL Rootr enter 2
+Carriage Speed	1.4	Enter Carriage Speed
+ADCP Number of Cells	10	Number of Cells
+ADCP Bin Size	0.25	Bin Size

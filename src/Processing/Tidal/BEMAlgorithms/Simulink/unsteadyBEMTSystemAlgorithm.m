@@ -42,7 +42,7 @@ classdef unsteadyBEMTSystemAlgorithm < handle
             obj.fluid = fluidProperties(Fluid.rho, Fluid.kinVisc);
 
             % Incoming wind
-            obj.wind = incomingWind(Wind.windSpeed_nom, Wind.hhub_nom, Wind.alphaPowerLaw, Wind.a, Wind.towerShadow);
+            obj.wind = incomingWind(Wind.windSpeed_nom, Wind.hhub_nom, Wind.alphaPowerLaw, Wind.betaBedRoughness, Wind.a, Wind.towerShadow);
 
             % Coordinate transformation
             obj.rot = coordTransformations(Rot.yaw, Rot.tilt, Rot.cone);
@@ -96,7 +96,7 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                 for inBE = 1:obj.turb.nBE
 
                     % Blade element position
-                    rb_4 = [obj.turb.Rb(inBE); 0; 10]; % assume blade offset from hub
+                    rb_4 = [obj.turb.Rb(inBE); 0; 10]; % assume blade offset from hub if tower shadow
                     rb_1 = obj.rot.R14 * rb_4;
 
                     % Incoming wind
@@ -112,6 +112,7 @@ classdef unsteadyBEMTSystemAlgorithm < handle
 
                     % Velocity seen by the blade
                     Vrot_4 = [0; -obj.turb.omega * obj.turb.Rb(inBE) * cosd(obj.rot.cone); 0];
+                    % should i add Rh here
                     Velas_4 = [0; 0; 0];
                     Vrel_4 = V0_4 + Vrot_4 + Velas_4 + obj.Wprev(:, inB, inBE);
 
@@ -126,7 +127,7 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                     Re = norm(Vrel_4) * obj.turb.chord(inBE) / obj.fluid.kinVisc;
 
                     % Flow angle
-                    phi = atan2(Vrel_4(3), Vrel_4(2));
+                    phi = atan2(Vrel_4(3), -Vrel_4(2));
                     if imag(phi) ~= 0
                         fprintf('Algorithm failed: r=%.2f\n', obj.turb.Rb(inBE));
                         break;
@@ -170,6 +171,7 @@ classdef unsteadyBEMTSystemAlgorithm < handle
 
                     % Local torque
                     Ty = Fy * obj.turb.Rb(inBE);
+                    % should i add Rh here
                     % Local power 
                     Py = Ty * obj.turb.omega;
 

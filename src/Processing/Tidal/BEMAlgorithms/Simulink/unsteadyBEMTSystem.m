@@ -17,6 +17,7 @@ classdef unsteadyBEMTSystem < matlab.System
         windSpeed_nom = 2;                  % Nominal (baseline) wind speed in frame 1 [m/s]
         hhub_nom = 25;                      % Nominal height of the hub (where windspeed is defined) in frame 1 [m] (this needs to be higher than most negative value of rb_1 or else incoming wind power law has a negative sqrt)     
         alphaPowerLaw = 1/5;                % Power law exponent
+        betaBedRoughness = 1;               % Bed roughness coefficient
         a = 2;                              % Tower radius [m]
         towerShadow = true;                 % Enable/disable tower shadow (bool)
 
@@ -84,7 +85,8 @@ classdef unsteadyBEMTSystem < matlab.System
             % Incoming Wind
             Wind.windSpeed_nom = obj.windSpeed_nom;               
             Wind.hhub_nom = obj.hhub_nom;                   
-            Wind.alphaPowerLaw = obj.alphaPowerLaw;            
+            Wind.alphaPowerLaw = obj.alphaPowerLaw;
+            Wind.betaBedRoughness = obj.betaBedRoughness;
             Wind.a = obj.a;                           
             Wind.towerShadow = obj.towerShadow;              
             

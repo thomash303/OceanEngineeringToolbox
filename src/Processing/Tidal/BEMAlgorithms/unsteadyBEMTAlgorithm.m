@@ -64,7 +64,7 @@ classdef unsteadyBEMTAlgorithm < handle
                         %display(inBE)
                         % ------------------------------
                         % Blade element position
-                        obj.var.rb_4(t,:,inB,inBE) = [obj.turb.Rb(inBE); 0; 10]; % assume blade offset from hub
+                        obj.var.rb_4(t,:,inB,inBE) = [obj.turb.Rb(inBE); 0; 1]; % assume blade offset from hub
                         obj.var.rb_1(t,:,inB,inBE) = obj.rot.R14 * obj.var.rb_4(t,:,inB,inBE)';
 
                         % Incoming wind
@@ -98,7 +98,8 @@ classdef unsteadyBEMTAlgorithm < handle
                                                  obj.turb.chord(inBE) / obj.fluid.kinVisc;
 
                         % Flow angle
-                        obj.var.phi(t,inB,inBE) = atan2(obj.var.Vrel_4(t,3,inB,inBE), obj.var.Vrel_4(t,2,inB,inBE));
+                        %obj.var.phi(t,inB,inBE) = 0.1;
+                        obj.var.phi(t,inB,inBE) = atan2(obj.var.Vrel_4(t,3,inB,inBE), -obj.var.Vrel_4(t,2,inB,inBE));
                         if imag(obj.var.phi(t,inB,inBE)) ~= 0
                             fprintf('Algorithm failed: r=%.2f\n', obj.turb.Rb(inBE));
                             break;

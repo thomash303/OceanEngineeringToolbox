@@ -1,10 +1,17 @@
+%% XFoil_process
+% Extract polar data from the XFoil output file
+
+polarData = struct();
 
 
+% Airfoil data
+airfoilFile = 'NACA_63215.txt';     % File storing airfoil coefficient data
 
-polar_5dig = parseXFoilPolar('NACA_63415.txt');
+% Load airfoil data from text file
+try
+    polarData = parseXFoilPolar(airfoilFile);
+catch ME
+    error('Failed to load airfoil data from %s: %s', airfoilFile, ME.message);
+end
 
-disp(polar_5dig.meta)
-head(polar_5dig.dataTable)
-
-
-save('polar_5dig.mat', '-struct', 'polar_5dig');
+save('polarData.mat', 'polarData')

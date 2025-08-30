@@ -5,7 +5,7 @@ polarData = struct();
 
 
 % Airfoil data
-airfoilFile = 'NACA_63415.txt';     % File storing airfoil coefficient data
+airfoilFile = 'NACA_63215.txt';     % File storing airfoil coefficient data
 
 % Load airfoil data from text file
 try

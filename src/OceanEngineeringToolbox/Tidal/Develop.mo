@@ -175,4 +175,133 @@ end turbine;
     annotation(
       Diagram);
 end animation;
+  
+  model testingFMUSetup
+    
+    import Modelica.Mechanics.MultiBody.{World, Parts, Joints, Visualizers, Sensors};
+    import Modelica.Mechanics.Rotational;
+    import Modelica.Electrical.Machines.BasicMachines.SynchronousMachines;
+    import Modelica.Blocks.Sources;
+  
+  Parts.BodyShape platform(r = {0, 0, 0}, r_CM = {0, 0, 0}, m = 10)  annotation(
+      Placement(transformation(origin = {-24, 2}, extent = {{-10, -10}, {10, 10}})));
+  inner World world annotation(
+      Placement(transformation(origin = {-122, 88}, extent = {{-10, -10}, {10, 10}})));
+  Joints.Revolute revolute(useAxisFlange = true, n = {0, 0, 1})  annotation(
+      Placement(transformation(origin = {10, 40}, extent = {{-10, -10}, {10, 10}})));
+  Parts.BodyShape hub(r = {0, 0, 0}, r_CM = {0, 0, 0}, m = 5, I_11 = 10, I_22 = 10, I_33 = 0.0001)  annotation(
+      Placement(transformation(origin = {28, 92}, extent = {{-10, -10}, {10, 10}})));
+  Parts.FixedRotation cone annotation(
+      Placement(transformation(origin = {-28, 40}, extent = {{-10, -10}, {10, 10}})));
+  Rotational.Sources.Speed speed(exact = true)  annotation(
+      Placement(transformation(origin = {80, 40}, extent = {{10, -10}, {-10, 10}})));
+  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+      Placement(transformation(origin = {-14, 116}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  Sources.Sine sine(amplitude = 50, f = 0.1)  annotation(
+      Placement(transformation(origin = {132, -6}, extent = {{10, -10}, {-10, 10}})));
+  Sources.Ramp ramp(height = 10, duration = 5)  annotation(
+      Placement(transformation(origin = {64, -18}, extent = {{-10, -10}, {10, 10}})));
+  equation
+    connect(revolute.frame_b, hub.frame_b) annotation(
+      Line(points = {{20, 40}, {20, 92}, {38, 92}}, color = {95, 95, 95}));
+    connect(cone.frame_b, revolute.frame_a) annotation(
+      Line(points = {{-18, 40}, {0, 40}}, color = {95, 95, 95}));
+    connect(platform.frame_a, cone.frame_a) annotation(
+      Line(points = {{-34, 2}, {-38, 2}, {-38, 40}}, color = {95, 95, 95}));
+    connect(speed.flange, revolute.axis) annotation(
+      Line(points = {{70, 40}, {48, 40}, {48, 64}, {10, 64}, {10, 50}}));
+    connect(absoluteSensor.frame_a, hub.frame_b) annotation(
+      Line(points = {{-4, 116}, {38, 116}, {38, 92}}, color = {95, 95, 95}));
+  connect(platform.frame_b, world.frame_b) annotation(
+      Line(points = {{-14, 2}, {-112, 2}, {-112, 88}}, color = {95, 95, 95}));
+  connect(sine.y, speed.w_ref) annotation(
+      Line(points = {{122, -6}, {92, -6}, {92, 40}}, color = {0, 0, 127}));
+    annotation(
+      Diagram(coordinateSystem(extent = {{-140, 140}, {140, -60}})));
+  end testingFMUSetup;
+  
+  model sampleFMU
+    
+    import Modelica.Mechanics.MultiBody.{World, Parts, Joints, Visualizers, Sensors, Forces};
+    import Modelica.Mechanics.Rotational;
+    import Modelica.Electrical.Machines.BasicMachines.SynchronousMachines;
+    import Modelica.Blocks.{Sources, Interfaces};
+  
+  Parts.BodyShape platform(r = {0, 0, 0}, r_CM = {0, 0, 0}, m = 10)  annotation(
+      Placement(transformation(origin = {-82, -4}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  inner World world annotation(
+      Placement(transformation(origin = {-122, 88}, extent = {{-10, -10}, {10, 10}})));
+  Joints.Revolute revolute(useAxisFlange = true, n = {0, 0, 1})  annotation(
+      Placement(transformation(origin = {-16, 40}, extent = {{-10, -10}, {10, 10}})));
+  Parts.BodyShape hub(r = {0, 0, 0}, r_CM = {0, 0, 0}, m = 5, I_11 = 10, I_22 = 10, I_33 = 0.0001)  annotation(
+      Placement(transformation(origin = {20, 92}, extent = {{-10, -10}, {10, 10}})));
+  Parts.FixedRotation cone annotation(
+      Placement(transformation(origin = {-46, 40}, extent = {{-10, -10}, {10, 10}})));
+  Rotational.Sources.Speed speed(exact = true)  annotation(
+      Placement(transformation(origin = {48, 34}, extent = {{10, -10}, {-10, 10}})));
+  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = true)  annotation(
+      Placement(transformation(origin = {54, 130}, extent = {{10, -10}, {-10, 10}})));
+  Sources.Ramp ramp(height = 10, duration = 5) annotation(
+      Placement(transformation(origin = {96, 34}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  Interfaces.RealOutput w annotation(
+      Placement(transformation(origin = {-46, 138}, extent = {{-10, -10}, {10, 10}}, rotation = 90), iconTransformation(origin = {106, -2}, extent = {{-10, -10}, {10, 10}})));
+  Interfaces.RealInput F[2] annotation(
+      Placement(transformation(origin = {132, 78}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-102, -2}, extent = {{-20, -20}, {20, 20}})));
+  Forces.WorldForceAndTorque forceAndTorque annotation(
+      Placement(transformation(origin = {48, 74}, extent = {{10, -10}, {-10, 10}})));
+  Rotational.Sensors.SpeedSensor speedSensor annotation(
+      Placement(transformation(origin = {-46, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
+  forceTorqueConvert forceTorqueConverter annotation(
+      Placement(transformation(origin = {96, 76}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
+  equation
+    connect(cone.frame_b, revolute.frame_a) annotation(
+      Line(points = {{-36, 40}, {-26, 40}}, color = {95, 95, 95}));
+    connect(platform.frame_a, cone.frame_a) annotation(
+      Line(points = {{-72, -4}, {-72, 40}, {-56, 40}}, color = {95, 95, 95}));
+    connect(absoluteSensor.frame_a, hub.frame_b) annotation(
+      Line(points = {{64, 130}, {64, 92}, {30, 92}}, color = {95, 95, 95}));
+    connect(platform.frame_b, world.frame_b) annotation(
+      Line(points = {{-92, -4}, {-114, -4}, {-114, 88}, {-112, 88}}, color = {95, 95, 95}));
+  connect(ramp.y, speed.w_ref) annotation(
+      Line(points = {{85, 34}, {60, 34}}, color = {0, 0, 127}));
+  connect(speed.flange, revolute.axis) annotation(
+      Line(points = {{38, 34}, {6, 34}, {6, 56}, {-16, 56}, {-16, 50}}));
+  connect(revolute.axis, speedSensor.flange) annotation(
+      Line(points = {{-16, 50}, {-32, 50}, {-32, 80}, {-46, 80}}));
+  connect(speedSensor.w, w) annotation(
+      Line(points = {{-46, 102}, {-46, 138}}, color = {0, 0, 127}));
+  connect(revolute.frame_b, hub.frame_a) annotation(
+      Line(points = {{-6, 40}, {-4, 40}, {-4, 92}, {10, 92}}, color = {95, 95, 95}));
+  connect(forceAndTorque.frame_b, hub.frame_b) annotation(
+      Line(points = {{38, 74}, {30, 74}, {30, 92}}, color = {95, 95, 95}));
+  connect(forceTorqueConverter.FT, F) annotation(
+      Line(points = {{106, 76}, {132, 76}, {132, 78}}, color = {0, 0, 127}));
+  connect(forceTorqueConverter.T, forceAndTorque.torque) annotation(
+      Line(points = {{86, 72}, {72, 72}, {72, 80}, {60, 80}}, color = {0, 0, 127}));
+  connect(forceTorqueConverter.F, forceAndTorque.force) annotation(
+      Line(points = {{86, 76}, {76, 76}, {76, 68}, {60, 68}}, color = {0, 0, 127}));
+    annotation(
+      Diagram(coordinateSystem(extent = {{-140, 140}, {140, -60}})));
+  end sampleFMU;
+
+  model forceTorqueConvert
+  
+    import Modelica.Blocks.Interfaces;
+    
+    Interfaces.RealInput FT[2] annotation(
+        Placement(transformation(origin = {-102, 2}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-102, 2}, extent = {{-20, -20}, {20, 20}})));
+    Interfaces.RealOutput F[3] annotation(
+      Placement(transformation(origin = {100, 48}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {100, 0}, extent = {{-20, -20}, {20, 20}})));
+    Interfaces.RealOutput T[3] annotation(
+      Placement(transformation(origin = {100, -36}, extent = {{-20, -20}, {20, 20}})));
+  equation
+  
+    F[1] = 0;
+    F[2] = 0;
+    FT[1] = F[3];
+    T[1] = 0;
+    T[2] = 0;
+    FT[2] = T[3];
+
+  end forceTorqueConvert;
 end Develop;

@@ -290,6 +290,12 @@ classdef aeroCorrections < handle
             %     warning('fAeroCoeff: Extrapolating lift/drag coefficients at alpha = %.2f deg', alpha);
             % end
 
+
+            % % Check if in Reynolds number independent regime
+            % if Re < Re_ind
+            %     warning('fAeroCoeff: Re = %.2e < Re_ind = %.2e', Re, Re_ind);
+            % end
+
             Cl = interp1(obj.alphaCoef, obj.liftCoef, alpha, 'linear', 'extrap');
             Cd = interp1(obj.alphaCoef, obj.dragCoef, alpha, 'linear', 'extrap');
         end 
