@@ -75,7 +75,7 @@ Turb.nDoF = 3;               % Translational DoF
 Turb.n = [0, 0, -1];         % Rotor shaft axis unit vector
 
 % Generator parameters
-Turb.RPM = RPM;             % Rotor angular speed [rpm]
+Turb.RPM = RPM;              % Rotor angular speed [rpm] (this is RPM so that the RPM can be changed in the batch simulation in the validation case. To run normally, replace RPM with the desired value)
 
 %% Step 3: -- Call BEMT algorithm --
 % This is a handle class, not a value class

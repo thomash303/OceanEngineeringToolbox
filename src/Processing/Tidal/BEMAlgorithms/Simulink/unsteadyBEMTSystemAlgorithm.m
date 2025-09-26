@@ -35,6 +35,8 @@ classdef unsteadyBEMTSystemAlgorithm < handle
         function obj = unsteadyBEMTSystemAlgorithm(Sim, Fluid, Wind, Rot, Cor, Turb)
             % Constructor - initialises all sub-components
 
+            % --- Step 0: Initialization --- 
+
             % Simulation settings
             obj.sim = simulationSettings(Sim.dt);
 
@@ -99,6 +101,9 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                     rb_4 = [obj.turb.Rb(inBE); 0; 10]; % assume blade offset from hub if tower shadow
                     rb_1 = obj.rot.R14 * rb_4;
 
+                    
+                    % --- Step 1: Incoming Wind ---
+
                     % Incoming wind
                     V0_1 = obj.wind.fgetWindSpeed(rb_1);
                     V0_3 = obj.rot.R13 * V0_1;
@@ -106,6 +111,9 @@ classdef unsteadyBEMTSystemAlgorithm < handle
 
                     V0_3 = [0; V0_3(2); V0_3(3)];
                     V0_4 = [0; V0_4(2); V0_4(3)];
+
+
+                    % --- Step 2: Relative Velocity ---
 
                     % Induced velocity in frame 3
                     Wprev_3 = obj.rot.R34' * obj.Wprev(:, inB, inBE);
@@ -124,8 +132,13 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                     % Local tip-speed ratio
                     lambda = -obj.turb.omega^2 * obj.turb.Rb(inBE) * cosd(obj.rot.cone) / norm(V0_3);
 
+
+                    % --- Step 3: Angle of Attack ---
+
+                    % - Step 3.c -
                     Re = norm(Vrel_4) * obj.turb.chord(inBE) / obj.fluid.kinVisc;
 
+                    % - Step 3.a - 
                     % Flow angle
                     phi = atan2(Vrel_4(3), -Vrel_4(2));
                     if imag(phi) ~= 0
@@ -133,36 +146,48 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                         break;
                     end
 
+                    % - Step 3.b -
+                    % Angle of attack
+                    alpha = phi - (obj.turb.twist(inBE) + obj.turb.pitch);
+
+
+                    % --- Step 4: Tip, Hub, and Thrust Corrections ---
+
+                    % - Step 4.a - 
                     % Prandtl correction
                     Fp = obj.cor.fprandtlCorrection(obj.turb.nB, obj.turb.Rr, obj.turb.Rh, obj.turb.Rb(inBE), phi);
 
+                    % - Step 4.b -
                     % Glauert correction
                     fg = obj.cor.fglauertCorrection(a);
                     
                     % Wind velocity in the wake (fg)
                     Vprime_fg = V0_3 + fg * obj.turb.n * (obj.turb.n * Wprev_3);
         
-                    % Angle of attack
-                    alpha = phi - (obj.turb.twist(inBE) + obj.turb.pitch);
 
+                    % --- Step 5: Lift and Drag Coefficients ---
+
+                    % - Step 5.a -
                     % Airfoil coefficients
                     [Cl, Cd] = obj.cor.fAeroCoeff(alpha, Re);
 
+                    % - Step 5.b -
                     % Dynamic stall
                     Cl = obj.cor.fdynamicStall(alpha, Cl, obj.sim.dt, obj.turb.chord(inBE), Vrel_4);
 
-                    L = 1 / 2 * obj.fluid.rho * norm(Vrel_4)^2 * Cl * obj.turb.chord(inBE);
-                    D = 1 / 2 * obj.fluid.rho * norm(Vrel_4)^2 * Cd * obj.turb.chord(inBE);
-                    
-                    % Tangential
-                    py = L * sin(phi) - D * cos(phi);
-                    % Normal (thrust)
-                    pz = L * cos(phi) + D * sin(phi);
 
+                    % --- Step 6: Aero/hydrodynamic Forces ---
+
+                    % - Step 6.a -
+                    % Lift and drag loads
+                    L = 1 / 2 * obj.fluid.rho * norm(Vrel_4)^2 * Cl * obj.turb.chord(inBE) * obj.turb.dr(inBE);
+                    D = 1 / 2 * obj.fluid.rho * norm(Vrel_4)^2 * Cd * obj.turb.chord(inBE) * obj.turb.dr(inBE);
+
+                    % - Step 6.b -
                     % Local tangential  
-                    Fy = py * obj.turb.dr(inBE);
+                    Fy = L * sin(phi) - D * cos(phi);
                     % Local normal (thrust)
-                    Fz = pz * obj.turb.dr(inBE);
+                    Fz = L * cos(phi) + D * sin(phi);
                     
                     % Global tangential  
                     obj.Fy = obj.Fy + Fy;
@@ -180,14 +205,23 @@ classdef unsteadyBEMTSystemAlgorithm < handle
                     % Global power 
                     obj.Py = obj.Py + Py;
 
+
+                    % --- Step 7: Quasi-Static Induced Velocities ---
+
                     % Quasi-steady induced velocities
                     Wqs_y = - obj.turb.nB * L * sin(phi) / (4 * pi * obj.fluid.rho * obj.turb.Rb(inBE) * Fp * norm(Vprime_fg));
                     Wqs_z = - obj.turb.nB * L * cos(phi) / (4 * pi * obj.fluid.rho * obj.turb.Rb(inBE) * Fp * norm(Vprime_fg));
                     Wqs = [0; Wqs_y; Wqs_z];
 
+
+                    % --- Step 8: Dynamic Wake ---
+
                     % Dynamic wake
                     [W, Wint] = obj.cor.fdynamicWake(V0_4, Wqs, obj.Wqs_prev(:, inB, inBE), obj.Wint_prev(:, inB, inBE), obj.Wprev(:, inB, inBE), a, obj.turb.Rr, obj.turb.Rb(inBE), obj.sim.dt);
                     
+
+                    % --- Step 9: Skewed Wake ---
+
                     % Skewed wake 
                     gamma = obj.cor.fskewedWake(psi, obj.Wprev(:, inB, inBE), inB, inBE);
                     W = gamma * W;
