@@ -7,11 +7,11 @@ device name.
 %}
 
 projectRoot = fileparts(fileparts(fileparts(fileparts(pwd))));
-srcPath = fullfile(projectRoot, 'OceanEngineeringToolbox', 'src', 'Processing', 'MATLAB','Preprocess');
+srcPath = fullfile(projectRoot, 'OceanEngineeringToolbox','src', 'Processing', 'MATLAB', 'Preprocess');
 addpath(srcPath);
 
 currentPath = pwd;
-filePath = fullfile('hydroData', 'rm3.h5');
-deviceName = 'RM3';
+filePath = fullfile('hydroData', 'oswec.h5');
+deviceName = 'OSWEC';
 
 [hydro] = preprocess(currentPath, filePath, deviceName);

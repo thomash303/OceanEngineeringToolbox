@@ -25,20 +25,26 @@ model ExcitationForceIrregularWave
     Dialog(group = "Simulation Parameters"));
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
   Real ramp "Ramping function" annotation(HideResult = true);
+  parameter Real waveHeading(quantity="Angle", unit="deg") "Wave heading";
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
   Real ExcCoeffRe[bodyDoF, n_omega] "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
   Real ExcCoeffIm[bodyDoF, n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
+  
+  // Wave heading
+  Integer waveHeadingIndex = Vectors.find(waveHeading,theta)"Index in the excitation coefficients for the desired wave heading";
 equation
+    // Asserts
+    assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
   // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
   for i in 1:bodyDoF loop
     for j in 1:n_omega loop
-      ExcCoeffRe[i, j] = Vectors.interpolate(w, F_excRe[i, :], omega[j]);
-      ExcCoeffIm[i, j] = Vectors.interpolate(w, F_excIm[i, :], omega[j]);
+      ExcCoeffRe[i, j] = Vectors.interpolate(w, F_excRe[waveHeadingIndex,i,:], omega[j]);
+      ExcCoeffIm[i, j] = Vectors.interpolate(w, F_excIm[waveHeadingIndex,i,:], omega[j]);
     end for;
     // Calculate excitation force vectors
-    F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp; 
+    F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time + phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time + phi))).*ramp; 
   end for;
 
 // Assign excitation force to output

@@ -34,7 +34,7 @@ equation
   else
     ramp = 1;
   end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+  SSE = ramp.*sum(zeta.*cos(omega*time + phi));
   annotation(
     defaultComponentName = "spectrumImport",
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Spectrum Import")}),

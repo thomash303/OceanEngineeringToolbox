@@ -59,7 +59,7 @@ model equalEnergyGenerator
 
 protected
   // Intermediate calculations
-  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component";
+  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
 
 equation
   if time < Trmp then
@@ -68,7 +68,7 @@ equation
   else
     ramp = 1;
   end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+  SSE = ramp.*sum(zeta.*cos(omega*time + phi));
 
   annotation(
     defaultComponentName = "EqualEnergyGenerator");

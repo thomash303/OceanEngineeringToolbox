@@ -57,9 +57,8 @@ model randomGenerator
   parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
   parameter SI.Angle phi[n_omega] = 2*pi.*RandomFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
     
-protected
   // Intermediate calculations
-  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component";
+  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
   
 equation
   if time < Trmp then
@@ -68,7 +67,7 @@ equation
   else
     ramp = 1;
   end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+  SSE = ramp.*sum(zeta.*cos(omega*time + phi));
   
   annotation(
   defaultComponentName = "RandomGenerator");

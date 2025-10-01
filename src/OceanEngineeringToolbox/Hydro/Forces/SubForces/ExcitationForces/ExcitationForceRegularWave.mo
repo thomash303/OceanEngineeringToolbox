@@ -25,6 +25,9 @@ model ExcitationForceRegularWave
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
   Real ramp "Ramping function" annotation(
     HideResult = true);
+  // Wave Heading Parameters
+  parameter Real waveHeading(quantity="Angle", unit="deg") "Wave heading";
+
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
@@ -32,11 +35,17 @@ protected
     HideResult = true);
   Real ExcCoeffIm[bodyDoF] "Imaginary component of excitation coefficient" annotation(
     HideResult = true);
+  
+  // Wave heading
+  Integer waveHeadingIndex = Vectors.find(waveHeading,theta)"Index in the excitation coefficients for the desired wave heading";
+
 equation
-// Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+    // Asserts
+    assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
+    // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
   for i in 1:bodyDoF loop
-    ExcCoeffRe[i] = Vectors.interpolate(w, F_excRe[i], omegaPeak);
-    ExcCoeffIm[i] = Vectors.interpolate(w, F_excIm[i], omegaPeak);
+    ExcCoeffRe[i] = Vectors.interpolate(w, F_excRe[waveHeadingIndex,i,:], omegaPeak);
+    ExcCoeffIm[i] = Vectors.interpolate(w, F_excIm[waveHeadingIndex,i,:], omegaPeak);
   end for;
   // This is a bug, for some reason I have to multiply by ramp at front and end
   F = (ramp.*(ExcCoeffRe.*A*cos(omegaPeak*time)) - (ExcCoeffIm.*A*sin(omegaPeak*time)).*ramp);

@@ -10,10 +10,10 @@ model Environment
   import Modelica.Constants.pi;
 
   // Spectrum Parameters
-  parameter String waveSelector = "Regular" annotation(
+  parameter String waveSelector = "Regular" "Desired wave conditions" annotation(
     Dialog(group = "Wave Spectrum Parameters"),
     choices(choice = "None", choice = "Regular", choice = "PiersonMoskowitz", choice = "Bretschneider", choice = "JONSWAP", choice = "OchiHubble", choice = "spectrumImport"));
-  parameter String frequencySelection = "random" annotation(
+  parameter String frequencySelection = "random" "Frequency discritization method" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")),
     choices(choice = "random", choice = "equalEnergy"));
   parameter SI.Height Hs = 2 "Significant wave height" annotation(
@@ -21,11 +21,15 @@ model Environment
   parameter SI.Time Tp = 8 "Peak wave period" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "OchiHubble" and waveSelector <> "None"));
   
-  // Pierson-Moskowitz parameters
+  // Wave Heading Parameters
+  parameter Real waveHeading(quantity="Angle", unit="deg") = 0 "Wave heading" annotation(Dialog(group = "Wave Heading Parameters"));
+  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Wave Heading Parameters"));
+  
+  // Pierson-Moskowitz Parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(
     Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
   
-  // JONSWAP parameters
+  // JONSWAP Parameters
   parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
   parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP" annotation(
@@ -49,7 +53,7 @@ model Environment
   SI.Height SSE "Sea surface elevation";
 
   // Regular wave model
-  Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp) if waveSelector == "Regular" annotation(
+  Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "Regular" annotation(
     Placement(transformation(origin = {0, 54}, extent = {{-12, -12}, {12, 12}})));
   // Irregular wave model
   Wave.IrregularWave irregularWave(Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(

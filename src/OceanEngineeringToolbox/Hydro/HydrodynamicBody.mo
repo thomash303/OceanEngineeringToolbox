@@ -68,9 +68,9 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Damping/Drag"));
   // Drag coefficients
-  parameter Real Cv[6] = {0, 0, 0, 0, 0, 0} "Linear damping coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag"));
-  parameter Real Cd[6] = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag"));
-  parameter Real Ad[6] = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag"));
+  parameter Real Cv[6] = {0, 0, 0, 0, 0, 0} "Linear damping coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real Cd[6] = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real Ad[6] = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
 
 
 equation

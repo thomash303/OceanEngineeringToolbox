@@ -6,6 +6,10 @@ model RegularWave
   // Importing from the MSL
   import Modelica.Units.SI; 
   import Modelica.Constants.pi;
+  
+  // Extending and inheriting from the OET
+  extends DataImport.InputRecords.FilePath;
+  extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
 
   // Spectrum Parameters 
   constant Integer n_omega = 1 "Number of frequency components (default is 100 for irregular)" annotation(
@@ -20,8 +24,10 @@ model RegularWave
   // Ramp  
   Real ramp "Ramping function" annotation(
     HideResult = true);
-  SI.Time Trmp "Interval for ramping up of waves during start phase [s]" annotation(
+  SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(
     HideResult = true);
+    
+  parameter SI.WaveNumber k = scalar(WaveFunctions.waveNumber(d, vector(omegaPeak), n_omega)) "Wave number component" annotation(HideResult = true);
 
 equation
   if time < Trmp then
