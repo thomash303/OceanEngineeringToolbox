@@ -22,7 +22,7 @@ model Radiation
     HideResult = true,
     Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
 
-      SubForces.RadiationForces.RadiationForceNoB2B radiationForceNoB2B(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+      SubForces.RadiationForces.RadiationForceNoB2B radiationForceNoB2B(file = file, bodyIndex = bodyIndex) annotation(
     Placement(transformation(origin = {0, -20}, extent = {{-18, -18}, {18, 18}})));
 
 equation

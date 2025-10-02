@@ -13,13 +13,23 @@ model waveBuoy
   parameter SI.Position x = 0 "x-coordinate of the buoy" annotation(Dialog(group = "Coordinates"));
   parameter SI.Position y = 0 "y-coordinate of the buoy" annotation(Dialog(group = "Coordinates"));
   
+  // Regular wavebuoy
   MeasurementModels.RegularWaveBuoy regularWaveBuoy(A = environment.regularWave.A, omegaPeak = environment.regularWave.omegaPeak, Trmp = environment.Trmp, k = environment.regularWave.k, theta = environment.waveHeading, x = x, y = y)  annotation(
-    Placement(transformation(origin = {-12, 34}, extent = {{-10, -10}, {10, 10}})));
-
+    Placement(transformation(origin = {-16, 24}, extent = {{-10, -10}, {10, 10}})));
+  
+  // Irregular wave equal-energy wave buoy
+  MeasurementModels.IrregularWaveBuoy irregularWaveBuoyEqualEnergy(zeta = environment.irregularWave.EqualEnergyGenerator.zeta, n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.EqualEnergyGenerator.omega, phi = environment.irregularWave.EqualEnergyGenerator.phi, Trmp = environment.Trmp, k = environment.irregularWave.EqualEnergyGenerator.k, theta = environment.waveHeading, x = x, y = y) if (environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "Bretschneider" or environment.waveSelector == "JONSWAP" or environment.waveSelector == "OchiHubble") and environment.frequencySelection == "equalEnergy" annotation(
+    Placement(transformation(origin = {-16, -48}, extent = {{-10, -10}, {10, 10}})));
+ 
+ // Irregular wave random wave buoy
+ MeasurementModels.IrregularWaveBuoy irregularWaveBuoyRandom(zeta = environment.irregularWave.RandomGenerator.zeta, n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.RandomGenerator.omega, phi = environment.irregularWave.RandomGenerator.phi, Trmp = environment.Trmp, k = environment.irregularWave.RandomGenerator.k, theta = environment.waveHeading, x = x, y = y) if (environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "Bretschneider" or environment.waveSelector == "JONSWAP" or environment.waveSelector == "OchiHubble") and environment.frequencySelection == "random" annotation(
+    Placement(transformation(origin = {-16, -10}, extent = {{-10, -10}, {10, 10}})));
 protected
   // Spectrum Parameters
   parameter String waveSelector = environment.waveSelector annotation(HideResult = true);
 
 equation
 
+annotation(
+    Diagram(coordinateSystem(extent = {{-40, 40}, {0, -60}})));
 end waveBuoy;

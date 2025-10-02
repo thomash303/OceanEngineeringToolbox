@@ -14,9 +14,9 @@ model Hydrostatic
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}}))); 
   
-  SubForces.HydrostaticForces.HydrostaticForce hydrostaticForce(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+  SubForces.HydrostaticForces.HydrostaticForce hydrostaticForce(file = file, bodyIndex = bodyIndex) annotation(
     Placement(transformation(origin = {1, 29}, extent = {{-13, -13}, {13, 13}})));
-  SubForces.HydrostaticForces.BuoyancyForce buoyancyForce(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+  SubForces.HydrostaticForces.BuoyancyForce buoyancyForce(file = file, bodyIndex = bodyIndex) annotation(
     Placement(transformation(origin = {2, -32}, extent = {{-14, -14}, {14, 14}})));
   Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Types.ResolveInFrameA.world)  annotation(
     Placement(transformation(origin = {4, 80}, extent = {{-12, -12}, {12, 12}})));

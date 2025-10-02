@@ -2,12 +2,12 @@ within OceanEngineeringToolbox.DataImport.InputRecords;
 
 partial class FilePath
   "Partial class containing the user input file path to the hydrodynamic data"
-  parameter String filePath "File path" annotation(
-    Dialog(group = "Body Data"));
-  parameter String hydroCoeffFile "Hydro coefficient file name" annotation(
-    Dialog(group = "Body Data"));
-protected
-  parameter String fileDir = filePath + hydroCoeffFile "Full file directory";
+  
+  // Importing from the MSL
+  import Modelica.Utilities.Files.loadResource;
+  
+  parameter String file = loadResource("C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3HydroCoeff.mat") "File containing the hydrodynamic coefficient data" annotation(Dialog(loadSelector(filter="MATLAB MAT files (*.mat)", caption="Select the file containing the hydrodynamic coefficient data")));
+  
   annotation(
     defaultComponentName = "fileDirectory",
     defaultComponentPrefixes = "inner",

@@ -57,7 +57,6 @@ model equalEnergyGenerator
   parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
   parameter SI.Angle phi[n_omega] = 2*pi.*RandomDiscritization.RandomFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
 
-protected
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
 

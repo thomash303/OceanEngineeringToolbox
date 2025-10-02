@@ -10,7 +10,7 @@ model HydrodynamicBody
   extends PartialTwoFrames;
 
   // Extending from the OceanEngineeringToolbox
-  extends DataImport.InputRecords.FilePath(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile);
+  extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.animationFile(geometryFile = "None");
   extends DataImport.InputRecords.BodyIndex;
   import Modelica.Utilities.Streams.readRealMatrix;
@@ -19,9 +19,9 @@ model HydrodynamicBody
   outer DataImport.FileDirectory fileDirectory;
   
   // Mass parameters
-  parameter SI.Mass M[1,1] = readRealMatrix(fileDir, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
+  parameter SI.Mass M[1,1] = readRealMatrix(file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
     Dialog(group = "Mass")); 
-  Multibody.Body body(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex, animationEnable = animationEnable, geometryFile = geometryFile, bodyColour = bodyColour, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_b, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
+  Multibody.Body body(file = fileDirectory.file, bodyIndex = bodyIndex, animationEnable = animationEnable, geometryFile = geometryFile, bodyColour = bodyColour, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_b, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
     Placement(transformation(origin = {0, -38}, extent = {{-12, -12}, {12, 12}})));
   parameter SI.Length ra_CM[3] = {0, 0, 0} "Position vector between joint A and the centre of mass" annotation(
     Dialog(group = "Mass"));
@@ -43,25 +43,25 @@ model HydrodynamicBody
     Dialog(group = "Mass"));
 
   // Excitation
-  Forces.Excitation excitation(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex) if enableExcitationForce annotation(
+  Forces.Excitation excitation(file = fileDirectory.file, bodyIndex = bodyIndex) if enableExcitationForce annotation(
     Placement(transformation(origin = {-32, 48}, extent = {{18, -18}, {-18, 18}})));
   parameter Boolean enableExcitationForce = true "Switch to enable/disable excitation force calculation" annotation(
     choices(checkBox = true),
     Dialog(group = "Excitation"));
   // Radiation
-    Forces.Radiation radiation(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex) if enableRadiationForce annotation(
+    Forces.Radiation radiation(file = fileDirectory.file, bodyIndex = bodyIndex) if enableRadiationForce annotation(
     Placement(transformation(origin = {34, 48}, extent = {{-18, -18}, {18, 18}})));
   parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
     choices(checkBox = true),
     Dialog(group = "Radiation"));
   // Hydrostatic
-  Forces.Hydrostatic hydrostatic(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, bodyIndex = bodyIndex) if enableHydrostaticForce annotation(
+  Forces.Hydrostatic hydrostatic(file = fileDirectory.file, bodyIndex = bodyIndex) if enableHydrostaticForce annotation(
     Placement(transformation(origin = {-80, 48}, extent = {{18, -18}, {-18, 18}})));
   parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
     choices(checkBox = true),
     Dialog(group = "Hydrostatic"));  
   // Damping/drag
-  Forces.DampingDrag dampingDrag(filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile, Cv = Cv, Cd = Cd, Ad = Ad) if enableDampingDragForce annotation(
+  Forces.DampingDrag dampingDrag(file = fileDirectory.file, Cv = Cv, Cd = Cd, Ad = Ad) if enableDampingDragForce annotation(
     Placement(transformation(origin = {78, 48}, extent = {{-18, -18}, {18, 18}})));
   parameter Boolean enableDampingDragForce = true "Switch to enable/disable damping/drag force calculation" annotation(
     HideResult = true,

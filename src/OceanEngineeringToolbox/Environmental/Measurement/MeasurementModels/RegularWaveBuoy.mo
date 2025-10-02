@@ -12,6 +12,7 @@ model RegularWaveBuoy
   parameter SI.AngularFrequency omegaPeak "Peak spectral frequency" annotation(HideResult = true);
   
   // Spectrum Variables
+  parameter SI.WaveNumber k "Wave number component" annotation(HideResult = true);
   SI.Height SSE "Sea surface elevation";
   
   // Ramp  
@@ -19,7 +20,6 @@ model RegularWaveBuoy
     HideResult = true);
   SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(HideResult = true);
   parameter Real theta(quantity="Angle", unit="deg") "Wave heading";
-  parameter SI.WaveNumber k "Wave number component" annotation(HideResult = true);
   
   // Coordinates
   parameter SI.Position x "x-coordinate of the buoy";

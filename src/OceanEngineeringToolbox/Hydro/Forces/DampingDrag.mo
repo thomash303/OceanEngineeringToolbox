@@ -15,7 +15,7 @@ model DampingDrag
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
-  SubForces.DampingDragForces.DampingDragForce dampingDragForce(filePath = filePath, hydroCoeffFile = hydroCoeffFile, Cv = Cv, Cd = Cd, Ad = Ad) annotation(
+  SubForces.DampingDragForces.DampingDragForce dampingDragForce(file = file, Cv = Cv, Cd = Cd, Ad = Ad) annotation(
     Placement(transformation(origin = {2, 0}, extent = {{-14, -14}, {14, 14}})));
   Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, animation = false, resolveInFrame = Types.ResolveInFrameA.world)  annotation(
     Placement(transformation(origin = {0, 64}, extent = {{-12, -12}, {12, 12}})));

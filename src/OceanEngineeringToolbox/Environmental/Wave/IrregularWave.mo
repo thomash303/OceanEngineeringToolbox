@@ -51,11 +51,11 @@ model IrregularWave
   
 
   // Random frequency discritization model
-  WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(filePath = filePath, hydroCoeffFile = hydroCoeffFile, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "random" annotation(
+  WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "random" annotation(
     Placement(transformation(origin = {-48, -2}, extent = {{-10, -10}, {10, 10}})));
 
   // Equal energy frequency discritization model
-  WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.equalEnergyGenerator EqualEnergyGenerator(filePath = filePath, hydroCoeffFile = hydroCoeffFile, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "equalEnergy" annotation(
+  WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.equalEnergyGenerator EqualEnergyGenerator(file = file, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "equalEnergy" annotation(
     Placement(transformation(origin = {20, -14}, extent = {{-10, -10}, {10, 10}})));
 
 equation

@@ -15,7 +15,7 @@ model Body
   
   // Mass
   parameter SI.Mass M[1,1];
-  Mass.BodyMass body(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, useQuaternions = true) annotation(
+  Mass.BodyMass body(file = file, bodyIndex = bodyIndex, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32, r_CM = {0, 0, 0}, useQuaternions = true) annotation(
     Placement(transformation(origin = {0, -46}, extent = {{-12, -12}, {12, 12}}, rotation = -90)));
   parameter SI.Length ra_CM[3] = {0, 0, 0} "Position vector between joint A and the centre of mass" annotation(
     Dialog(group = "Mass"));
