@@ -76,7 +76,7 @@ package OET
         Placement(transformation(origin = {12, -16}, extent = {{-10, -10}, {10, 10}})));
       Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random", Hs = 1) annotation(
+      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random", Hs = 1) annotation(
         Placement(transformation(origin = {100, -8}, extent = {{-10, -10}, {10, 10}})));
       PTO.LinearPTO linearPTO annotation(
         Placement(transformation(origin = {40, -28}, extent = {{-10, -10}, {10, 10}})));
@@ -277,26 +277,12 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/applications/Validation/RM3/RM3HydroCoeff.mat")  annotation(
         Placement(transformation(origin = {110, -26}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody spar(enableRadiationForce = true, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableHydrostaticForce = true, enableDampingDragForce = false, animationEnable = false, geometryFile = "/RM3/geometry/plate.stl", offset = {0, 0, 21.29, 0, 0, 0}, ra_CM = {0, 0, -21.29}) annotation(
-        Placement(transformation(origin = {20, -16}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
+      Hydro.HydrodynamicBody float(enableRadiationForce = false, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, geometryFile = "/RM3/geometry/float.stl", animationEnable = false, offset = {0, 0, 0.72, 0, 0, 0}, rCM_b = {0, 0, 0}, ra_CM = {0, 0, 20.57}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-  inner Wave.Environment_new environment(waveSelector = "Regular", frequencySelection = "equalEnergy")  annotation(
+  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "equalEnergy")  annotation(
         Placement(transformation(origin = {132, -4}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.FreeMotion freeMotion annotation(
-        Placement(transformation(origin = {-6, -38}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
-        Placement(transformation(origin = {42, -34}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
-      connect(freeMotion.frame_b, spar.frame_a) annotation(
-        Line(points = {{4, -38}, {10, -38}, {10, -16}}, color = {95, 95, 95}));
-      connect(freeMotion.frame_a, world.frame_b) annotation(
-        Line(points = {{-16, -38}, {-30, -38}, {-30, -20}}, color = {95, 95, 95}));
-  connect(prismatic.frame_b, float.frame_a) annotation(
-        Line(points = {{52, -34}, {60, -34}, {60, -16}}, color = {95, 95, 95}));
-  connect(prismatic.frame_a, spar.frame_b) annotation(
-        Line(points = {{32, -34}, {30, -34}, {30, -16}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -346,8 +332,6 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory annotation(
         Placement(transformation(origin = {98, -30}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody_mm spar(enableRadiationForce = false, bodyIndex = 2, enableExcitationForce = true, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, ra_CM = {0, 0, 0}, enableHydrostaticForce = true, enableDampingDragForce = false, rCM_b = {0, 0, 0}, animationEnable = true, geometryFile = "/RM3/geometry/plate.stl") annotation(
-        Placement(transformation(origin = {12, -14}, extent = {{-10, -10}, {10, 10}})));
       Hydro.HydrodynamicBody_mm float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = false, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}, rCM_b = {0, 0, 0}, I_32 = 4300, geometryFile = "/RM3/geometry/float.stl", animationEnable = false) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
       inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, frequencySelection = "random", Hs = 2, Trmp = 100) annotation(
@@ -492,6 +476,61 @@ package OET
     equation
 
     end Environment_Tester;
+    
+    model TestmultibodyWEC
+      extends Modelica.Icons.Package;
+      // World component (no gravity, Z-axis pointing downwards)
+      inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity, n = {0, 0, -1}, label1 = "x", label2 = "z") "World coordinate system without gravity" annotation(
+        Placement(transformation(origin = {-50, -18}, extent = {{-10, -10}, {10, 10}})));
+      // Prismatic joint constraining motion in heave
+      // Force and torque element (adapt wave output to a force and apply to the body)
+      // Define hydrodynamic body
+      inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/Archived/RM3HydroCoeffEWTEC.mat")  annotation(
+        Placement(transformation(origin = {116, -30}, extent = {{-10, -10}, {10, 10}})));
+      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
+        Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
+      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random", Hs = 1) annotation(
+        Placement(transformation(origin = {112, -8}, extent = {{-10, -10}, {10, 10}})));
+    equation
+// Connections
+      annotation(
+        Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
+        Documentation(info = "<html>
+            <p><b>1D Single-Body Wave Energy Converter (WEC) Model</b></p>
+            <p>This model represents a simplified 1D single-body wave energy converter system, 
+            focusing on the vertical motion of the body in response to wave excitation forces.</p>
+            
+            <p><b>Model Description</b></p>
+            <p>The WEC consists of a hydrodynamic body constrained to move vertically using a prismatic joint. 
+            The body is subjected to wave excitation forces generated by Regular (Linear) and Irregular (PM, Bretschneider, JONSWAP) wave profiles.</p>
+            
+            <p><b>Key Components</b></p>
+            <ul>
+              <li><code>world</code>: Defines the world coordinate system without gravity</li>
+              <li><code>bodyHD6D</code>: Represents the hydrodynamic body of the WEC</li>
+              <li><code>prismatic</code>: Allows vertical motion of the body</li>
+              <li><code>Regular and Irregular Wave Profiles</code>: Generates regular and irregular wave excitation forces</li>
+              <li><code>forceAndTorque</code>: Applies the excitation force to the body</li>
+            </ul>
+            
+            <p><b>Assumptions and Simplifications</b></p>
+            <ul>
+              <li>The model considers only vertical motion (1D) of the WEC</li>
+              <li>Gravity is not included in the world model</li>
+              <li>The excitation force is applied as an external input based on the Pierson-Moskowitz or Regular wave profile</li>
+            </ul>
+            
+            <p><b>Notes</b></p>
+            <ul>
+              <li>This model serves as a basic framework for WEC simulations and can be extended for more complex analyses</li>
+              <li>Additional forces like radiation damping or PTO forces can be added to enhance the model's realism</li>
+              <li>Ensure that the BodyHD6D component is properly configured for accurate results</li>
+              <li>The wave parameters may need to be adjusted to represent specific sea states</li>
+            </ul>
+          </html>"),
+        Diagram(coordinateSystem(extent = {{-80, 0}, {150, -40}})),
+        experiment(StartTime = 0, StopTime = 500, Tolerance = 1e-08, Interval = 0.05));
+    end TestmultibodyWEC;
     annotation(
       Icon(graphics = {Polygon(points = {{-40, 40}, {40, 0}, {-40, -40}, {-40, 40}}, lineColor = {0, 0, 0}, fillColor = // Red color for the polygon
       {0, 0, 0}, fillPattern = // Red fill
@@ -894,7 +933,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       // allow user option to adjust in wave
       /*parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
-                                                              Dialog(group = "Wave Spectrum Parameters"));*/
+                                                                          Dialog(group = "Wave Spectrum Parameters"));*/
       // use can adjust, but they shouldn't
     end waveData;
 
@@ -6532,7 +6571,7 @@ elseif waveSelector == "spectrumImport" then
 
     end waveKin;
   end Morison;
-      //within OET
+        //within OET
   //within OET;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle

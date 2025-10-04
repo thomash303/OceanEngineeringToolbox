@@ -10,7 +10,6 @@ model HydrodynamicBody
   extends PartialTwoFrames;
 
   // Extending from the OceanEngineeringToolbox
-  extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.animationFile(geometryFile = "None");
   extends DataImport.InputRecords.BodyIndex;
   import Modelica.Utilities.Streams.readRealMatrix;
@@ -19,7 +18,7 @@ model HydrodynamicBody
   outer DataImport.FileDirectory fileDirectory;
   
   // Mass parameters
-  parameter SI.Mass M[1,1] = readRealMatrix(file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
+  parameter SI.Mass M[1,1] = readRealMatrix(fileDirectory.file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
     Dialog(group = "Mass")); 
   Multibody.Body body(file = fileDirectory.file, bodyIndex = bodyIndex, animationEnable = animationEnable, geometryFile = geometryFile, bodyColour = bodyColour, ra_CM = ra_CM, rCM_b = rCM_b, ra_b = ra_b, M = M, I_11 = I_11, I_22 = I_22, I_33 = I_33, I_21 = I_21, I_31 = I_31, I_32 = I_32) annotation(
     Placement(transformation(origin = {0, -38}, extent = {{-12, -12}, {12, 12}})));

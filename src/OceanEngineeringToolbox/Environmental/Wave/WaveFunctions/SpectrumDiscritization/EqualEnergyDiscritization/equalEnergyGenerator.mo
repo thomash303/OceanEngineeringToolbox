@@ -5,7 +5,7 @@ model equalEnergyGenerator
   
   // Importing from the MSL
   import Modelica.Units.SI;
-  import Modelica.Constants.pi;
+  import Modelica.Constants.{pi,g_n};
 
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
@@ -45,12 +45,6 @@ model equalEnergyGenerator
   HideResult = true);
   parameter SI.AngularFrequency omega_int[n_omega_int] = SpectrumCalculations.constantFrequencyStepGenerator(omegaMin, omegaMax, n_omega_int) "Integration frequency step size";  
   
-  // Spectrum variables
-  parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
-  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumCalculations.spectrumInterpolator(n_omega = n_omega, n_omega_int = n_omega_int, omega_int = omega_int, S_int = S_int, omega = omega) "Wave energy spectrum";
-  SI.Height SSE "Sea surface elevation";
-  parameter WaveUnits.spectrumEnergyDensity S_int[n_omega_int] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Integratation wave energy spectrum"; 
-
   // Random phase selection
   parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
   // readd , enable = frequencySelection == "random"
@@ -59,7 +53,14 @@ model equalEnergyGenerator
 
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
-
+  
+  // Spectrum variables
+  parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
+  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumCalculations.spectrumInterpolator(n_omega = n_omega, n_omega_int = n_omega_int, omega_int = omega_int, S_int = S_int, omega = omega) "Wave energy spectrum";
+  parameter WaveUnits.spectrumEnergyDensity S_int[n_omega_int] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Integratation wave energy spectrum"; 
+  SI.Height SSE "Sea surface elevation";
+  parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, S = S, domega = domega, n_omega = n_omega) "Wave time-average power per unit wave crest length";
+  
 equation
   if time < Trmp then
     ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
@@ -67,7 +68,8 @@ equation
   else
     ramp = 1;
   end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time + phi));
+  
+  SSE = waveElevation(zeta = zeta, phi = phi, omegaTime = omega, ramp = ramp, n_omega = n_omega);
 
   annotation(
     defaultComponentName = "EqualEnergyGenerator");

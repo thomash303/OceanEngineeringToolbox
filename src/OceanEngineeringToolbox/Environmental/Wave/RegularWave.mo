@@ -5,7 +5,7 @@ model RegularWave
 
   // Importing from the MSL
   import Modelica.Units.SI; 
-  import Modelica.Constants.pi;
+  import Modelica.Constants.{pi,g_n};
   
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
@@ -19,7 +19,6 @@ model RegularWave
   parameter SI.AngularFrequency omegaPeak = 0.9423 "Peak spectral frequency" annotation(
     Dialog(group = "Wave Spectrum Parameters"));
   parameter SI.Height A = Hs/2 "Wave amplitude";
-  SI.Height SSE "Sea surface elevation";
   
   // Ramp  
   Real ramp "Ramping function" annotation(
@@ -28,6 +27,10 @@ model RegularWave
     HideResult = true);
     
   parameter SI.WaveNumber k = scalar(WaveFunctions.waveNumber(d, vector(omegaPeak), n_omega)) "Wave number component" annotation(HideResult = true);
+  
+  // Spectrum Variables
+  SI.Height SSE "Sea surface elevation";
+  parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = vector(k), A = A, n_omega = n_omega) "Wave time-average power per unit wave crest length";
 
 equation
   if time < Trmp then
@@ -36,7 +39,9 @@ equation
   else
     ramp = 1;
   end if; 
-  SSE = ramp.*(A*cos(omegaPeak*time));
+  
+  SSE = WaveFunctions.waveElevation(A = A, omegaTime = vector(omegaPeak*time), ramp = ramp, n_omega = n_omega);
+  
   annotation(
     defaultComponentName = "regularWave",
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Regular Wave")}),

@@ -23,7 +23,7 @@ model Environment
   
   // Wave Heading Parameters
   parameter Real waveHeading(quantity="Angle", unit="deg") = 0 "Wave heading" annotation(Dialog(group = "Wave Heading Parameters"));
-  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Wave Heading Parameters"));
+  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Wave Heading Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")));
   
   // Pierson-Moskowitz Parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(

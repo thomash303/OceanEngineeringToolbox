@@ -5,7 +5,7 @@ model randomGenerator
   
   // Importing from the MSL
   import Modelica.Units.SI;
-  import Modelica.Constants.pi;
+  import Modelica.Constants.{pi,g_n};
 
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
@@ -14,7 +14,7 @@ model randomGenerator
   
   // Spectrum Parameters  
   parameter String waveSelector = "PiersonMoskowitz";
-  parameter SI.Length Hs"Significant Wave Height";
+  parameter SI.Length Hs "Significant Wave Height";
   parameter SI.AngularFrequency omegaPeak "Peak angular frequency";
   
   // Pierson-Moskowitz parameters
@@ -46,10 +46,7 @@ model randomGenerator
   parameter SI.AngularFrequency omega[n_omega] = RandomFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation";
   parameter SI.AngularFrequency domega[n_omega] = fill(SpectrumCalculations.constantFrequencyStep(omegaMin, omegaMax, n_omega), n_omega) "Frequency step size";
   
-  // Spectrum variables
-  parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
-  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Wave energy spectrum";
-  SI.Height SSE "Sea surface elevation";
+
   
   // Random phase selection
   parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
@@ -60,6 +57,12 @@ model randomGenerator
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
   
+  // Spectrum variables
+  parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
+  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Wave energy spectrum";
+  SI.Height SSE "Sea surface elevation";
+  parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, S = S, domega = domega, n_omega = n_omega) "Wave time-average power per unit wave crest length";
+  
 equation
   if time < Trmp then
     ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
@@ -67,7 +70,8 @@ equation
   else
     ramp = 1;
   end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time + phi));
+  
+  SSE = waveElevation(zeta = zeta, phi = phi, omegaTime = omega, ramp = ramp, n_omega = n_omega);
   
   annotation(
   defaultComponentName = "RandomGenerator");

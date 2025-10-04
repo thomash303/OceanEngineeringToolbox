@@ -6,12 +6,14 @@ model ExcitationForceIrregularWave
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Constants.{pi, g_n};
-  import Modelica.Math.Vectors;
+  import Modelica.Math.Vectors.find;
+
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
   extends DataImport.ImportRecords.HydroImport.excitationData;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
+  
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
@@ -29,23 +31,23 @@ model ExcitationForceIrregularWave
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
-  Real ExcCoeffRe[bodyDoF, n_omega] "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
-  Real ExcCoeffIm[bodyDoF, n_omega] "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
+  
+  parameter Real ExcCoeffRe[bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
+  parameter Real ExcCoeffIm[bodyDoF, n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
   
   // Wave heading
-  Integer waveHeadingIndex = Vectors.find(waveHeading,theta)"Index in the excitation coefficients for the desired wave heading";
+  Integer waveHeadingIndex = find(waveHeading,theta) "Index in the excitation coefficients for the desired wave heading";
+  
+initial equation
+ // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
+ (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w, F_excRe2D, F_excIm2D, waveHeadingIndex, nH, nF[1], omega, bodyDoF, n_omega); 
+  
 equation
-    // Asserts
-    assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
-  // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
-  for i in 1:bodyDoF loop
-    for j in 1:n_omega loop
-      ExcCoeffRe[i, j] = Vectors.interpolate(w, F_excRe[waveHeadingIndex,i,:], omega[j]);
-      ExcCoeffIm[i, j] = Vectors.interpolate(w, F_excIm[waveHeadingIndex,i,:], omega[j]);
-    end for;
-    // Calculate excitation force vectors
-    F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time + phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time + phi))).*ramp; 
-  end for;
+  // Asserts
+  assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
+
+  // Calculate excitation force vectors
+    F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, zeta = zeta, phi = phi, omegaTime = omega*time, ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega);
 
 // Assign excitation force to output
   frame_a.f = -f_element;
