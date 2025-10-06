@@ -220,12 +220,12 @@ package OET
       // Prismatic joint constraining motion in heave
       // Force and torque element (adapt wave output to a force and apply to the body)
       // Define hydrodynamic body
-      inner Hydro.FilePath fileDirectory annotation(
+      inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/applications/Validation/RM3/RM3HydroCoeff.mat")  annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "random")  annotation(
+  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "random", Trmp = 100, Hs = 2)  annotation(
         Placement(transformation(origin = {54, -24}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody(bodyIndex = 2, enableHydrostaticForce = false, enableRadiationForce = false, enableDampingDragForce = false, offset = {0, 0, 0, 0, 0, 0})  annotation(
-        Placement(transformation(origin = {4, -28}, extent = {{-10, -10}, {10, 10}})));
+  Hydro.HydrodynamicBody hydrodynamicBody(bodyIndex = 1, enableHydrostaticForce = true, enableRadiationForce = false, enableDampingDragForce = false, offset = {0, 0, 0, 0, 0, 0}, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481)  annotation(
+        Placement(transformation(origin = {12, -24}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
       annotation(
@@ -487,9 +487,9 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/Archived/RM3HydroCoeffEWTEC.mat")  annotation(
         Placement(transformation(origin = {116, -30}, extent = {{-10, -10}, {10, 10}})));
-      Hydro.HydrodynamicBody float(enableRadiationForce = true, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
+      Hydro.HydrodynamicBody float(enableRadiationForce = false, bodyIndex = 1, enableExcitationForce = true, enableDampingDragForce = false, enableHydrostaticForce = true, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, ra_CM = {0, 0, 0}) annotation(
         Placement(transformation(origin = {70, -16}, extent = {{-10, -10}, {10, 10}})));
-      inner Wave.Environment environment(waveSelector = "PiersonMoskowitz", omegaPeak = 0.785, Trmp = 50, frequencySelection = "random", Hs = 1) annotation(
+      inner Wave.Environment environment(waveSelector = "Regular", omegaPeak = 0.785, Trmp = 100, frequencySelection = "random", Hs = 2) annotation(
         Placement(transformation(origin = {112, -8}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
@@ -933,7 +933,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       // allow user option to adjust in wave
       /*parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
-                                                                          Dialog(group = "Wave Spectrum Parameters"));*/
+                                                                                      Dialog(group = "Wave Spectrum Parameters"));*/
       // use can adjust, but they shouldn't
     end waveData;
 
@@ -1035,9 +1035,9 @@ This component has a filled rectangular icon.
     protected
         parameter Modelica.Units.SI.Volume vol[1, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.vol" + bodyIndexString, 1, 1) "Body volume";
     
-        parameter Modelica.Units.SI.Height cg[3, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cg" + bodyIndexString, 3, 1) "Center of gravity"; 
+        parameter Modelica.Units.SI.Height cg[1, 3] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cg" + bodyIndexString, 1, 3) "Center of gravity"; 
         
-        parameter Modelica.Units.SI.Height cb[3, 1] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cb" + bodyIndexString, 3, 1) "Center of buoyancy"; 
+        parameter Modelica.Units.SI.Height cb[1, 3] = Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.bodies.cb" + bodyIndexString, 1, 3) "Center of buoyancy"; 
     equation
 
     end bodyData;
@@ -6571,7 +6571,7 @@ elseif waveSelector == "spectrumImport" then
 
     end waveKin;
   end Morison;
-        //within OET
+          //within OET
   //within OET;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle

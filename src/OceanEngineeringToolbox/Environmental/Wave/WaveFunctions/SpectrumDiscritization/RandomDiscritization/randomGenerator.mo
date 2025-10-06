@@ -71,7 +71,7 @@ equation
     ramp = 1;
   end if;
   
-  SSE = waveElevation(zeta = zeta, phi = phi, omegaTime = omega, ramp = ramp, n_omega = n_omega);
+  SSE = waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, ramp = ramp, n_omega = n_omega);
   
   annotation(
   defaultComponentName = "RandomGenerator");

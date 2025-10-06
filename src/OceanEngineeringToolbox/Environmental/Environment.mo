@@ -5,11 +5,11 @@ model Environment
  
   outer DataImport.FileDirectory fileDirectory;
 
-  // Importing from the MSL
+// Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
 
-  // Spectrum Parameters
+// Spectrum Parameters
   parameter String waveSelector = "Regular" "Desired wave conditions" annotation(
     Dialog(group = "Wave Spectrum Parameters"),
     choices(choice = "None", choice = "Regular", choice = "PiersonMoskowitz", choice = "Bretschneider", choice = "JONSWAP", choice = "OchiHubble", choice = "spectrumImport"));
@@ -20,15 +20,12 @@ model Environment
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "None"));
   parameter SI.Time Tp = 8 "Peak wave period" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "OchiHubble" and waveSelector <> "None"));
-  
   // Wave Heading Parameters
   parameter Real waveHeading(quantity="Angle", unit="deg") = 0 "Wave heading" annotation(Dialog(group = "Wave Heading Parameters"));
   parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Wave Heading Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")));
-  
   // Pierson-Moskowitz Parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(
     Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
-  
   // JONSWAP Parameters
   parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
@@ -37,22 +34,21 @@ model Environment
   parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
 
-  // Ochi-Hubble Parameters (including sample values from original paper)
+// Ochi-Hubble Parameters (including sample values from original paper)
   // Default parameters computed from most likely sea state
   parameter SI.Height HsOH[componentSpectra] = {0.84*Hs,0.54*Hs} "Significant wave heights" annotation(
     Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {4.14,3.27}
   parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0.7*exp(-0.046*Hs),1.15*exp(-0.039*Hs)} "Peak spectral frequencies" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {0.58, 1} 
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {0.58, 1}
   parameter Real lambdaOH[componentSpectra] = {3,1.54*exp(-0.062*Hs)} "Peak shape parameter" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {2.67, 1.37}
-  
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble"));   // {2.67, 1.37}
   // Ramp
   parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
     Dialog(group = "Simulation Parameters", enable = waveSelector <> "None"));
     // Spectrum Variables
   SI.Height SSE "Sea surface elevation";
 
-  // Regular wave model
+// Regular wave model
   Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, file = fileDirectory.file) if waveSelector == "Regular" annotation(
     Placement(transformation(origin = {0, 54}, extent = {{-12, -12}, {12, 12}})));
   // Irregular wave model
@@ -92,6 +88,5 @@ equation
       Text(extent={{-150, -140}, {150, -110}}, textString="waveType=%waveSelector")
     }
   ),
-  Diagram
-);
+  Diagram(coordinateSystem(extent = {{0, 60}, {60, -140}})));
 end Environment;

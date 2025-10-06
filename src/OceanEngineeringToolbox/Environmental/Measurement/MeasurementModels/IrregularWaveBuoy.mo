@@ -12,7 +12,7 @@ model IrregularWaveBuoy
 
   // Frequency variables
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation" annotation(HideResult = true);
-  constant Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(HideResult = true);
+  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(HideResult = true);
   
     // Random phase selection
   parameter SI.Angle phi[n_omega] "Wave components phase shift" annotation(HideResult = true);
