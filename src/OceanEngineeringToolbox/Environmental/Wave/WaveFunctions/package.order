@@ -4,3 +4,6 @@ waveNumber
 waveGroupVelocity
 wavePower
 waveElevation
+waveSpreading
+normalizingConstant
+gamma
