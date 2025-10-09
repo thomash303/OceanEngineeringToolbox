@@ -27,7 +27,7 @@ model ExcitationForceIrregularWave
     Dialog(group = "Simulation Parameters"));
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
   Real ramp "Ramping function" annotation(HideResult = true);
-  parameter Real waveHeading(quantity="Angle", unit="deg") "Wave heading";
+  parameter SI.Angle waveHeading "Wave heading";
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);

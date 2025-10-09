@@ -29,7 +29,7 @@ model ExcitationForceRegularWave
   Real ramp "Ramping function" annotation(
     HideResult = true);
   // Wave Heading Parameters
-  parameter Real waveHeading(quantity="Angle", unit="deg") "Wave heading";
+  parameter SI.Angle waveHeading "Wave heading";
 
 protected
   SI.Force f_element[3] annotation(HideResult = true);

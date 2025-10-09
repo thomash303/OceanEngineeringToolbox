@@ -21,19 +21,15 @@ model IrregularWaveBuoy
   parameter SI.WaveNumber k[n_omega] "Wave number component" annotation(HideResult = true);
   SI.Height SSE "Sea surface elevation";
   
-  
   // Ramp  
   Real ramp "Ramping function" annotation(
     HideResult = true);
   SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(HideResult = true);
-  parameter Real theta(quantity="Angle", unit="deg") "Wave heading";
+  parameter SI.Angle theta "Wave heading";
 
-  
   // Coordinates
   parameter SI.Position x "x-coordinate of the buoy";
   parameter SI.Position y "y-coordinate of the buoy";
-
-  
   
 equation
 

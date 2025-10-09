@@ -2,7 +2,7 @@ clear spreadBinsEdge spreadBinCentre D
 
 %% Defining parameters
 spreadingFunctionConstant = 7; % n
-waveHeading = 0; % mean wave heading
+waveHeading = 10; % mean wave heading
 waveHeadingSpread = 30; % +/- range for wave heading
 waveHeadingSpreadBins = 5; % bins about mean heading to consider
 
@@ -20,7 +20,8 @@ for i = 1:waveHeadingSpreadBins
 end
 
 disp(spreadBinsEdge)
-disp(spreadBinCentre)
+disp(wrapTo360(spreadBinCentre))
+disp(sort(deg2rad(wrapTo360(spreadBinCentre))))
 disp(D)
 % plot(spreadBinCentre,D)
 % hold on

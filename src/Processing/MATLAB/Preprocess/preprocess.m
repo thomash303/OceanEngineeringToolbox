@@ -81,10 +81,6 @@ for i = 1:hydro.bodies.Nb
     hydro.bodies.(volName) = h5read(filePath,[h5BodyName '/properties/disp_vol']);
     hydro.bodies.(cbName) = h5read(filePath,[h5BodyName '/properties/cb']);
 
-    % hydro.bodies.cg(1:3,i) = h5read(filePath,[h5BodyName '/properties/cg']);
-    % hydro.bodies.vol(i) = h5read(filePath,[h5BodyName '/properties/disp_vol']);
-    % hydro.bodies.cb(1:3,i) = h5read(filePath,[h5BodyName '/properties/cb']);
-    % 
     % Mass
     hydro.bodies.(massName) = hydro.parameters.rho*hydro.bodies.(volName);
 

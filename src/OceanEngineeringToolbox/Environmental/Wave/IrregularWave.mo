@@ -15,6 +15,13 @@ model IrregularWave
   parameter SI.Height Hs = 2.5 "Significant Wave Height";
   parameter SI.AngularFrequency omegaPeak "Peak angular frequency";
   
+  // Wave Heading Parameters
+  parameter SI.Angle waveHeading = 0 "Wave heading";
+  parameter Boolean multidirectionalEnable "Enable multidirectional wave";
+  parameter Integer n "Spreading function constant";
+    parameter SI.Angle waveHeadingSpread "Maximum spread (+/-) from the mean wave heading";
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
+  
   // Pierson-Moskowitz parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)";
   
@@ -50,11 +57,11 @@ model IrregularWave
   SI.Height SSE "Sea surface elevation";
 
   // Random frequency discritization model
-  WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "random" annotation(
+  WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if frequencySelection == "random" annotation(
     Placement(transformation(origin = {-48, -2}, extent = {{-10, -10}, {10, 10}})));
 
   // Equal energy frequency discritization model
-  WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.equalEnergyGenerator EqualEnergyGenerator(file = file, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp) if frequencySelection == "equalEnergy" annotation(
+  WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.equalEnergyGenerator EqualEnergyGenerator(file = file, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if frequencySelection == "equalEnergy" annotation(
     Placement(transformation(origin = {20, -14}, extent = {{-10, -10}, {10, 10}})));
 
 equation

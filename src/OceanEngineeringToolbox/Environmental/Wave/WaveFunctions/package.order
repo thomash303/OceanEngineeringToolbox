@@ -7,3 +7,5 @@ waveElevation
 waveSpreading
 normalizingConstant
 gamma
+waveSpreadingBins
+zeta

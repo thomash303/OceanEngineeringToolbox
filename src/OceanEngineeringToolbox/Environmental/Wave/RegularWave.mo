@@ -12,7 +12,7 @@ model RegularWave
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
 
   // Spectrum Parameters 
-  constant Integer n_omega = 1 "Number of frequency components (default is 100 for irregular)" annotation(
+  constant Integer n_omega = 1 "Number of frequency components" annotation(
     Dialog(group = "Simulation Parameters"));
   parameter SI.Height Hs = 2.5 "Significant Wave Height" annotation(
     Dialog(group = "Wave Spectrum Parameters"));

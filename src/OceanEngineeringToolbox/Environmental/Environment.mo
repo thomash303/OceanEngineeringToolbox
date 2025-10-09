@@ -21,8 +21,12 @@ model Environment
   parameter SI.Time Tp = 8 "Peak wave period" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "OchiHubble" and waveSelector <> "None"));
   // Wave Heading Parameters
-  parameter Real waveHeading(quantity="Angle", unit="deg") = 0 "Wave heading" annotation(Dialog(group = "Wave Heading Parameters"));
-  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Wave Heading Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")));
+  parameter SI.Angle waveHeading = 0 "Wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters"));
+  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Multidirectional Wave Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport")));
+  parameter Integer n = 5 "Spreading function constant" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
+    parameter SI.Angle waveHeadingSpread = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
+  parameter Integer waveHeadingSpreadBins = 5 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
+  
   // Pierson-Moskowitz Parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(
     Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
@@ -52,10 +56,10 @@ model Environment
   Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, file = fileDirectory.file) if waveSelector == "Regular" annotation(
     Placement(transformation(origin = {0, 54}, extent = {{-12, -12}, {12, 12}})));
   // Irregular wave model
-  Wave.IrregularWave irregularWave(Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, file = fileDirectory.file) if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
+  Wave.IrregularWave irregularWave(Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
     Placement(transformation(extent = {{-12, -12}, {12, 12}})));
  // Imported spectrum model
-  Wave.SpectrumImport spectrumImport(Trmp = Trmp, file = fileDirectory.file) if waveSelector == "spectrumImport" annotation(
+  Wave.SpectrumImport spectrumImport(Trmp = Trmp, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if waveSelector == "spectrumImport" annotation(
     Placement(transformation(origin = {0, -54}, extent = {{-12, -12}, {12, 12}})));
 
 protected
@@ -88,5 +92,5 @@ equation
       Text(extent={{-150, -140}, {150, -110}}, textString="waveType=%waveSelector")
     }
   ),
-  Diagram(coordinateSystem(extent = {{0, 60}, {60, -140}})));
+  Diagram(coordinateSystem(extent = {{-20, 80}, {20, -80}})));
 end Environment;
