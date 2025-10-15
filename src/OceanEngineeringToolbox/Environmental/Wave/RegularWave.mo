@@ -40,7 +40,7 @@ equation
     ramp = 1;
   end if; 
   
-  SSE = WaveFunctions.waveElevation(A = A, omegaTime = vector(omegaPeak*time), ramp = ramp, n_omega = n_omega);
+  SSE = WaveFunctions.waveElevation(A = A, omegaTime = vector(omegaPeak*time), k = k, ramp = ramp, n_omega = n_omega);
   
   annotation(
     defaultComponentName = "regularWave",

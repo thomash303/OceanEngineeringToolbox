@@ -23,9 +23,9 @@ model Environment
   // Wave Heading Parameters
   parameter SI.Angle waveHeading = 0 "Wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters"));
   parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Multidirectional Wave Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport")));
-  parameter Integer n = 5 "Spreading function constant" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
-    parameter SI.Angle waveHeadingSpread = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
-  parameter Integer waveHeadingSpreadBins = 5 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = multidirectionalEnable));
+  parameter Integer n = 5 "Spreading function constant" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
+  parameter SI.Angle waveHeadingSpread = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
+  parameter Integer waveHeadingSpreadBins = 1 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
   
   // Pierson-Moskowitz Parameters
   parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(

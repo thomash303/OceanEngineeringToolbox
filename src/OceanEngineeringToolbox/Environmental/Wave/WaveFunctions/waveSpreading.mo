@@ -13,6 +13,7 @@ function waveSpreading
   input SI.Angle waveHeadingSpread = pi/2 "Maximum spread (+/-) from the mean wave heading (must be <= pi/2)";
   input Integer waveHeadingSpreadBins = 5 "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
   input SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
+  input Boolean multidirectionalEnable = false "Flag to enable/disable the multidirectional wave calculation";
 
   // Output
   output Real D[waveHeadingSpreadBins] "Directional spreading weights"; 
@@ -26,19 +27,26 @@ protected
   
 algorithm
 
-  for i in 1:waveHeadingSpreadBins loop
-    // Computing directional spreading weights
-    D[i] := k * cos(spreadBinCentres[i] - waveHeading)^n;
-  end for;
+  if multidirectionalEnable then
+
+    for i in 1:waveHeadingSpreadBins loop
+      // Computing directional spreading weights
+      D[i] := k * cos(spreadBinCentres[i] - waveHeading)^n;
+    end for;
+    
+    // Check to verify if energy is conserved
+    energy := sum(D*spreadWidth);
+    
+  assert(energy >= energyThresh, "Spread range is inadequate. Only : " + String(energy) +
+    " of initial energy is captured, below threshold of: " + String(energyThresh) + ". Consider increasing the spread and number of bins",
+    level = AssertionLevel.error);
+    
+    // Normalize the spreading weights to ensure energy conservation
+    D := (D / energy)*spreadWidth;
+    
+  else
+    D := fill(1,waveHeadingSpreadBins);
   
-  // Check to verify if energy is conserved
-  energy := sum(D*spreadWidth);
-  
-assert(energy >= energyThresh, "Spread range is inadequate. Only : " + String(energy) +
-  " of initial energy is captured, below threshold of: " + String(energyThresh) + ". Consider increasing the spread and number of bins",
-  level = AssertionLevel.error);
-  
-  // Normalize the spreading weights to ensure energy conservation
-  D := D / energy;
+  end if;
   
 end waveSpreading;

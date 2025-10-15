@@ -1,8 +1,8 @@
 clear spreadBinsEdge spreadBinCentre D
 
 %% Defining parameters
-spreadingFunctionConstant = 7; % n
-waveHeading = 10; % mean wave heading
+spreadingFunctionConstant = 5; % n
+waveHeading = 0; % mean wave heading
 waveHeadingSpread = 30; % +/- range for wave heading
 waveHeadingSpreadBins = 5; % bins about mean heading to consider
 
@@ -19,25 +19,19 @@ for i = 1:waveHeadingSpreadBins
     D(i) = k * cos(deg2rad(spreadBinCentre(i)) - deg2rad(waveHeading))^spreadingFunctionConstant;
 end
 
-disp(spreadBinsEdge)
-disp(wrapTo360(spreadBinCentre))
-disp(sort(deg2rad(wrapTo360(spreadBinCentre))))
-disp(D)
+disp(['Bin edges (deg): ', num2str(spreadBinsEdge)])
+disp(['Bin centres in 360 (deg): ', num2str(wrapTo360(spreadBinCentre))])
+disp(['Sorted bin centres in 360 (rad): ', num2str(sort(deg2rad(wrapTo360(spreadBinCentre))))])
+disp(['Spreading weights: ', num2str(D)])
 % plot(spreadBinCentre,D)
 % hold on
-disp(sum(D*deg2rad(spreadWidth)))
-D = D / sum(D * deg2rad(spreadWidth));
-disp(D)
-disp(sum(D*deg2rad(spreadWidth)))
+disp(['Energy conserved: ', num2str(sum(D*deg2rad(spreadWidth)))])
+Dnorm = D / sum(D * deg2rad(spreadWidth));
+disp(['Normalized spreading weights: ', num2str(Dnorm)])
+disp(sum(Dnorm*deg2rad(spreadWidth)))
 % plot(spreadBinCentre,D)
 % legend(['Original','Normalized'])
 
-% Compute centers of each bin
-
-% A = sqrt(2*S.*domega*D);
-% 
-% 
-% spreadingFunction(1,0,45)
 
 %% Functions
 % Need to add an assert for the range
