@@ -21,30 +21,30 @@ model ExcitationForceIrregularWave
   // Parameters to call
   parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(HideResult = true, Dialog(group = "Simulation Parameters"));
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation" annotation(HideResult = true);
-  parameter SI.Height zeta[n_omega] "Wave amplitude component" annotation(HideResult = true);
-  parameter SI.Angle phi[n_omega] "Wave components phase shift" annotation(HideResult = true);
+  parameter SI.Height zeta[waveHeadingSpreadBins, n_omega] "Wave amplitude component" annotation(HideResult = true);
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] "Wave components phase shift" annotation(HideResult = true);
   parameter SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(HideResult = true,
     Dialog(group = "Simulation Parameters"));
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
   Real ramp "Ramping function" annotation(HideResult = true);
+  
+  // Wave Heading Parameters
   parameter SI.Angle waveHeading "Wave heading";
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";  
+ parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
+
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
   
-  parameter Real ExcCoeffRe[bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
-  parameter Real ExcCoeffIm[bodyDoF, n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
-  
-  // Wave heading
-  Integer waveHeadingIndex = find(waveHeading,theta) "Index in the excitation coefficients for the desired wave heading";
+  parameter Real ExcCoeffRe[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
+  parameter Real ExcCoeffIm[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
   
 initial equation
  // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
- (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w, F_excRe2D, F_excIm2D, waveHeadingIndex, nH, nF[1], omega, bodyDoF, n_omega); 
+ (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF, omega = omega, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres); 
   
 equation
-  // Asserts
-  assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
 
   // Calculate excitation force vectors
     F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, zeta = zeta, phi = phi, omegaTime = omega*time, ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega);

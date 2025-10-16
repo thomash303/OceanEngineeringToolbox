@@ -8,7 +8,7 @@ function waveSpreadingBins
   // Importing from the MSL
   import Modelica.Units.{SI,Conversions};
   import Modelica.Constants.pi;
-  import Modelica.Math;
+  import Modelica.Math.{wrapAngle,Vectors};
   
   // Inputs
   //input Integer n = 1 "Spreading function constant";
@@ -41,11 +41,11 @@ algorithm
   for i in 1:waveHeadingSpreadBins loop
     // Finding bin centres
     // Wrapping to [0,360)
-    spreadBinCentres[i] := Math.wrapAngle(u = ((spreadBinEdges[i] + spreadBinEdges[i+1]) / 2), positiveRange = true);
+    spreadBinCentres[i] := wrapAngle(u = ((spreadBinEdges[i] + spreadBinEdges[i+1]) / 2), positiveRange = true);
   end for;
   
   // Sorting to ascending order for interpolation
-  spreadBinCentres := Math.Vectors.sort(spreadBinCentres);
+  spreadBinCentres := Vectors.sort(spreadBinCentres);
   
 
 end waveSpreadingBins;

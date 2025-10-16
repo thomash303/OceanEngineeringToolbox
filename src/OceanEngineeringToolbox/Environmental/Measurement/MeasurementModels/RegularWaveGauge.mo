@@ -36,5 +36,5 @@ equation
     ramp = 1;
   end if;
   
-  SSE = Wave.WaveFunctions.waveElevation(A = A, omegaTime = vector(omegaPeak*time), k = k, ramp = ramp, n_omega = n_omega, theta = waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y);
+  SSE = Wave.WaveFunctions.waveElevation(A = A, omegaTime = vector(omegaPeak*time), k = vector(k), ramp = ramp, n_omega = n_omega, theta = waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y);
 end RegularWaveGauge;

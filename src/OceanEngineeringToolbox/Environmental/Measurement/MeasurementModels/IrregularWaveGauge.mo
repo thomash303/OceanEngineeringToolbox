@@ -10,11 +10,12 @@ model IrregularWaveGauge
   parameter Boolean waveGaugeEnable "Flag to enable/disable wave gauge calculation";
   
   // Spectrum Parameters
-  parameter SI.Height zeta[n_omega] "Wave amplitude component" annotation(
+  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude component" annotation(
     HideResult = true);
   
   // Wave Heading Parameters
   parameter SI.Angle waveHeading "Wave heading";
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
   
   // Frequency variables
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation" annotation(
@@ -45,6 +46,6 @@ equation
     ramp = 1;
   end if;
   
-  SSE = Wave.WaveFunctions.waveElevation(zeta = zeta, omegaTime = omega*time, phi = phi, k = k, ramp = ramp, n_omega = n_omega, theta = waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y);
+  SSE = Wave.WaveFunctions.waveElevation(zeta = zeta, omegaTime = omega*time, phi = phi, k = k, ramp = ramp, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, theta = waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y);
     
 end IrregularWaveGauge;

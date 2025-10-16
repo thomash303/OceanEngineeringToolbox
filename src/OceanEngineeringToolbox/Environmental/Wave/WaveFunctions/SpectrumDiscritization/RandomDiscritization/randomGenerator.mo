@@ -63,13 +63,13 @@ model randomGenerator
   parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
   // readd , enable = frequencySelection == "random"
   parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
-  parameter SI.Angle phi[n_omega] = 2*pi.*RandomFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = 2*pi.*RandomFunctions.randomVectorGenerator(localSeed = localSeedPhase, globalSeed = globalSeedPhase, n_omega = n_omega) "Wave components phase shift";
     
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
   
   // Spectrum variables
-  parameter SI.Height zeta[n_omega] = WaveFunctions.zeta(S = S, D = D, domega = domega, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins) "Wave amplitude component" annotation(
+  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = WaveFunctions.zeta(S = S, D = D, domega = domega, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins) "Wave amplitude component" annotation(
     HideResult = true);
   parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Wave energy spectrum";
   SI.Height SSE "Sea surface elevation";
@@ -83,7 +83,7 @@ equation
     ramp = 1;
   end if;
   
-  SSE = WaveFunctions.waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega, theta = waveHeading);
+  SSE = WaveFunctions.waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, theta = waveHeading);
     
   annotation(
   defaultComponentName = "RandomGenerator");

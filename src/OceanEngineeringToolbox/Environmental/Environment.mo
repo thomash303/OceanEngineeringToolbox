@@ -59,13 +59,16 @@ model Environment
   Wave.IrregularWave irregularWave(Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
     Placement(transformation(extent = {{-12, -12}, {12, 12}})));
  // Imported spectrum model
-  Wave.SpectrumImport spectrumImport(Trmp = Trmp, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if waveSelector == "spectrumImport" annotation(
+  Wave.SpectrumImport spectrumImport(Trmp = Trmp, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread) if waveSelector == "spectrumImport" annotation(
     Placement(transformation(origin = {0, -54}, extent = {{-12, -12}, {12, 12}})));
 
 protected
   parameter SI.AngularFrequency omegaPeak = 2*pi/Tp "Peak angular frequency";
   final parameter Integer componentSpectra = 2;
 equation
+  // Assert
+  assert(multidirectionalEnable or waveHeadingSpreadBins == 1, "1D waves must contain ONLY 1 wave heading bin. Only multidirectional waves can contain multiple wave bins.", level = AssertionLevel.error);
+
   if waveSelector == "None" then
     SSE = 0;
   elseif waveSelector == "Regular" then

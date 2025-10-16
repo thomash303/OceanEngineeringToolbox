@@ -13,12 +13,21 @@ function zeta
   input Integer waveHeadingSpreadBins "Number of discrete headings";
 
   // Output
-  output SI.Height zeta[n_omega] "Wave amplitude per frequency";
+  output SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude per frequency";
 
 algorithm
+
+  for i in 1:waveHeadingSpreadBins loop
+    for j in 1:n_omega loop
+      // Sum over directions first, then frequencies
+      zeta[i,j] := sqrt(2 * domega[j] * S[j] * D[i]^2);
+    end for;
+  end for;
+
+/*
   for j in 1:n_omega loop
     // Sum over directions first, then take square root
     zeta[j] := sqrt(2 * domega[j] * sum(S[j] * D));
   end for;
-
+*/
 end zeta;

@@ -18,8 +18,7 @@ model SpectrumImport
   parameter Boolean multidirectionalEnable "Enable multidirectional wave";
   parameter Integer n "Spreading function constant";
     parameter SI.Angle waveHeadingSpread "Maximum spread (+/-) from the mean wave heading";
-  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
-  
+    
   // Wave Heading Variables
   parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = WaveFunctions.waveSpreadingBins(waveHeading = waveHeading, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) "Bin centres";
   parameter Real D[waveHeadingSpreadBins] = WaveFunctions.waveSpreading(n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres);
@@ -41,7 +40,7 @@ model SpectrumImport
   parameter SI.WaveNumber k[n_omega] = WaveFunctions.waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
   
   // Spectrum variables
-  parameter SI.Height zeta[n_omega] = WaveFunctions.zeta(S = S, D = D, domega = domega, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins) "Wave amplitude component";
+  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = WaveFunctions.zeta(S = S, D = D, domega = domega, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins) "Wave amplitude component";
   SI.Height SSE "Sea surface elevation";
   
 equation
@@ -52,7 +51,7 @@ equation
     ramp = 1;
   end if;
    
-     SSE = WaveFunctions.waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega, theta = waveHeading);
+  SSE = WaveFunctions.waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, theta = waveHeading);
  
   annotation(
     defaultComponentName = "spectrumImport",

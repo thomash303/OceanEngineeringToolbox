@@ -28,31 +28,29 @@ model ExcitationForceRegularWave
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
   Real ramp "Ramping function" annotation(
     HideResult = true);
+  
   // Wave Heading Parameters
   parameter SI.Angle waveHeading "Wave heading";
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
 
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
-  parameter Real ExcCoeffRe[bodyDoF,n_omega](each start=0, each fixed=false) "Real component of excitation coefficient" annotation(
+  parameter Real ExcCoeffRe[waveHeadingSpreadBins,bodyDoF,n_omega](each start=0, each fixed=false) "Real component of excitation coefficient" annotation(
    HideResult = true);
-  parameter Real ExcCoeffIm[bodyDoF,n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient" annotation(
+  parameter Real ExcCoeffIm[waveHeadingSpreadBins,bodyDoF,n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient" annotation(
     HideResult = true);
   
-  // Wave heading
-  Integer waveHeadingIndex = find(waveHeading,theta) "Index in the excitation coefficients for the desired wave heading";
 
 initial equation
  // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
- (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w, F_excRe2D, F_excIm2D, waveHeadingIndex, nH, nF[1], vector(omegaPeak), bodyDoF, n_omega); 
+ (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF[1], omega = vector(omegaPeak), bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = vector(waveHeading), theta = theta); 
    
 equation  
-  // Asserts
-  assert(waveHeadingIndex <> 0, "Prescribed wave heading is not present in the hydrodynamic coefficients", level = AssertionLevel.error);
 
   // Calculate excitation force vectors
   // This is a bug, for some reason I have to multiply by ramp at front and end
-  F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, A = A, omegaTime = vector(omegaPeak*time), ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega);
+  F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, A = A, omegaTime = vector(omegaPeak*time), ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins);
 
   frame_a.f = -f_element;
   frame_a.t = -t_element;

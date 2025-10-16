@@ -18,7 +18,7 @@ function waveGroupVelocity
 protected
   // Intermediate variables
   Real n[n_omega] = 1/2 * (1 .+ 2*k*d ./ (sinh(2*k*d))) "Group-to-phase velocity ratio";
-  SI.Velocity c[n_omega] = sqrt(g_n./k .* tanh(k*d)) "Phase speed";
+  SI.Velocity c[n_omega] = sqrt(g_n./k .* tanh(k*d)) "Phase speed/celerity";
   
 algorithm
   cg := n .* c;

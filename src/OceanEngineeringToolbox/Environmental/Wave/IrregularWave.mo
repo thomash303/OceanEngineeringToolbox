@@ -41,7 +41,7 @@ model IrregularWave
     HideResult = true);
     
   // Frequency variables
-  constant Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)";
+  constant Integer n_omega = 50 "Number of frequency components (default is 100 for irregular)";
 
   // Random frequency selection
   parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection";
