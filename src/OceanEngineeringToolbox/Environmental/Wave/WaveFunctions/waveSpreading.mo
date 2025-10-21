@@ -24,6 +24,7 @@ protected
   Real k = normalizingConstant(n) "Normalizing constant";
   SI.Energy energy "Amount of energy in the consdired directions relative to the intial energy";
   Real energyThresh = 0.8 "Energy threshold before before throwing energy conservation warning";
+  Real sqrtSum "Intermediate variable used to track energy conservation";
   
 algorithm
 
@@ -41,8 +42,20 @@ algorithm
     " of initial energy is captured, below threshold of: " + String(energyThresh) + ". Consider increasing the spread and number of bins",
     level = AssertionLevel.error);
     
-    // Normalize the spreading weights to ensure energy conservation
-    D := (D / energy)*spreadWidth;
+    // Normalize the spreading weights to ensure energy conservation (accounting for the spectral energy included within the selected frequency range)
+    D := (D / energy).^2*spreadWidth;
+    
+    // Normalize the spreading weights to ensure energy conservation (accounting for the number of directional bins)
+    sqrtSum := 0;
+    //Normalize by the number of directional bins
+    //D := D .* waveHeadingSpreadBins;
+    for i in 1:waveHeadingSpreadBins loop
+      // Computing directional spreading weights
+      sqrtSum := sqrtSum + sqrt(D[i]);
+    end for;
+    
+    // Normalize for energy conservation
+    //D := D ./sqrtSum;
     
   else
     D := fill(1,waveHeadingSpreadBins);

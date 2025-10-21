@@ -28,17 +28,17 @@ model HydrodynamicBody
     Dialog(group = "Mass"));
   parameter SI.Length ra_b[3] = ra_CM + rCM_b "Position vector between joint A and joint B" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_11 = 0.001 "Element (1,1) of inertia tensor" annotation(
+  parameter SI.Inertia I_11(min=0) = 0.001 "Element (1,1) of inertia tensor" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_22 = 0.001 "Element (2,2) of inertia tensor" annotation(
+  parameter SI.Inertia I_22(min=0) = 0.001 "Element (2,2) of inertia tensor" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_33 = 0.001 "Element (3,3) of inertia tensor" annotation(
+  parameter SI.Inertia I_33(min=0) = 0.001 "Element (3,3) of inertia tensor" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_21 = 0 "Element (2,1) of inertia tensor" annotation(
+  parameter SI.Inertia I_21(min=0) = 0 "Element (2,1) of inertia tensor" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_31 = 0 "Element (3,1) of inertia tensor" annotation(
+  parameter SI.Inertia I_31(min=0) = 0 "Element (3,1) of inertia tensor" annotation(
     Dialog(group = "Mass"));
-  parameter SI.Inertia I_32 = 0 "Element (3,2) of inertia tensor" annotation(
+  parameter SI.Inertia I_32(min=0) = 0 "Element (3,2) of inertia tensor" annotation(
     Dialog(group = "Mass"));
 
   // Excitation
@@ -67,9 +67,9 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Damping/Drag"));
   // Drag coefficients
-  parameter Real Cv[6] = {0, 0, 0, 0, 0, 0} "Linear damping coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
-  parameter Real Cd[6] = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
-  parameter Real Ad[6] = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real Cv[6](each min=0) = {0, 0, 0, 0, 0, 0} "Linear damping coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real Cd[6](each min=0) = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real Ad[6](each min=0) = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
 
 
 equation

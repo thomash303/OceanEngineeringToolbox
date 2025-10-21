@@ -29,7 +29,7 @@ model RegularWave
   parameter SI.WaveNumber k = scalar(WaveFunctions.waveNumber(d, vector(omegaPeak), n_omega)) "Wave number component" annotation(HideResult = true);
   
   // Spectrum Variables
-  SI.Height SSE "Sea surface elevation";
+  SI.Position SSE "Sea surface elevation";
   parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = vector(k), A = A, n_omega = n_omega) "Wave time-average power per unit wave crest length";
 
 equation

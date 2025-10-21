@@ -42,18 +42,27 @@ protected
   
 initial equation
  // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
- (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF, omega = omega, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres); 
-  
+ (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF, omega = omega, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres, theta = theta); //ExcCoeffRe = fill(0,waveHeadingSpreadBins, bodyDoF, n_omega);
+//ExcCoeffIm = fill(0,waveHeadingSpreadBins, bodyDoF, n_omega);
 equation
 
   // Calculate excitation force vectors
-    F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, zeta = zeta, phi = phi, omegaTime = omega*time, ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega);
+   // F = ExcitationFunctions.computeExcitationForce(ExcCoeffRe = ExcCoeffRe, ExcCoeffIm = ExcCoeffIm, zeta = zeta, phi = phi, omegaTime = omega*time, ramp = ramp, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins);
+    
+        for i in 1:bodyDoF loop
+      F[i] = 0;
+      for j in 1:waveHeadingSpreadBins loop
+        F[i] = F[i] + ramp * sum(ExcCoeffRe[j,i,:] .* zeta[j,:] .* cos(omega*time + phi[j,:]) - ExcCoeffIm[j,i,:] .* zeta[j,:] .* sin(omega*time + phi[j,:]));
+      end for;
+    end for;
+  
+  //F = {0,0,0,0,0,0};
 
 // Assign excitation force to output
   frame_a.f = -f_element;
   frame_a.t = -t_element;
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Irregular Wave")}),
-    Diagram);
+    Diagram(coordinateSystem(extent = {{-120, 20}, {-80, -20}})));
 
 end ExcitationForceIrregularWave;

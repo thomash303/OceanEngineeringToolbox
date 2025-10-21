@@ -20,7 +20,7 @@ algorithm
   for i in 1:waveHeadingSpreadBins loop
     for j in 1:n_omega loop
       // Sum over directions first, then frequencies
-      zeta[i,j] := sqrt(2 * domega[j] * S[j] * D[i]^2);
+      zeta[i,j] := sqrt(2 * domega[j] * S[j] * D[i]);
     end for;
   end for;
 

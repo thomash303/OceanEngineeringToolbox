@@ -16,26 +16,26 @@ model Environment
   parameter String frequencySelection = "random" "Frequency discritization method" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")),
     choices(choice = "random", choice = "equalEnergy"));
-  parameter SI.Height Hs = 2 "Significant wave height" annotation(
+  parameter SI.Height Hs(min=0) = 2 "Significant wave height" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "None"));
-  parameter SI.Time Tp = 8 "Peak wave period" annotation(
+  parameter SI.Time Tp(min=0) = 8 "Peak wave period" annotation(
     Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "OchiHubble" and waveSelector <> "None"));
   // Wave Heading Parameters
   parameter SI.Angle waveHeading = 0 "Wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters"));
   parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Multidirectional Wave Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport")));
-  parameter Integer n = 5 "Spreading function constant" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
-  parameter SI.Angle waveHeadingSpread = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
+  parameter Integer n(min=1) = 5 "Spreading function constant" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
+  parameter SI.Angle waveHeadingSpread(min=0,max=pi) = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
   parameter Integer waveHeadingSpreadBins = 1 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
   
   // Pierson-Moskowitz Parameters
-  parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(
+  parameter Real alphaPM(min=0) = 0.0081 "Energy scale (Phillips constant)" annotation(
     Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
   // JONSWAP Parameters
-  parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
+  parameter Real gamma(min=0) = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
-  parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP" annotation(
+  parameter Real sigmaA(min=0) = 0.07 "Lower spectral bound for JONSWAP" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
-  parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
+  parameter Real sigmaB(min=0) = 0.09 "Upper spectral bound for JONSWAP" annotation(
     Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
 
 // Ochi-Hubble Parameters (including sample values from original paper)
@@ -50,7 +50,7 @@ model Environment
   parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
     Dialog(group = "Simulation Parameters", enable = waveSelector <> "None"));
     // Spectrum Variables
-  SI.Height SSE "Sea surface elevation";
+  SI.Position SSE "Sea surface elevation";
 
 // Regular wave model
   Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp, file = fileDirectory.file) if waveSelector == "Regular" annotation(
@@ -64,7 +64,7 @@ model Environment
 
 protected
   parameter SI.AngularFrequency omegaPeak = 2*pi/Tp "Peak angular frequency";
-  final parameter Integer componentSpectra = 2;
+  final parameter Integer componentSpectra(min=0) = 2;
 equation
   // Assert
   assert(multidirectionalEnable or waveHeadingSpreadBins == 1, "1D waves must contain ONLY 1 wave heading bin. Only multidirectional waves can contain multiple wave bins.", level = AssertionLevel.error);

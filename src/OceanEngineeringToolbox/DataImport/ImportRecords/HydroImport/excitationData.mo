@@ -16,8 +16,8 @@ protected
   parameter Integer nH = integer(nH_read) "Number of wave headings";
   parameter Real thetaDeg[nH](each quantity="Angle", each unit="deg") = vector(readRealMatrix(file, "hydro.parameters.theta", 1, nH)) "Vector of wave headings present in the hydrodynamic coefficients (deg)";
   parameter SI.Angle theta[nH] = Conversions.from_deg(thetaDeg) "Vector of wave headings present in the hydrodynamic coefficients";
-  parameter Real F_excRe2D[bodyDoF, nF[1]*nH] = readRealMatrix(file, "hydro.coefficients.excitation.spectralDecomp.re" + bodyIndexString, bodyDoF, nF[1]*nH) "Real part of excitation force coefficients (2D)";
-  parameter Real F_excIm2D[bodyDoF, nF[1]*nH] = readRealMatrix(file, "hydro.coefficients.excitation.spectralDecomp.im" + bodyIndexString, bodyDoF, nF[1]*nH) "Imaginary part of excitation force coefficients (2D)";  
+  parameter Real F_excRe2D[bodyDoF, nF*nH] = readRealMatrix(file, "hydro.coefficients.excitation.spectralDecomp.re" + bodyIndexString, bodyDoF, nF*nH) "Real part of excitation force coefficients (2D)";
+  parameter Real F_excIm2D[bodyDoF, nF*nH] = readRealMatrix(file, "hydro.coefficients.excitation.spectralDecomp.im" + bodyIndexString, bodyDoF, nF*nH) "Imaginary part of excitation force coefficients (2D)";  
   
   
   // Sample code if 3D matrix is needed in the main code (list comprehension cannot be used in the helper function, which is what now extracts the data)

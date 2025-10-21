@@ -36,15 +36,15 @@ model ExcitationForceRegularWave
 protected
   SI.Force f_element[3] annotation(HideResult = true);
   SI.Torque t_element[3] annotation(HideResult = true);
-  parameter Real ExcCoeffRe[waveHeadingSpreadBins,bodyDoF,n_omega](each start=0, each fixed=false) "Real component of excitation coefficient" annotation(
+  parameter Real ExcCoeffRe[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient" annotation(
    HideResult = true);
-  parameter Real ExcCoeffIm[waveHeadingSpreadBins,bodyDoF,n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient" annotation(
+  parameter Real ExcCoeffIm[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient" annotation(
     HideResult = true);
   
 
 initial equation
  // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
- (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF[1], omega = vector(omegaPeak), bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = vector(waveHeading), theta = theta); 
+ (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF, omega = vector(omegaPeak), bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = vector(waveHeading), theta = theta); 
    
 equation  
 

@@ -10,7 +10,7 @@ model IrregularWaveGauge
   parameter Boolean waveGaugeEnable "Flag to enable/disable wave gauge calculation";
   
   // Spectrum Parameters
-  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude component" annotation(
+  parameter SI.Height zeta[waveHeadingSpreadBins, n_omega] "Wave amplitude component" annotation(
     HideResult = true);
   
   // Wave Heading Parameters
@@ -23,7 +23,7 @@ model IrregularWaveGauge
   parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(
     HideResult = true);
   // Random phase selection
-  parameter SI.Angle phi[n_omega] "Wave components phase shift" annotation(
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] "Wave components phase shift" annotation(
     HideResult = true);
   // Spectrum Variables
   parameter SI.WaveNumber k[n_omega] "Wave number component" annotation(

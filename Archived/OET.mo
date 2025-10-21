@@ -222,12 +222,14 @@ package OET
       // Define hydrodynamic body
       inner Hydro.FilePath fileDirectory(hydroCoeffFile = "/applications/Validation/RM3/RM3HydroCoeff.mat")  annotation(
         Placement(transformation(origin = {134, -18}, extent = {{-10, -10}, {10, 10}})));
-  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "random", Trmp = 100, Hs = 2)  annotation(
+  inner Wave.Environment_new environment(waveSelector = "PiersonMoskowitz", frequencySelection = "equalEnergy", Trmp = 100, Hs = 2, omegaPeak = 0.78539)  annotation(
         Placement(transformation(origin = {54, -24}, extent = {{-10, -10}, {10, 10}})));
-  Hydro.HydrodynamicBody hydrodynamicBody(bodyIndex = 1, enableHydrostaticForce = true, enableRadiationForce = false, enableDampingDragForce = false, offset = {0, 0, 0, 0, 0, 0}, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481)  annotation(
+  Hydro.HydrodynamicBody hydrodynamicBody(bodyIndex = 1, enableHydrostaticForce = false, enableRadiationForce = false, enableDampingDragForce = false, offset = {0, 0, 0, 0, 0, 0}, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, enableExcitationForce = false)  annotation(
         Placement(transformation(origin = {12, -24}, extent = {{-10, -10}, {10, 10}})));
     equation
 // Connections
+      connect(hydrodynamicBody.frame_a, world.frame_b) annotation(
+        Line(points = {{2, -24}, {-30, -24}, {-30, -20}}, color = {95, 95, 95}));
       annotation(
         Icon(graphics = {Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = {0, 0, 0}, fillPattern = FillPattern.Solid)}),
         Documentation(info = "<html>
@@ -933,7 +935,7 @@ This component has a filled rectangular icon.
         Dialog(group = "Wave Spectrum Parameters"));
       // allow user option to adjust in wave
       /*parameter Modelica.Units.SI.Angle heading = scalar(Modelica.Utilities.Streams.readRealMatrix(fileDir, "hydro.parameters.heading", 1, 1)) "Wave Heading [theta]" annotation(
-                                                                                      Dialog(group = "Wave Spectrum Parameters"));*/
+                                                                                                              Dialog(group = "Wave Spectrum Parameters"));*/
       // use can adjust, but they shouldn't
     end waveData;
 
@@ -2249,8 +2251,8 @@ This component has a filled rectangular icon.
 // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
       for i in 1:bodyDoF loop
         for j in 1:n_omega loop
-          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], omega[j])*rho*g;
-          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], omega[j])*rho*g;
+          ExcCoeffRe[i, j] = Modelica.Math.Vectors.interpolate(w, F_excRe[i, :], omega[j]);//*rho*g;
+          ExcCoeffIm[i, j] = Modelica.Math.Vectors.interpolate(w, F_excIm[i, :], omega[j]);//*rho*g;
         end for;
       end for;
 // Calculate the excitation force
@@ -2258,7 +2260,7 @@ This component has a filled rectangular icon.
 // Calculate and apply ramping to the excitation force
 // if time < Trmp then
 // Ramp up the excitation force during the initial phase
-        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi))).*ramp; // move into first loop
+        F[i] = ramp.*sum((ExcCoeffRe[i].*zeta.*cos(omega*time + phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time + phi))).*ramp; // move into first loop
 //else
 // Apply full excitation force after the ramping period
 //F[i] = sum((ExcCoeffRe[i].*zeta.*cos(omega*time - phi)) - (ExcCoeffIm[i].*zeta.*sin(omega*time - phi)));
@@ -3351,7 +3353,7 @@ frame_a.t = -t_element;
       parameter String waveSelector = "PiersonMoskowitz" annotation(
         Dialog(group = "Wave Spectrum Parameters"),
         choices(choice = "PiersonMoskowitz", choice = "JONSWAP"));
-      constant Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)" annotation(
+      constant Integer n_omega = 50 "Number of frequency components (default is 100 for irregular)" annotation(
         Dialog(group = "Simulation Parameters", enable = waveSelector <> "Linear"));
       parameter Modelica.Units.SI.Length Hs = 2.5 "Significant Wave Height" annotation(
         Dialog(group = "Wave Spectrum Parameters"));
@@ -3415,6 +3417,7 @@ frame_a.t = -t_element;
       parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
         HideResult = true,
         Dialog(group = "Spectrum", enable = waveSelector == "JONSWAP"));
+    
     equation
 // Calculate wave parameters
       Tp = 2*pi./omega;
@@ -3440,7 +3443,8 @@ frame_a.t = -t_element;
       else
         ramp = 1;
       end if;
-      SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+    
+      SSE = ramp.*sum(zeta.*cos(omega*time + phi));
       annotation(
         defaultComponentName = "irregularWave",
         Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Irregular Wave")}),
@@ -3900,6 +3904,8 @@ elseif waveSelector == "spectrumImport" then
         parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3";
         parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP";
         parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP";
+        
+        Real omegaTime[n_omega];
       equation
         if time < Trmp then
           ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
@@ -3907,7 +3913,8 @@ elseif waveSelector == "spectrumImport" then
         else
           ramp = 1;
         end if;
-        SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+          omegaTime = omega*time;
+        SSE = ramp.*sum(zeta.*cos(omega*time + phi));
         
           annotation(
         defaultComponentName = "RandomGen");
@@ -4063,7 +4070,7 @@ elseif waveSelector == "spectrumImport" then
           else
             ramp = 1;
           end if;
-          SSE = ramp.*sum(zeta.*cos(omega*time - phi));
+          SSE = ramp.*sum(zeta.*cos(omega*time + phi));
       
         annotation(
           defaultComponentName = "EeGen");
@@ -6571,7 +6578,7 @@ elseif waveSelector == "spectrumImport" then
 
     end waveKin;
   end Morison;
-          //within OET
+              //within OET
   //within OET;
   annotation(
     Icon(graphics = {Line(points = {{-90, 40}, {-60, 60}, {-30, 20}, {0, 60}, {30, 20}, {60, 60}, {90, 40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, -40}, {-60, -20}, {-30, -60}, {0, -20}, {30, -60}, {60, -20}, {90, -40}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Line(points = {{-90, 0}, {-60, 20}, {-30, -20}, {0, 20}, {30, -20}, {60, 20}, {90, 0}}, color = {0, 0, 200}, thickness = 2, smooth = Smooth.Bezier), Ellipse(extent = {{-20, 20}, {20, -20}}, lineColor = {0, 0, 0}, fillColor = // Black circle

@@ -10,8 +10,8 @@ function computeExcitationForce
   input Real ExcCoeffRe[waveHeadingSpreadBins, bodyDoF, n_omega] "Real component of excitation coefficient for frequency components";
   input Real ExcCoeffIm[waveHeadingSpreadBins, bodyDoF, n_omega] "Imaginary component of excitation coefficient for frequency components";
   input SI.Height A = 0 "Wave amplitude";
-  input SI.Height zeta[n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave amplitude component";
-  input SI.Angle phi[n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave components phase shift";
+  input SI.Height zeta[waveHeadingSpreadBins, n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave amplitude component";
+  input SI.Angle phi[waveHeadingSpreadBins, n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave components phase shift";
   input SI.Angle omegaTime[n_omega] "Frequency components selected for simulation multiplied by the current time";
   input Real ramp "Ramping function";
   input Integer bodyDoF "Degrees-of-Freedom per body";
@@ -20,15 +20,22 @@ function computeExcitationForce
   
   // Output
   output Real F[bodyDoF] "Combined force and torque vector";
+  
 algorithm
 
   // Regular or irregular
   if n_omega == 1 then
     F := (ramp.*(ExcCoeffRe[waveHeadingSpreadBins,:,n_omega] .*A*cos(omegaTime[n_omega])) - (ExcCoeffIm[waveHeadingSpreadBins,:,n_omega] .*A*sin(omegaTime[n_omega])).*ramp);
   else
+
     for i in 1:bodyDoF loop
-      F[i] := ramp * sum(ExcCoeffRe[1,i,:] .* zeta .* cos(omegaTime + phi[1,1]) - ExcCoeffIm[1,i,:] .* zeta .* sin(omegaTime + phi[1,1])) * ramp;
+      F[i] := 0;
+      for j in 1:waveHeadingSpreadBins loop
+        F[i] := F[i] + ramp * sum(ExcCoeffRe[j,i,:] .* zeta[j,:] .* cos(omegaTime + phi[j,:]) - ExcCoeffIm[j,i,:] .* zeta[j,:] .* sin(omegaTime + phi[j,:])).*ramp;
+      end for;
     end for;
+    
+    
   end if;
 
 end computeExcitationForce;

@@ -9,3 +9,5 @@ normalizingConstant
 gamma
 waveSpreadingBins
 zeta
+minFrequency
+maxFrequency

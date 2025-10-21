@@ -41,7 +41,7 @@ model IrregularWave
     HideResult = true);
     
   // Frequency variables
-  constant Integer n_omega = 50 "Number of frequency components (default is 100 for irregular)";
+  constant Integer n_omega = 100 "Number of frequency components (default is 100 for irregular)";
 
   // Random frequency selection
   parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection";
@@ -54,7 +54,7 @@ model IrregularWave
   parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
   
   // Spectrum variables
-  SI.Height SSE "Sea surface elevation";
+  SI.Position SSE "Sea surface elevation";
 
   // Random frequency discritization model
   WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if frequencySelection == "random" annotation(

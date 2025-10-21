@@ -50,8 +50,8 @@ model equalEnergyGenerator
 
   // Frequency variables
   constant Integer n_omega "Number of frequency components (default is 100 for irregular)";
-  parameter SI.AngularFrequency omegaMin = w[1] "Lowest frequency component";
-  parameter SI.AngularFrequency omegaMax = w[end] "Highest frequency component";
+  parameter SI.AngularFrequency omegaMin = minFrequency(omegaPeak = omegaPeak, wMin = w[1]) "Lowest frequency component";
+  parameter SI.AngularFrequency omegaMax = maxFrequency(omegaPeak = omegaPeak, wMax = w[end]) "Highest frequency component";
   parameter SI.AngularFrequency omega[n_omega] = EqualEnergyFunctions.equalEnergyFrequencySelector(omegaMin, omegaMax, n_omega, n_omega_int, omega_int, S_int) "Frequency components selected for simulation";
   parameter SI.AngularFrequency domega[n_omega] = SpectrumCalculations.diferenceFrequencyStep(omega = omega, n_omega = n_omega) "Frequency step size";
   parameter Integer n_omega_int = 500 "Number of frequency components for spectrum generation and integration" annotation(
@@ -62,7 +62,7 @@ model equalEnergyGenerator
   parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
   // readd , enable = frequencySelection == "random"
   parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
-  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = 2*pi.*RandomDiscritization.RandomFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = RandomDiscritization.RandomFunctions.randomArrayGenerator(localSeed = localSeedPhase, globalSeed = globalSeedPhase, n_row = waveHeadingSpreadBins, n_col = n_omega) "Wave components phase shift" annotation(HideResult = true);
 
   // Intermediate calculations
   parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true);
@@ -72,7 +72,7 @@ model equalEnergyGenerator
     HideResult = true);
   parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumCalculations.spectrumInterpolator(n_omega = n_omega, n_omega_int = n_omega_int, omega_int = omega_int, S_int = S_int, omega = omega) "Wave energy spectrum";
   parameter WaveUnits.spectrumEnergyDensity S_int[n_omega_int] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega_int, n_omega = n_omega_int, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Integratation wave energy spectrum"; 
-  SI.Height SSE "Sea surface elevation";
+  SI.Position SSE "Sea surface elevation";
   parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, S = S, domega = domega, n_omega = n_omega) "Wave time-average power per unit wave crest length";
   
 equation

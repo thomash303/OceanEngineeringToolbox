@@ -22,7 +22,7 @@ function waveElevation
   input SI.Position y = 0 "y-coordinate of the gauge";
   
   // Output
-  output SI.Height SSE "Sea surface elevation";
+  output SI.Position SSE "Sea surface elevation";
 
 algorithm
 
@@ -36,7 +36,13 @@ algorithm
     SSE := 0;  
   
     for i in 1:waveHeadingSpreadBins loop
-      SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime - k*(x*cos(theta) + y*sin(theta)) + phi[i,:]));
+     // SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime - k*(x*cos(theta) + y*sin(theta)) + phi[i,:]));
+      
+            //SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime + phi[i,:]));
+            
+            for j in 1:n_omega loop
+            SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] + phi[i,j]);
+            end for;
     end for;
   
   end if;
