@@ -21,7 +21,7 @@ model HydrostaticForce
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));  
     
   // Displacement connectors
-  Interfaces.RealVectorInput u_abs[3] "Linear position vector" annotation(
+  Interfaces.RealVectorInput u_abs[3] "Translational position vector" annotation(
     HideResult = true,
     Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   Interfaces.RealVectorInput theta_abs[3] "Angular position vector" annotation(

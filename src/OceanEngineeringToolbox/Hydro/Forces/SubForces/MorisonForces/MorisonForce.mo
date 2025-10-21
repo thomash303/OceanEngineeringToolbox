@@ -1,46 +1,18 @@
 within OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces;
 
-model MorisonForce
+model MorisonForce 
   "Model representing the Morison force"
-  // This has yet to be developed.
-  
+
+// currently only considering 1D excitation, could probably extend to 2D relatively easily
+
   // Importing from the MSL
-  import Modelica.Units.SI; 
+  import Modelica.Units.SI;
   import Modelica.Constants.pi;
   
-  parameter String kinematicType = "None";
-  parameter String currentType = "None";
-  Real currentVelocityVector[6] = {current, 0, 0, 0, 0, 0};
-  Real currentVelocityAmplitude;
-  Real current = ramp*currentVelocityAmplitude;
-  Real ramp;
-  Real waterVelocity;
+  // Importing from the OET
+  import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
 
-  
-  parameter SI.Velocity currentSpeedMWL "Current speed at the mean water level";
-  parameter SI.Height currentDepth "Depth with zero current";
-  parameter Integer powerLawExp "Power law exponent";
-  
-  EnvironmentKinematics.waveKinematics waveKinematics if kinematicType == "waveOnly" or kinematicType == "waveAndCurrent" annotation(
-    Placement(transformation(origin = {2, 48}, extent = {{-10, -10}, {10, 10}})));
-  EnvironmentKinematics.currentKinematics currentKinematics if kinematicType == "currentOnly" or kinematicType == "waveAndCurrent" annotation(
-    Placement(transformation(origin = {2, -34}, extent = {{-10, -10}, {10, 10}})));
-
-
-equation
-
-  if kinematicType == "None" then
-    waterVelocity = 0;
-  elseif kinematicType == "waveOnly" then
-    waterVelocity = waveKinematics.waveVelocityVector;
-  elseif kinematicType == "currentOnly" then
-    waterVelocity = currentKinematics.currentVelocityVector;
-  elseif kinematicType == "waveAndCurrent" then
-    waterVelocity = waveKinematics.waveVelocityVector + currentKinematics.currentVelocityVector;    
-  end if;
-
-
-
-
+  replaceable NoCurrent currentModel constrainedby BaseCurrent  "Current profile" annotation(choices(choice(redeclare currentModel NoCurrent "No current"), choice(redeclare currentModel ConstantCurrent "Constant current profile"), choice(redeclare currentModel LinearCurrent "Linear current profile"), choice(redeclare currentModel PowerLawCurrent "Power law current profile")),
+    Placement(transformation(origin = {0, 44}, extent = {{-10, -10}, {10, 10}})));
 
 end MorisonForce;

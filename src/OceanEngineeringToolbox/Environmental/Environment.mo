@@ -27,6 +27,9 @@ model Environment
   parameter SI.Angle waveHeadingSpread(min=0,max=pi) = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
   parameter Integer waveHeadingSpreadBins = 1 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(group = "Multidirectional Wave Parameters", enable = (multidirectionalEnable and (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" or waveSelector == "spectrumImport"))));
   
+  // Current parameters
+  parameter SI.Velocity Uc0 = 1 "Current velocity at the mean water level" annotation(Dialog(group = "Current Parameters"));
+  parameter SI.Angle currentHeading = 0 "Current heading" annotation(Dialog(group = "Current Parameters"));
   // Pierson-Moskowitz Parameters
   parameter Real alphaPM(min=0) = 0.0081 "Energy scale (Phillips constant)" annotation(
     Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
