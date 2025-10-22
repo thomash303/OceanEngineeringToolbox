@@ -13,26 +13,33 @@ partial model BaseWaveKin
     Placement(transformation(origin = {0, 115}, extent = {{15, -15}, {-15, 15}}, rotation = -270), iconTransformation(origin = {0, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
 
   // Wave velocity connectors
-  Interfaces.RealOutput Uw[3,nME] = {uV * cos(waveHeading), vV * sin(waveHeading), wV}"Wave velocity vector" annotation(
+  Interfaces.RealOutput Uw[3,nME] = {uV , vV, wV} "Wave velocity vector" annotation(
     Placement(transformation(origin = {-30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-38, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
     
   // Wave acceleration connectors
-  Interfaces.RealOutput UAw[3,nME] = {uA * cos(waveHeading), vA * sin(waveHeading), wA} "Wave acceleration vector" annotation(
+  Interfaces.RealOutput UAw[3,nME] = {uA, vA, wA} "Wave acceleration vector" annotation(
     Placement(transformation(origin = {30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {40, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
  
   // Base wave parameters
   parameter Integer nME = 2 "Number of Morison Morison elements";
-  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)";
+  parameter Integer n_omega = 2 "Number of frequency components (default is 100 for irregular)";
   
   // Wave Heading Parameters
   parameter SI.Angle waveHeading "Wave heading";
   
   // Wave variables
+  parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
   parameter SI.WaveNumber k[n_omega] "Wave number component";
   parameter SI.Angle phi[n_omega] "Wave components phase shift";
+  parameter SI.Height zeta[n_omega] "Wave amplitude component";
   
 protected 
   // Intermediate variables
+  // Velocity amplitude Components
+ 
+  SI.Velocity vHorz[n_omega, nME] "Horiziontal velocity amplitude component";
+  SI.Velocity vVert[n_omega, nME] "Vertical velocity amplitude component";
+  
   // Velocity
   SI.Velocity uV[nME] "Horizontal water particle velocity (x)";
   SI.Velocity vV[nME] "Horizontal water particle velocity (y)";
@@ -43,24 +50,22 @@ protected
   SI.Velocity vA[nME] "Horizontal water particle acceleration (y)";
   SI.Velocity wA[nME] "Vertical water particle acceleration (z)";
   
-    // Velocity
-  SI.Velocity uV_Int[n_omega, nME] "Horizontal water particle velocity (x)";
-  SI.Velocity vV_Int[n_omega, nME] "Horizontal water particle velocity (y)";
-  SI.Velocity wV_Int[n_omega, nME] "Vertical water particle velocity (z)";
-
-  // Acceleration
-  SI.Velocity uA_Int[n_omega, nME] "Horizontal water particle acceleration (x)";
-  SI.Velocity vA_Int[n_omega, nME] "Horizontal water particle acceleration (y)";
-  SI.Velocity wA_Int[n_omega, nME] "Vertical water particle acceleration (z)";
+  SI.Angle phase[nME,n_omega] "Intermediate value for phase";
   
 equation
+
   for i in 1:nME loop
-    uV[i] = sum(uV_Int[:, i]);
-    vV[i] = sum(vV_Int[:, i]);
-    wV[i] = sum(wV_Int[:, i]);
-    uA[i] = sum(uA_Int[:, i]);
-    vA[i] = sum(vA_Int[:, i]);
-    wA[i] = sum(wA_Int[:, i]);
+    phase[i,:] = omega .* time - k .* (fill(positionME[1,i],n_omega) .* cos(waveHeading) + fill(positionME[2,i],n_omega) .* sin(waveHeading)) + phi;
+  
+    // Velocities
+    uV[i] = sum(vHorz[:,i] .* cos(phase[i,:])) * cos(waveHeading);
+    vV[i] = sum(vHorz[:,i] .* cos(phase[i,:])) * sin(waveHeading);
+    wV[i] = sum(vVert[:,i] .* sin(phase[i,:]));
+    
+    // Accelerations
+    uA[i] = sum(omega .* vHorz[:,i] .* sin(phase[i,:])) * cos(waveHeading);
+    vA[i] = sum(omega .* vHorz[:,i] .* sin(phase[i,:])) * sin(waveHeading);
+    wA[i] = sum(-omega .* vVert[:,i] .* cos(phase[i,:]));
   end for;
 
 end BaseWaveKin;

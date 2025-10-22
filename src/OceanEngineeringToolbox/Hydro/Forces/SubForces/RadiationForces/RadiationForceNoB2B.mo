@@ -19,7 +19,7 @@ model RadiationForceNoB2B
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
 
   // Velocity connectors
-  Interfaces.RealVectorInput v_abs[3] "Linear velocity vector" annotation(
+  Interfaces.RealVectorInput v_abs[3] "Translational velocity vector" annotation(
     HideResult = true,
     Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   Interfaces.RealVectorInput omega_abs[3] "Angular velocity vector" annotation(
