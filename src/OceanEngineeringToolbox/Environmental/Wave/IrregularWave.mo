@@ -8,9 +8,14 @@ model IrregularWave
   
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.equalEnergyGenerator;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.BaseSpectrumDiscritization;
 
   // Spectrum Parameters  
   parameter String waveSelector = "PiersonMoskowitz";
+  parameter WaveSpectrumType waveSpectrum;
   parameter String frequencySelection = "random";
   parameter SI.Height Hs = 2.5 "Significant Wave Height";
   parameter SI.AngularFrequency omegaPeak "Peak angular frequency";
@@ -57,6 +62,8 @@ model IrregularWave
   SI.Position SSE "Sea surface elevation";
 
   // Random frequency discritization model
+  replaceable randomGenerator spectrumGeneration(waveSpectrum = waveSpectrum, file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) constrainedby BaseSpectrumDiscritization "Current profile" annotation(choices(choice(redeclare randomGenerator spectrumGeneration "Random frequency selection"), choice(redeclare equalEnergyGenerator spectrumGeneration "Equal-energy frequency selection")));
+  
   WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator RandomGenerator(file = file, localSeedFrequency = localSeedFrequency, globalSeedFrequency = globalSeedFrequency, localSeedPhase = localSeedPhase, globalSeedPhase = globalSeedPhase, n_omega = n_omega, waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins) if frequencySelection == "random" annotation(
     Placement(transformation(origin = {-48, -2}, extent = {{-10, -10}, {10, 10}})));
 

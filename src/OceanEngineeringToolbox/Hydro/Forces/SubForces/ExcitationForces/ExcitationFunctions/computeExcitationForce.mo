@@ -24,7 +24,7 @@ function computeExcitationForce
 algorithm
 
   // Regular or irregular
-  if n_omega == 1 then
+  if false then
     F := (ramp.*(ExcCoeffRe[waveHeadingSpreadBins,:,n_omega] .*A*cos(omegaTime[n_omega])) - (ExcCoeffIm[waveHeadingSpreadBins,:,n_omega] .*A*sin(omegaTime[n_omega])).*ramp);
   else
 

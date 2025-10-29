@@ -20,6 +20,9 @@ model RegularWave
     Dialog(group = "Wave Spectrum Parameters"));
   parameter SI.Height A = Hs/2 "Wave amplitude";
   
+  // Wave Heading Parameters
+  parameter SI.Angle waveHeading = 0 "Wave heading";
+  
   // Ramp  
   Real ramp "Ramping function" annotation(
     HideResult = true);

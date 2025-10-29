@@ -14,6 +14,7 @@ model HydrodynamicBody
   import Modelica.Utilities.Streams.readRealMatrix;
   // Simulation parameters w/ implicit connections
   outer DataImport.FileDirectory fileDirectory;
+  
   // Mass parameters
   parameter SI.Mass M[1,1] = readRealMatrix(fileDirectory.file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
     Dialog(group = "Mass")); 
@@ -57,7 +58,7 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Hydrostatic"));  
 // Damping/drag
-  Forces.DampingDrag dampingDrag(file = fileDirectory.file, Cv = Cv, Cd = Cd, Ad = Ad) if enableDampingDragForce annotation(
+  Forces.DampingDrag dampingDrag(file = fileDirectory.file, Cv = Cv, Cd = CD, Ad = Ad) if enableDampingDragForce annotation(
     Placement(transformation(origin = {78, 48}, extent = {{-18, -18}, {18, 18}})));
   parameter Boolean enableDampingDragForce = false "Switch to enable/disable damping/drag force calculation" annotation(
     HideResult = true,
@@ -65,16 +66,22 @@ model HydrodynamicBody
     Dialog(group = "Damping/Drag"));
   // Drag coefficients
   parameter Real Cv[6](each min=0) = {0, 0, 0, 0, 0, 0} "Linear damping coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
-  parameter Real Cd[6](each min=0) = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
+  parameter Real CD[6](each min=0) = {0, 0, 0, 0, 0, 0} "Quadratic drag coefficient vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
   parameter Real Ad[6](each min=0) = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
   // Morison
-  Forces.Morison morison(nME = nME, rME = rME, nHatME = nHatME, Cdn = Cdn, Cdt = Cdt, Adn = Adn, Adt = Adt, Camn = Camn, Camt = Camt, VME = VME) annotation(
-    Placement(transformation(origin = {0, 86}, extent = {{-14, -14}, {14, 14}})));
   parameter Boolean enableMorisonForce = false "Switch to enable/disable Morison force calculation" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
-  parameter Integer nME = 1 "Number of Morison Morison elements" annotation(
+  parameter Boolean enableMorisonDrag = false "Switch to enable only the drag contribution in the Morison force calculation" annotation(
+    HideResult = true,
+    choices(checkBox = true),
+    Dialog(group = "Morison"));
+  replaceable Forces.Morison morison(nME = nME, rME = rME, nHatME = nHatME, Cfk = Cfk, Cd = Cd, Ac = Ac, Cam = Cam, VME = VME) if enableMorisonForce "Select the desired wave and current and wave kinematic model"  annotation(Placement(transformation(origin = {-4, 88}, extent = {{-14, -14}, {14, 14}})),
+    choices(checkBox = true),
+    Dialog(group = "Morison"));
+  // Morison parameters
+  parameter Integer nME = 2 "Number of Morison Morison elements" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
@@ -82,27 +89,23 @@ model HydrodynamicBody
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
-  parameter Real nHatME[3,nME] = zeros(3,nME) "Orientation unit vector in the body frame" annotation(
+  parameter Real nHatME[3,nME] = transpose(fill({0,0,1}, nME)) "Orientation unit vector in the body frame" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
-  parameter Real CdME[3,nME] = {Cdn,Cdt,0} "Normal drag coefficients" annotation(
+  parameter Real Cfk[2,nME] = zeros(2,nME) "Froude-Krylov coefficients [normal, tangential]" annotation(
+    HideResult = true,
+    choices(checkBox = true),
+    Dialog(group = "Morison")); 
+  parameter Real Cd[2,nME] = zeros(2,nME) "Drag coefficients [normal, tangential]" annotation(
+    HideResult = true,
+    choices(checkBox = true),
+    Dialog(group = "Morison"));  
+  parameter SI.Area Ac[2,nME] = zeros(2,nME) "Characteristic drag area [normal, tangential]" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
-  parameter SI.Area Adn[3,nME] = zeros(3,nME) "Normal drag area" annotation(
-    HideResult = true,
-    choices(checkBox = true),
-    Dialog(group = "Morison"));
-  parameter SI.Area Adt[3,nME] = zeros(3,nME) "Tangential drag area" annotation(
-    HideResult = true,
-    choices(checkBox = true),
-    Dialog(group = "Morison"));
-  parameter Real Camn[3,nME] = zeros(3,nME) "Normal added mass coefficients" annotation(
-    HideResult = true,
-    choices(checkBox = true),
-    Dialog(group = "Morison"));
-  parameter Real Camt[3,nME] = zeros(3,nME) "Tangential added mass coefficients" annotation(
+  parameter Real Cam[2,nME] = zeros(2,nME) "Added mass coefficients [normal, tangential]" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
@@ -110,6 +113,7 @@ model HydrodynamicBody
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
+  
 
 equation
 //Conections
@@ -126,7 +130,7 @@ equation
   connect(body.frame_b, frame_b) annotation(
     Line(points = {{12, -38}, {100, -38}, {100, 0}}, color = {95, 95, 95}));
   connect(morison.frame_a, body.frame_c) annotation(
-    Line(points = {{0, 72}, {0, -26}}, color = {95, 95, 95}));
+    Line(points = {{-4, 74}, {-4, 23}, {0, 23}, {0, -26}}, color = {95, 95, 95}));
 
 annotation(
   Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {

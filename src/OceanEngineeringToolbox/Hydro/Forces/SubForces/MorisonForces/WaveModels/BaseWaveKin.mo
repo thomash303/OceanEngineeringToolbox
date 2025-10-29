@@ -17,7 +17,7 @@ partial model BaseWaveKin
     Placement(transformation(origin = {-30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-38, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
     
   // Wave acceleration connectors
-  Interfaces.RealOutput UAw[3,nME] = {uA, vA, wA} "Wave acceleration vector" annotation(
+  Interfaces.RealOutput Aw[3,nME] = {uA, vA, wA} "Wave acceleration vector" annotation(
     Placement(transformation(origin = {30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {40, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
  
   // Base wave parameters
@@ -25,14 +25,17 @@ partial model BaseWaveKin
   parameter Integer n_omega = 2 "Number of frequency components (default is 100 for irregular)";
   
   // Wave Heading Parameters
-  parameter SI.Angle waveHeading "Wave heading";
+  parameter SI.Angle waveHeading = 0 "Wave heading";
   
   // Wave variables
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
-  parameter SI.WaveNumber k[n_omega] "Wave number component";
-  parameter SI.Angle phi[n_omega] "Wave components phase shift";
-  parameter SI.Height zeta[n_omega] "Wave amplitude component";
+  parameter SI.WaveNumber k[n_omega]  "Wave number component";
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega]  "Wave components phase shift";
+  parameter SI.Height zeta[waveHeadingSpreadBins, n_omega] "Wave amplitude component";
   
+  
+  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
 protected 
   // Intermediate variables
   // Velocity amplitude Components
@@ -55,7 +58,7 @@ protected
 equation
 
   for i in 1:nME loop
-    phase[i,:] = omega .* time - k .* (fill(positionME[1,i],n_omega) .* cos(waveHeading) + fill(positionME[2,i],n_omega) .* sin(waveHeading)) + phi;
+    phase[i,:] = omega .* time - k .* (fill(positionME[1,i],n_omega) .* cos(waveHeading) + fill(positionME[2,i],n_omega) .* sin(waveHeading)) + phi[1,:];
   
     // Velocities
     uV[i] = sum(vHorz[:,i] .* cos(phase[i,:])) * cos(waveHeading);

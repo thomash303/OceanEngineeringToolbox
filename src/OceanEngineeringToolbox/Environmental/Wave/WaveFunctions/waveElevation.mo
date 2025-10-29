@@ -41,7 +41,7 @@ algorithm
             //SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime + phi[i,:]));
             
             for j in 1:n_omega loop
-            SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] + phi[i,j]);
+            SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] - k[j]*(x*cos(theta) + y*sin(theta)) + phi[i,j]);
             end for;
     end for;
   
