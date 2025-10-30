@@ -12,31 +12,21 @@ model RegularWave
   extends DataImport.InputRecords.FilePath;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   extends BaseWave(
-    n_omega = 1,
-    redeclare parameter Real alphaPM,
-    redeclare parameter Real gamma,
-    redeclare parameter Real sigmaA,
-    redeclare parameter Real sigmaB,
-    redeclare parameter SI.Height HsOH,
-    redeclare parameter SI.AngularFrequency omegaPeakOH,
-    redeclare parameter Real lambdaOH,
-    redeclare parameter Integer componentSpectra,
-    redeclare parameter Integer localSeedPhase,
-    redeclare parameter Integer globalSeedPhase,
-    redeclare parameter Boolean multidirectionalEnable,
-    redeclare parameter Integer n,
-    redeclare parameter SI.Angle waveHeadingSpread,
-    redeclare parameter Integer waveHeadingSpreadBins,
-    redeclare parameter WaveSpectrumType waveSpectrum,
-    redeclare parameter String waveSelector,
-    redeclare parameter String frequencySelection
-  );
+    n_omega = 1);
   
-  // Wave Parameters
+  // Wave parameters
+  parameter WaveTypes.WaveSpectrumType waveSpectrum = WaveTypes.WaveSpectrumType.PiersonMoskowitz "Wave Spectrum Type" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.Height A = Hs/2 "Wave amplitude" annotation(Dialog(enable = false, tab = "Misc"));
   
-  // Wave Heading Parameters
-  parameter SI.Angle waveHeading = 0 "Wave heading" annotation(Dialog(enable = false, tab = "Misc"));
+  // Multidirectional wave parameters
+  parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer n(min=1) = 5 "Spreading function constant" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle waveHeadingSpread(min=0,max=pi) = pi/6 "Maximum spread (+/-) from the mean wave heading" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer waveHeadingSpreadBins = 1 "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  
+  // Random phase selection
+  parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Ramp  
   Real ramp "Ramping function" annotation(Dialog(enable = false, tab = "Misc"));
@@ -47,11 +37,11 @@ model RegularWave
   parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, A = A, n_omega = n_omega) "Wave time-average power per unit wave crest length" annotation(Dialog(enable = false,tab = "Misc"));
 
   // Output variables for excitation, Morison, and wave gauge
-  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = fill(A,waveHeadingSpreadBins,n_omega) "Wave amplitude component" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = zeros(waveHeadingSpreadBins,n_omega) "Wave components phase shift" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.AngularFrequency omega[n_omega] = vector(omegaPeak) "Frequency components selected for simulation" annotation(Dialog(enable = false, tab = "Misc"));
-    parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Bin centres" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real D[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Directional spreading weights" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = fill(A,waveHeadingSpreadBins,n_omega) "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = zeros(waveHeadingSpreadBins,n_omega) "Wave components phase shift"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.AngularFrequency omega[n_omega] = vector(omegaPeak) "Frequency components selected for simulation" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+    parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Bin centres" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real D[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Directional spreading weights" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
 
   // Wave elevation
   SI.Position SSE "Sea surface elevation";

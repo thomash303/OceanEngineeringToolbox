@@ -41,18 +41,21 @@ model MorisonForce
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {86, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   
   // Morison parameters
-  parameter Integer nME = 2 "Number of Morison Morison elements" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Position rME[3,nME] "Vector to the Morison element from the CG in the body frame" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real nHatME[3,nME] "Orientation unit vector in the body frame" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real Cfk[2,nME] "Froude-Krylov coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));  
-  parameter Real Cd[2,nME] "Drag coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));  
-  parameter SI.Area Ac[2,nME] "Characteristic drag area [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter Integer nME "Number of Morison Morison elements" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Position rME[3,nME] "Vector to the Morison element from the CG in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real nHatME[3,nME] "Orientation unit vector in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real Cfk[2,nME] "Froude-Krylov coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
+  parameter Real Cd[2,nME] "Drag coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
+  parameter SI.Area Ac[2,nME] "Characteristic drag area [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.Volume VME[nME] "Displaced volume" annotation(Dialog(enable = false, tab = "Misc"));
 
-  replaceable NoCurrent currentModel(nME = nME) constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel  "No current"), choice(redeclare ConstantCurrent currentModel "Constant current profile"), choice(redeclare LinearCurrent currentModel "Linear current profile"), choice(redeclare PowerLawCurrent currentModel "Power law current profile")),
+  // Current model
+  replaceable NoCurrent currentModel(nME = nME, positionME = positionME) constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel(nME = nME, positionME = positionME)  "No current"), choice(redeclare ConstantCurrent currentModel(nME = nME, positionME = positionME) "Constant current profile"), choice(redeclare LinearCurrent currentModel(nME = nME, positionME = positionME) "Linear current profile"), choice(redeclare PowerLawCurrent currentModel(nME = nME, positionME = positionME) "Power law current profile")),
     Placement(transformation(origin = {0, 44}, extent = {{-10, -10}, {10, 10}})));
-  replaceable NoWaveKin waveModel(zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel "No wave kinematics"), choice(redeclare LinearWaveKin waveModel "Linear wave kinematics")),
+  
+  // Wave model
+  replaceable NoWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) "No wave kinematics"), choice(redeclare LinearWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) "Linear wave kinematics")),
     Placement(transformation(origin = {0, -28}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
   
   // Fluid kinematics
@@ -63,10 +66,10 @@ model MorisonForce
   SI.Velocity AfT[3,nME] "Tangential component of the wave fluid acceleration";
   SI.Velocity AfN[3,nME] "Normal component of the wave fluid acceleration";
   
-  Real position[3] = u_abs "Translational position vector";
+  SI.Position position[3] = u_abs "Translational position vector";
   Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";
   Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined acceleration vector";
-  Interfaces.RealOutput positionME[3,nME] "Absolute translational position vector for all Morison elements";
+  SI.Position positionME[3,nME] "Absolute translational position vector for all Morison elements";
   
   SI.Position rMEG[3,nME] "Vector to the Morison element from the CG in the global frame";
   Real nHatMEG[3,nME] "Orientation unit vector in the global frame";
@@ -96,20 +99,24 @@ model MorisonForce
   SI.Acceleration AMEN[3,nME] "Normal acceleration of the Morison elements";
   SI.Acceleration AMET[3,nME] "Tangential acceleration of the Morison elements";
   
+  // Current parameters
+  parameter SI.Velocity Uc0 "Current velocity at the mean water level";
+  parameter SI.Angle currentHeading "Current heading";
+  
   // Wave variables
-  parameter SI.Angle waveHeading "Wave heading" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude component" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega]"Wave components phase shift" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle waveHeading "Wave heading" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega]"Wave components phase shift" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.AngularFrequency omega[n_omega]"Frequency components selected for simulation" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(enable = false, tab = "Misc"));
   parameter SI.WaveNumber k[n_omega] "Wave number component" annotation(
-    HideResult = true);
+    HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Ramp
     parameter SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(HideResult = true,
-    Dialog(group = "Simulation Parameters"));
+    Dialog(enable = false, tab = "Misc"));
   Real ramp "Ramping function" annotation(HideResult = true);
 equation
 // Need to first rotate r,n!!!!!!!!!!!!
@@ -160,7 +167,7 @@ equation
     fD[:, i] = fDN[:, i] + fDT[:, i];
 // Check if Z-coordinate of the Morison element is above the mean free surface
 // Should I Wheeler stretch??
-    if positionME[3, i] <= 0 then
+    if positionME[3, i] <= 5 then
       fME[:, i] = fI[:, i] + fD[:, i];
       mME[:, i] = cross(rME[:, i], fME[:, i]);
     else
@@ -169,8 +176,6 @@ equation
     end if;
   end for;
   F = ramp.*cat(1, sum(fME[:, i] for i in 1:nME), sum(mME[:, i] for i in 1:nME));
-// Connects
-  connect(positionME, currentModel.positionME);
-  connect(positionME, waveModel.positionME);
+
   annotation(
     experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-06, Interval = 0.002));end MorisonForce;

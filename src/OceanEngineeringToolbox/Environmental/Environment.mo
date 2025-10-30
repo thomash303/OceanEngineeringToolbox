@@ -9,23 +9,23 @@ model Environment
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
   
-  // Importing and inheriting from the OET
-  extends Current.CurrentRecords.CurrentParameters; 
-  extends Wave.WaveRecords.SimulationParameters;
-  
   import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
     import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
     
+  // Current parameters
+  parameter SI.Velocity Uc0 = 1 "Current velocity at the mean water level" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  parameter SI.Angle currentHeading = 0 "Current heading" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  
+  // Simulation parameters
+  parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase" annotation(
+    Dialog(group = "Simulation Parameters"));
     
-  replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave  "Wave type" annotation(choices(choice(redeclare NoWave wave "No wave"), choice(redeclare RegularWave wave "Regular wave"), choice(redeclare IrregularWave wave "Irregular wave"), choice(redeclare SpectrumImportWave wave "Spectrum import wave")));
+  replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave  "Wave type" annotation(choices(choice(redeclare NoWave wave(file = fileDirectory.file) "No wave"), choice(redeclare RegularWave wave(file = fileDirectory.file) "Regular wave"), choice(redeclare IrregularWave wave(file = fileDirectory.file) "Irregular wave"), choice(redeclare SpectrumImportWave wave(file = fileDirectory.file) "Spectrum import wave")));
   
 
     
-// Regular wave model
-  Wave.RegularWave regularWave(Hs = 1, omegaPeak = 1, Trmp = 100, file = fileDirectory.file) annotation(
-    Placement(transformation(origin = {0, 54}, extent = {{-12, -12}, {12, 12}})));
 /*  // Irregular wave model
   replaceable Wave.IrregularWave irregularWave(waveSpectrum = waveSpectrum, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins, redeclare randomGenerator spectrumGeneration "Random frequency selection") if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
     Placement(transformation(extent = {{-12, -12}, {12, 12}})));

@@ -8,15 +8,18 @@ model SubWaveGauge
   import Modelica.Constants.pi;
   
   // Wave Gauge Enable
-  parameter Boolean waveGaugeEnable "Flag to enable/disable wave gauge calculation";
+  parameter Boolean waveGaugeEnable "Flag to enable/disable wave gauge calculation" annotation(
+    HideResult = true);
   
   // Spectrum Parameters
   parameter SI.Height zeta[waveHeadingSpreadBins, n_omega] "Wave amplitude component" annotation(
     HideResult = true);
   
   // Wave Heading Parameters
-  parameter SI.Angle waveHeading "Wave heading";
-  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
+  parameter SI.Angle waveHeading "Wave heading" annotation(
+    HideResult = true);
+  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(
+    HideResult = true);
   
   // Frequency variables
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation" annotation(
@@ -31,7 +34,7 @@ model SubWaveGauge
   // Spectrum Variables
   parameter SI.WaveNumber k[n_omega] "Wave number component" annotation(
     HideResult = true);
-  SI.Height SSE "Sea surface elevation";
+  SI.Position SSE "Sea surface elevation";
   
   // Ramp
   Real ramp "Ramping function" annotation(
@@ -40,8 +43,10 @@ model SubWaveGauge
     HideResult = true);
 
   // Coordinates
-  parameter SI.Position x "x-coordinate of the gauge";
-  parameter SI.Position y "y-coordinate of the gauge";
+  parameter SI.Position x "x-coordinate of the gauge" annotation(
+    HideResult = true);
+  parameter SI.Position y "y-coordinate of the gauge" annotation(
+    HideResult = true);
 equation
 
   SSE = Wave.WaveFunctions.waveElevation(zeta = zeta, omegaTime = omega*time, phi = phi, k = k, ramp = ramp, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, theta = waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y);

@@ -17,23 +17,23 @@ model Morison
   outer Environmental.Environment environment;
  
   // Frame_a connector
-  Frame_a frame_a "Coordinate system fixed at body" annotation(
+  Frame_a frame_a "Coordinate system fixed at body" annotation(HideResult = true, 
     Placement(transformation(origin = {0, -200}, extent = {{-116, -16}, {-84, 16}}, rotation = -90), iconTransformation(extent = {{-116, -16}, {-84, 16}}, rotation = 90)));
   
   // Morison parameters
   parameter Integer nME "Number of Morison Morison elements" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Position rME[3,nME] "Vector to the Morison element from the CG in the body frame" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real nHatME[3,nME] "Orientation unit vector in the body frame" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real Cfk[2,nME] "Froude-Krylov coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));  
-  parameter Real Cd[2,nME] "Drag coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));  
-  parameter SI.Area Ac[2,nME] "Characteristic drag area [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Volume VME[nME] "Displaced volume" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Position rME[3,nME] "Vector to the Morison element from the CG in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real nHatME[3,nME] "Orientation unit vector in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real Cfk[2,nME] "Froude-Krylov coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
+  parameter Real Cd[2,nME] "Drag coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
+  parameter SI.Area Ac[2,nME] "Characteristic drag area [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Volume VME[nME] "Displaced volume" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   
- replaceable SubForces.MorisonForces.MorisonForce morisonForce(nME = nME, rME = rME, nHatME = nHatME, Cfk = Cfk, Cd = Cd, Ac = Ac, Cam = Cam, VME = VME, zeta = environment.wave.zeta, n_omega = environment.wave.n_omega, omega = environment.wave.omega, phi = environment.wave.phi, ramp = environment.wave.ramp, Trmp = environment.Trmp, k = environment.wave.k, waveHeading = environment.wave.waveHeading, waveHeadingSpreadBins = environment.wave.waveHeadingSpreadBins, spreadBinCentres = environment.wave.spreadBinCentres) annotation(Dialog(group = "Wave and current kinematic model selection"),
+ replaceable SubForces.MorisonForces.MorisonForce morisonForce(nME = nME, rME = rME, nHatME = nHatME, Cfk = Cfk, Cd = Cd, Ac = Ac, Cam = Cam, VME = VME, zeta = environment.wave.zeta, n_omega = environment.wave.n_omega, omega = environment.wave.omega, phi = environment.wave.phi, ramp = environment.wave.ramp, Trmp = environment.Trmp, k = environment.wave.k, waveHeading = environment.wave.waveHeading, waveHeadingSpreadBins = environment.wave.waveHeadingSpreadBins, spreadBinCentres = environment.wave.spreadBinCentres, Uc0 = environment.Uc0, currentHeading = environment.currentHeading) annotation(Dialog(group = "Wave and current kinematic model selection"),
     Placement(transformation(origin = {0, -24}, extent = {{-10, -10}, {10, 10}})));
-  Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = false)  annotation(   Placement(transformation(origin = {0, 58}, extent = {{-10, -10}, {10, 10}})));
+  Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = false)  annotation(HideResult = true, Placement(transformation(origin = {0, 58}, extent = {{-10, -10}, {10, 10}})));
 equation
 // below surface check
 // regular waves

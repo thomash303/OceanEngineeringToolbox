@@ -7,11 +7,11 @@ partial class spectrumImportData
 
   extends InputRecords.FilePath;
 
-  parameter Integer SDim[2] = readMatrixSize(file, "hydro.wave.spectrumImport.w") "Dimensions of the frequency vector" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter Integer SDim[2] = readMatrixSize(file, "hydro.wave.spectrumImport.w") "Dimensions of the frequency vector" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Integer n_omega = SDim[2] "Number of frequency components" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Integer phiDim[2] = readMatrixSize(file, "hydro.wave.spectrumImport.phi") "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter Integer waveHeadingSpreadBins = phiDim[2] "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(enable = false, tab = "Misc"));  
+  parameter Integer phiDim[2] = readMatrixSize(file, "hydro.wave.spectrumImport.phi") "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer waveHeadingSpreadBins = phiDim[2] "Number of discrete headings centered around the mean heading to consider in the spectrum spread"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
   parameter SI.AngularFrequency omega[n_omega] = vector(readRealMatrix(file, "hydro.wave.spectrumImport.w", 1, n_omega)) "Angular frequency vector" annotation(Dialog(enable = false, tab = "Misc"));
   parameter Environmental.Wave.WaveUnits.spectrumEnergyDensity S[n_omega] = vector(readRealMatrix(file, "hydro.wave.spectrumImport.S", 1, n_omega)) "Spectral Density" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = readRealMatrix(file, "hydro.wave.spectrumImport.phase", waveHeadingSpreadBins, n_omega) "Phase vector" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = readRealMatrix(file, "hydro.wave.spectrumImport.phase", waveHeadingSpreadBins, n_omega) "Phase vector"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
 end spectrumImportData;

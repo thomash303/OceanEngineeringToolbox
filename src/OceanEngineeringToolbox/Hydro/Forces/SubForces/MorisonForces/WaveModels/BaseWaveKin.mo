@@ -8,24 +8,21 @@ partial model BaseWaveKin
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.{pi,g_n};
       
-  // Translational position connectors
-  Interfaces.RealInput positionME[3,nME] "Absolute translational position vector for all Morison elements" annotation(
-    Placement(transformation(origin = {0, 115}, extent = {{15, -15}, {-15, 15}}, rotation = -270), iconTransformation(origin = {0, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
+  // Translational position 
+  SI.Position positionME[3,nME] "Absolute translational position vector for all Morison elements";
 
   // Wave velocity connectors
-  Interfaces.RealOutput Uw[3,nME] = {uV , vV, wV} "Wave velocity vector" annotation(
-    Placement(transformation(origin = {-30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-38, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
+  SI.Velocity Uw[3,nME] = {uV , vV, wV} "Wave velocity vector";
     
   // Wave acceleration connectors
-  Interfaces.RealOutput Aw[3,nME] = {uA, vA, wA} "Wave acceleration vector" annotation(
-    Placement(transformation(origin = {30, -114}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {40, -115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
+  SI.Acceleration Aw[3,nME] = {uA, vA, wA} "Wave acceleration vector";
  
   // Base wave parameters
-  parameter Integer nME = 2 "Number of Morison Morison elements";
-  parameter Integer n_omega = 2 "Number of frequency components (default is 100 for irregular)";
+  parameter Integer nME  "Number of Morison Morison elements";
+  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)";
   
   // Wave Heading Parameters
-  parameter SI.Angle waveHeading = 0 "Wave heading";
+  parameter SI.Angle waveHeading "Wave heading";
   
   // Wave variables
   parameter SI.AngularFrequency omega[n_omega] "Frequency components selected for simulation";
@@ -35,13 +32,12 @@ partial model BaseWaveKin
   
   
   parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
-  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
+  parameter Integer waveHeadingSpreadBins  "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
 protected 
   // Intermediate variables
   // Velocity amplitude Components
- 
-  SI.Velocity vHorz[n_omega, nME] "Horiziontal velocity amplitude component";
-  SI.Velocity vVert[n_omega, nME] "Vertical velocity amplitude component";
+  SI.Velocity vHorz[waveHeadingSpreadBins,n_omega, nME] "Horiziontal velocity amplitude component";
+  SI.Velocity vVert[waveHeadingSpreadBins,n_omega, nME] "Vertical velocity amplitude component";
   
   // Velocity
   SI.Velocity uV[nME] "Horizontal water particle velocity (x)";
@@ -53,22 +49,46 @@ protected
   SI.Velocity vA[nME] "Horizontal water particle acceleration (y)";
   SI.Velocity wA[nME] "Vertical water particle acceleration (z)";
   
-  SI.Angle phase[nME,n_omega] "Intermediate value for phase";
+  SI.Angle phase[nME,waveHeadingSpreadBins,n_omega] "Intermediate value for phase";
   
 equation
-
+/*
   for i in 1:nME loop
-    phase[i,:] = omega .* time - k .* (fill(positionME[1,i],n_omega) .* cos(waveHeading) + fill(positionME[2,i],n_omega) .* sin(waveHeading)) + phi[1,:];
-  
-    // Velocities
-    uV[i] = sum(vHorz[:,i] .* cos(phase[i,:])) * cos(waveHeading);
-    vV[i] = sum(vHorz[:,i] .* cos(phase[i,:])) * sin(waveHeading);
-    wV[i] = sum(vVert[:,i] .* sin(phase[i,:]));
+
+    for j in 1:waveHeadingSpreadBins loop
+      phase[i,j,:] = omega .* time - k .* (fill(positionME[1,i],n_omega) .* cos(spreadBinCentres[j]) + fill(positionME[2,i],n_omega) .* sin(spreadBinCentres[j])) + phi[j,:];
     
-    // Accelerations
-    uA[i] = sum(omega .* vHorz[:,i] .* sin(phase[i,:])) * cos(waveHeading);
-    vA[i] = sum(omega .* vHorz[:,i] .* sin(phase[i,:])) * sin(waveHeading);
-    wA[i] = sum(-omega .* vVert[:,i] .* cos(phase[i,:]));
+      // Velocities
+      uV[i] = sum(vHorz[j,:,i] .* cos(phase[i,j,:])) * cos(spreadBinCentres[j]);
+      vV[i] = sum(vHorz[j,:,i] .* cos(phase[i,j,:])) * sin(spreadBinCentres[j]);
+      wV[i] = sum(vVert[j,:,i] .* sin(phase[i,j,:]));
+      
+      // Accelerations
+      uA[i] = sum(omega .* vHorz[j,:,i] .* sin(phase[i,j,:])) * cos(spreadBinCentres[j]);
+      vA[i] = sum(omega .* vHorz[j,:,i] .* sin(phase[i,j,:])) * sin(spreadBinCentres[j]);
+      wA[i] = sum(-omega .* vVert[j,:,i] .* cos(phase[i,j,:]));
+    end for;
+  end for;*/
+  
+  for i in 1:nME loop
+    for j in 1:waveHeadingSpreadBins loop
+      // Phase computation (equation section compatible)
+      phase[i,j,:] = omega .* time
+                   - k .* (positionME[1,i] .* cos(spreadBinCentres[j])
+                          + positionME[2,i] .* sin(spreadBinCentres[j]))
+                   + phi[j,:];
+    end for;
+  
+    // Velocities (nested sums over frequency and heading)
+    uV[i] = sum(sum(vHorz[j,:,i] .* cos(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
+    vV[i] = sum(sum(vHorz[j,:,i] .* cos(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
+    wV[i] = sum(sum(vVert[j,:,i] .* sin(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
+  
+    // Accelerations (nested sums over frequency and heading)
+    uA[i] = sum(sum(omega .* vHorz[j,:,i] .* sin(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
+    vA[i] = sum(sum(omega .* vHorz[j,:,i] .* sin(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
+    wA[i] = sum(sum(-omega .* vVert[j,:,i] .* cos(phase[i,j,:])) for j in 1:waveHeadingSpreadBins);
   end for;
+  
 
 end BaseWaveKin;

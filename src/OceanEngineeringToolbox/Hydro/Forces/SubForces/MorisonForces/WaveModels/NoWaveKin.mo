@@ -8,7 +8,7 @@ model NoWaveKin
   
 equation
 
-    vHorz = zeros(n_omega, nME);
+    vHorz = zeros(waveHeadingSpreadBins, n_omega, nME);
     vVert = vHorz;
 
 end NoWaveKin;

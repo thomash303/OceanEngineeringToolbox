@@ -16,6 +16,11 @@ model BuoyancyForce
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   extends DataImport.ImportRecords.MultibodyImport.massNoB2BData;
   extends BaseHydroForce;
+  
+    // Frame_a connector
+  Frame_a frame_a "Coordinate system fixed at body" annotation(
+    HideResult = true,
+    Placement(transformation(extent = {{-116, -16}, {-84, 16}})));  
 
 protected
   parameter SI.Force f_gravity[3]= {0, 0, g_n *M[1,1]} "Gravitational force";
@@ -23,7 +28,7 @@ protected
   parameter Real offset[3] = vector(cb - cg) "Offset between centres of bouyancy and gravity";
   
 equation
-  
+
   F = cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Buoyancy Force")}));

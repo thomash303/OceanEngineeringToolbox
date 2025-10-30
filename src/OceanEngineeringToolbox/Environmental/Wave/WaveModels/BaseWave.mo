@@ -8,22 +8,28 @@ partial model BaseWave
   import Modelica.Constants.pi;
   
   // Extending and inheriting from the OET
-  extends DataImport.InputRecords.FilePath(redeclare parameter String file);
+  extends DataImport.InputRecords.FilePath;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
-  extends WaveRecords.WaveParameters;
-  extends WaveRecords.MultidirectionalParameters;
-  extends WaveRecords.WaveSpectrumParameters;
-  extends WaveRecords.RandomPhaseParameters;
-  extends WaveRecords.SimulationParameters(redeclare parameter SI.Time Trmp);
+  
+  // Calling an outer model at the top-level deployment
+  outer Environmental.Environment environment;
+  outer DataImport.FileDirectory fileDirectory;
   
   // Wave Parameters
+  parameter SI.Height Hs(min=0) = 2 "Significant wave height" annotation(
+    Dialog(group = "Wave Parameters"));
+  parameter SI.Time Tp(min=0) = 8 "Peak wave period" annotation(
+    Dialog(group = "Wave Parameters"));
   parameter SI.AngularFrequency omegaPeak = 2*pi/Tp "Peak angular frequency" annotation(Dialog(enable = false, tab = "Misc"));
-  // Wave Parameters
-  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)";
-    
-  // Multidirectional wave Parameters
-  parameter SI.Angle waveHeading = 0 "Wave heading" annotation(Dialog(group = "Multidirectional Wave Parameters"));
-  // Ramp
+  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(Dialog(enable = false, tab = "Misc"));
+  
+  // Multidirectional wave parameters
+  parameter SI.Angle waveHeading = 0 "Wave heading ([0-360) or [0-2pi))" annotation(Dialog(group = "Multidirectional Wave Parameters"));
+  
+  // Ramp parameters  
+  parameter SI.Time Trmp = environment.Trmp "Interval for ramping up of waves during start phase" annotation(Dialog(enable = false, tab = "Misc"));
+
+  // Ramp variables
   Real ramp "Ramping function" annotation(
     HideResult = true);
   

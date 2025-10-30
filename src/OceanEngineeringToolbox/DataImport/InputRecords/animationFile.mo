@@ -8,7 +8,7 @@ partial class animationFile
   import Modelica.Mechanics.MultiBody.Types;
   import Modelica.Utilities.Files.loadResource;
   
-  parameter Boolean animationEnable "Parameter to enable the body's animation" annotation(
+  parameter Boolean animationEnable "Parameter to enable the body's animation"  annotation(HideResult = true,
     Dialog(group = "Animation Data"));
   parameter String geometryFile "Path to the geometry (.stl) file. Note: the file path must be prefaced by (file://)" annotation(
     Dialog(group = "Animation Data", enable = animationEnable));

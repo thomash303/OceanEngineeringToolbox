@@ -18,7 +18,7 @@ model Radiation
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
   
-  Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Types.ResolveInFrameA.world) annotation(
+  Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Types.ResolveInFrameA.world) annotation(HideResult = true,
     HideResult = true,
     Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
 

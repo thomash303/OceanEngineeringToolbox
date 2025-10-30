@@ -28,23 +28,32 @@ algorithm
 
   // Regular wave
   if n_omega == 1 then
-
-    SSE := ramp.*(A*cos(omegaTime[1] - k[1]*(x*cos(theta) + y*sin(theta))));
+    // Wave gauge
+    if waveGaugeEnable then
+      SSE := ramp * zeta[1,1].*cos(omegaTime[1] - k[1]*(x*cos(theta) + y*sin(theta)));
+    // Body
+    else
+      SSE := ramp * zeta[1,1].*cos(omegaTime[1]);
+    end if;
     
   // Irregular wave and spectrum import
   else
     SSE := 0;  
-  
+    
+    // Direction loop
     for i in 1:waveHeadingSpreadBins loop
-     // SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime - k*(x*cos(theta) + y*sin(theta)) + phi[i,:]));
-      
-            //SSE := SSE + ramp.*sum(zeta[i,:].*cos(omegaTime + phi[i,:]));
-            
-            for j in 1:n_omega loop
-            SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] - k[j]*(x*cos(theta) + y*sin(theta)) + phi[i,j]);
-            end for;
-    end for;
-  
+      // Frequency loop 
+      for j in 1:n_omega loop
+        // Wave gauge
+        if waveGaugeEnable then
+          SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] - k[j]*(x*cos(theta) + y*sin(theta)) + phi[i,j]);
+        // Body
+        else
+          SSE := SSE + ramp * zeta[i,j].*cos(omegaTime[j] + phi[i,j]);
+        end if;    
+      end for;
+    end for;    
+ 
   end if;
 
 end waveElevation;
