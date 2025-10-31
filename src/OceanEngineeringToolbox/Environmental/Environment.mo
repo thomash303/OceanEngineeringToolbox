@@ -17,6 +17,7 @@ model Environment
   // Current parameters
   parameter SI.Velocity Uc0 = 1 "Current velocity at the mean water level" annotation(Dialog(group = "Current Parameters (for Morison only)"));
   parameter SI.Angle currentHeading = 0 "Current heading" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  parameter Real alphaCur = 0.14 "Power-law exponent" annotation(Dialog(group = "Current Parameters (for Morison only)"));
   
   // Simulation parameters
   parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase" annotation(

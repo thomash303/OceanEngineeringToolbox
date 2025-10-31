@@ -20,7 +20,6 @@ function computeExcitationForce
   
   // Output
   output Real F[bodyDoF] "Combined force and torque vector";
-  annotation(Inline=true);
 algorithm
 
   // Regular or irregular

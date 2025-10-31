@@ -8,10 +8,10 @@ model PowerLawCurrent
 
   // Importing from the MSL
   import Modelica.Units.SI;
+  extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   
   // Current parameters
-  parameter SI.Position d = 200 "Water depth";
-  parameter Real alphaCur = 0.14 "Power-law exponent";
+  parameter Real alphaCur = environment.alphaCur "Power-law exponent";
  
 equation
 

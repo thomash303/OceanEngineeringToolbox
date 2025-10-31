@@ -81,7 +81,7 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Morison"));
   // Morison parameters
-  parameter Integer nME = 2 "Number of Morison Morison elements" annotation(
+  parameter Integer nME = 1 "Number of Morison Morison elements" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));

@@ -4,8 +4,6 @@ model MorisonForce
   "Model representing the Morison force"
   /* The development of this model referenced the Morison formulation in WEC-Sim. */
 
-// currently only considering 1D excitation, could probably extend to 2D relatively easily
-
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
@@ -20,9 +18,8 @@ model MorisonForce
   import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.WaveModels.*;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   
-  // Frame_a connector
-  //Frame_a frame_a "Coordinate system fixed at body" annotation(
-    //Placement(transformation(origin = {0, -200}, extent = {{-116, -16}, {-84, 16}}, rotation = -90), iconTransformation(extent = {{-116, -16}, {-84, 16}}, rotation = 90)));
+  // Calling an outer model at the top-level deployment
+  outer DataImport.FileDirectory fileDirectory;
 
   // Displacement connectors
   Interfaces.RealVectorInput u_abs[3] "Absolute translational position vector" annotation(
@@ -50,14 +47,6 @@ model MorisonForce
   parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.Volume VME[nME] "Displaced volume" annotation(Dialog(enable = false, tab = "Misc"));
 
-  // Current model
-  replaceable NoCurrent currentModel(nME = nME, positionME = positionME) constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel(nME = nME, positionME = positionME)  "No current"), choice(redeclare ConstantCurrent currentModel(nME = nME, positionME = positionME) "Constant current profile"), choice(redeclare LinearCurrent currentModel(nME = nME, positionME = positionME) "Linear current profile"), choice(redeclare PowerLawCurrent currentModel(nME = nME, positionME = positionME) "Power law current profile")),
-    Placement(transformation(origin = {0, 44}, extent = {{-10, -10}, {10, 10}})));
-  
-  // Wave model
-  replaceable NoWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) "No wave kinematics"), choice(redeclare LinearWaveKin waveModel(nME = nME, positionME = positionME, zeta = zeta, n_omega = n_omega, omega = omega, phi = phi, k = k, waveHeading = waveHeading, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres) "Linear wave kinematics")),
-    Placement(transformation(origin = {0, -28}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
-  
   // Fluid kinematics
   SI.Velocity Uf[3,nME] "Combined wave and current fluid velocity";
   SI.Velocity UfT[3,nME] "Tangential component of the combined wave and current fluid velocity";
@@ -66,11 +55,13 @@ model MorisonForce
   SI.Velocity AfT[3,nME] "Tangential component of the wave fluid acceleration";
   SI.Velocity AfN[3,nME] "Normal component of the wave fluid acceleration";
   
+  // Body kinematics
   SI.Position position[3] = u_abs "Translational position vector";
   Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";
   Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined acceleration vector";
-  SI.Position positionME[3,nME] "Absolute translational position vector for all Morison elements";
+  Interfaces.RealOutput  positionME[3,nME] "Absolute translational position vector for all Morison elements";
   
+  // Global Morison quantities
   SI.Position rMEG[3,nME] "Vector to the Morison element from the CG in the global frame";
   Real nHatMEG[3,nME] "Orientation unit vector in the global frame";
   
@@ -99,25 +90,16 @@ model MorisonForce
   SI.Acceleration AMEN[3,nME] "Normal acceleration of the Morison elements";
   SI.Acceleration AMET[3,nME] "Tangential acceleration of the Morison elements";
   
-  // Current parameters
-  parameter SI.Velocity Uc0 "Current velocity at the mean water level";
-  parameter SI.Angle currentHeading "Current heading";
-  
-  // Wave variables
-  parameter SI.Angle waveHeading "Wave heading" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle phi[waveHeadingSpreadBins, n_omega]"Wave components phase shift" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter SI.AngularFrequency omega[n_omega]"Frequency components selected for simulation" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter Integer n_omega "Number of frequency components (default is 100 for irregular)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter Integer waveHeadingSpreadBins "Number of discrete headings centered around the mean heading to consider in the spectrum spread" annotation(Dialog(enable = false, tab = "Misc"));
-  parameter SI.WaveNumber k[n_omega] "Wave number component" annotation(
-    HideResult = true, Dialog(enable = false, tab = "Misc"));
-  
   // Ramp
-    parameter SI.Time Trmp "Interval for ramping up of waves during start phase" annotation(HideResult = true,
-    Dialog(enable = false, tab = "Misc"));
   Real ramp "Ramping function" annotation(HideResult = true);
+  
+  // Current model
+  replaceable NoCurrent currentModel(file = fileDirectory.file, nME = nME) constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel(file = fileDirectory.file, nME = nME)  "No current"), choice(redeclare ConstantCurrent currentModel(file = fileDirectory.file, nME = nME) "Constant current profile"), choice(redeclare LinearCurrent currentModel(file = fileDirectory.file, nME = nME) "Linear current profile"), choice(redeclare PowerLawCurrent currentModel(file = fileDirectory.file, nME = nME) "Power law current profile")),
+    Placement(transformation(origin = {0, 44}, extent = {{-10, -10}, {10, 10}})));
+  
+  // Wave model
+  replaceable NoWaveKin waveModel(file = fileDirectory.file, nME = nME) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel(file = fileDirectory.file, nME = nME) "No wave kinematics"), choice(redeclare LinearWaveKin waveModel(file = fileDirectory.file, nME = nME) "Linear wave kinematics")),
+    Placement(transformation(origin = {0, -28}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
 equation
 // Need to first rotate r,n!!!!!!!!!!!!
   R = frame_a.R;
@@ -167,7 +149,7 @@ equation
     fD[:, i] = fDN[:, i] + fDT[:, i];
 // Check if Z-coordinate of the Morison element is above the mean free surface
 // Should I Wheeler stretch??
-    if positionME[3, i] <= 5 then
+    if positionME[3, i] <= 0 then
       fME[:, i] = fI[:, i] + fD[:, i];
       mME[:, i] = cross(rME[:, i], fME[:, i]);
     else
@@ -176,6 +158,7 @@ equation
     end if;
   end for;
   F = ramp.*cat(1, sum(fME[:, i] for i in 1:nME), sum(mME[:, i] for i in 1:nME));
-
-  annotation(
-    experiment(StartTime = 0, StopTime = 1, Tolerance = 1e-06, Interval = 0.002));end MorisonForce;
+  // Connects
+  connect(positionME, currentModel.positionME);
+  connect(positionME, waveModel.positionME);
+end MorisonForce;

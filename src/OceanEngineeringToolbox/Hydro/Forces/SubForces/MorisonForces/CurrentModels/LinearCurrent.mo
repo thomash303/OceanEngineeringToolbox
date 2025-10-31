@@ -8,9 +8,9 @@ model LinearCurrent
 
   // Importing from the MSL
   import Modelica.Units.SI;
+  extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   
   // Current parameters
-  parameter SI.Position d = 200 "Water depth";
   
 equation
 

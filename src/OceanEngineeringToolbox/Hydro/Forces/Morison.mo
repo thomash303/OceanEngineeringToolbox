@@ -31,7 +31,7 @@ model Morison
   parameter SI.Volume VME[nME] "Displaced volume" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   
- replaceable SubForces.MorisonForces.MorisonForce morisonForce(nME = nME, rME = rME, nHatME = nHatME, Cfk = Cfk, Cd = Cd, Ac = Ac, Cam = Cam, VME = VME, zeta = environment.wave.zeta, n_omega = environment.wave.n_omega, omega = environment.wave.omega, phi = environment.wave.phi, ramp = environment.wave.ramp, Trmp = environment.Trmp, k = environment.wave.k, waveHeading = environment.wave.waveHeading, waveHeadingSpreadBins = environment.wave.waveHeadingSpreadBins, spreadBinCentres = environment.wave.spreadBinCentres, Uc0 = environment.Uc0, currentHeading = environment.currentHeading) annotation(Dialog(group = "Wave and current kinematic model selection"),
+ replaceable SubForces.MorisonForces.MorisonForce morisonForce(nME = nME, rME = rME, nHatME = nHatME, Cfk = Cfk, Cd = Cd, Ac = Ac, Cam = Cam, VME = VME, ramp = environment.wave.ramp) annotation(Dialog(group = "Wave and current kinematic model selection"),
     Placement(transformation(origin = {0, -24}, extent = {{-10, -10}, {10, 10}})));
   Sensors.AbsoluteSensor absoluteSensor(resolveInFrame = Types.ResolveInFrameA.world, get_r = true, get_v = true, get_a = true, get_w = true, get_z = true, get_angles = false)  annotation(HideResult = true, Placement(transformation(origin = {0, 58}, extent = {{-10, -10}, {10, 10}})));
 equation

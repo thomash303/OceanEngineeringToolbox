@@ -13,7 +13,6 @@ partial model BaseWave
   
   // Calling an outer model at the top-level deployment
   outer Environmental.Environment environment;
-  outer DataImport.FileDirectory fileDirectory;
   
   // Wave Parameters
   parameter SI.Height Hs(min=0) = 2 "Significant wave height" annotation(
