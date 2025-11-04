@@ -66,6 +66,7 @@ for i = 1:hydro.bodies.Nb
     cbName = sprintf('cb%d', i); 
     hydrostaticName = sprintf('Khs%d', i); 
     addedMassName = sprintf('Ainf%d', i);
+    addedMassExName = sprintf('AinfEx%d', i);
     excitationSpectralReName = sprintf('re%d', i);
     excitationSpectralImName = sprintf('im%d', i);
     massName = sprintf('m%d', i);
@@ -100,7 +101,12 @@ for i = 1:hydro.bodies.Nb
     hydro.coefficients.radiation.stateSpace.B2B.(addedMassName) = reverseDimensionOrder(h5read(filePath, [h5BodyName '/hydro_coeffs/added_mass/inf_freq']));
     hydro.coefficients.radiation.stateSpace.B2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)*hydro.parameters.rho;
     hydro.coefficients.radiation.stateSpace.noB2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)(:,1+(i-1)*hydro.bodies.nDoF:i*hydro.bodies.nDoF);
-    
+    hydro.coefficients.radiation.stateSpace.B2B.(addedMassExName) = ...
+    hydro.coefficients.radiation.stateSpace.B2B.(addedMassName)(:, [1:(i-1)*hydro.bodies.nDoF, i*hydro.bodies.nDoF+1:end]);
+    %hydro.coefficients.radiation.stateSpace.B2B.(addedMassExName) = hydro.coefficients.radiation.stateSpace.B2B.(addedMassName);
+    %hydro.coefficients.radiation.stateSpace.B2B.(addedMassExName)(1:hydro.bodies.nDoF, (i-1)*hydro.bodies.nDoF+1:i*hydro.bodies.nDoF) = 0;
+    hydro.coefficients.radiation.stateSpace.B2B.(addedMassName) = hydro.coefficients.radiation.stateSpace.noB2B.(addedMassName);
+
     % Excitation spectral decompositon
     hydro.coefficients.excitation.spectralDecomp.D3.(excitationSpectralReName) = permute(h5read(filePath, [h5BodyName '/hydro_coeffs/excitation/re']),[3,1,2])*hydro.parameters.rho*hydro.parameters.g;
     hydro.coefficients.excitation.spectralDecomp.D3.(excitationSpectralImName) = permute(h5read(filePath, [h5BodyName '/hydro_coeffs/excitation/im']),[3,1,2])*hydro.parameters.rho*hydro.parameters.g;
@@ -172,7 +178,7 @@ for i = 1:hydro.bodies.Nb
      Cf = [];
      Df = [];
     
-     % State-space matrices including B2B interaction
+     % State-space matrices not including B2B interaction
      hydro.bodies.LDoF =  hydro.bodies.dof(1);
      for ii = 1:hydro.bodies.nDoF
          for jj = hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i) % this will need to change if body has < 6DoF

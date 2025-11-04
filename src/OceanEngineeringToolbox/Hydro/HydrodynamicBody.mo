@@ -15,6 +15,9 @@ model HydrodynamicBody
   // Simulation parameters w/ implicit connections
   outer DataImport.FileDirectory fileDirectory;
   
+  // Body index used for the radiation force (to avoid instantiation issue with replaceable objects)
+  inner parameter Integer bodyIndexTemp = bodyIndex "Body index used for the radiation force (to avoid instantiation issue with replaceable objects)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  
   // Mass parameters
   parameter SI.Mass M[1,1] = readRealMatrix(fileDirectory.file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
     Dialog(group = "Mass")); 
@@ -46,11 +49,12 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Excitation"));
   // Radiation
-    Forces.Radiation radiation(file = fileDirectory.file, bodyIndex = bodyIndex) if enableRadiationForce annotation(
-    Placement(transformation(origin = {34, 48}, extent = {{-18, -18}, {18, 18}})));
   parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
     choices(checkBox = true),
     Dialog(group = "Radiation"));
+  replaceable Forces.Radiation radiation(file = fileDirectory.file) if enableRadiationForce constrainedby Forces.Radiation  annotation(Dialog(group = "Radiation"), choices(choice(redeclare Forces.Radiation radiation(file = fileDirectory.file) "Radiation Force"), choice(redeclare Forces.RadiationB2B radiation(file = fileDirectory.file) "B2B Radiation Force")),
+    Placement(transformation(origin = {34, 48}, extent = {{-18, -18}, {18, 18}})));
+
   // Hydrostatic
   Forces.Hydrostatic hydrostatic(file = fileDirectory.file, bodyIndex = bodyIndex) if enableHydrostaticForce annotation(
     Placement(transformation(origin = {-80, 48}, extent = {{18, -18}, {-18, 18}})));
@@ -114,8 +118,8 @@ model HydrodynamicBody
     choices(checkBox = true),
     Dialog(group = "Morison"));
   
-
 equation
+
 //Conections
   connect(hydrostatic.frame_a, body.frame_c) annotation(
     Line(points = {{-62, 48}, {-56, 48}, {-56, -26}, {0, -26}}, color = {95, 95, 95}));
