@@ -3,51 +3,37 @@ within OceanEngineeringToolbox.Hydro.Forces.SubForces.RadiationForces;
 model RadiationForceB2B
   "Model representing the radiation force with B2B interactions"
   
-  // This has yet to be developed.
+  // Importing from the MSL
+  import Modelica.Units.SI;
+  
+  // Extending and inheriting from the OET
+  extends DataImport.ImportRecords.HydroImport.radiationB2BData(bodyIndex = bodyIndexTemp);
+  extends BaseRadiationForce;
+  
+  // Calling an outer model at the top-level deployment
+  outer RadiationB2BCoupler radiationB2BCoupler;
+  outer parameter Integer bodyIndexTemp "Body index used for the radiation force (to avoid instantiation issue with replaceable objects)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer bodyIndex = bodyIndexTemp "Body index for radiation force"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc")); 
 
-/*
-  // Import hydro coefficients
-  extends DataImport.radiationDataB2B;
-  // Inherit frame_a
-  extends Modelica.Mechanics.MultiBody.Interfaces.PartialOneFrame_a;
-  // Velocity connectors
-  Modelica.Blocks.Interfaces.RealInput v_abs[3] "Linear velocity vector [m/s]" annotation(
-    HideResult = true,
-    Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-  Modelica.Blocks.Interfaces.RealInput omega_abs[3] "Angular velocity vector [rad/s]" annotation(
-    HideResult = true,
-    Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-  Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector [N,Nm]";
-  // Enable/disable radiation force
-  parameter Boolean enableRadiationForce = true "Switch to enable/disable radiation force calculation" annotation(
-    HideResult = true,
-    Dialog(group = "Radiation Force Parameters"));
-  Real velocityVector[nDoF];
 protected
-  Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector [m/s, rad/s]";
-  Modelica.Units.SI.Force f_element[3];
-  Modelica.Units.SI.Torque t_element[3];
-  Real x[n_states] "Dummy variable state vector";
+  Real x[n_state[1]] "Dummy variable state vector";
+
 initial equation
-  x = zeros(n_states) "Initialize state vector to zero";
+  x = zeros(n_state[1]) "Initialize state vector to zero";
+
 equation
+    // Assign velocity values for the given body
   for i in 1:bodyDoF loop
-    velocityVector[bodyDoF*(bodyIndex - 1) + i] = velocity[i];
+    radiationB2BCoupler.vCoupled[bodyDoF*(bodyIndex - 1) + i] = velocity[i];
   end for;
-// Use the switch to conditionally output the radiation force torque element
-  if enableRadiationForce then
-// Radiation state space
-    der(x) = A*x + B*velocityVector;
-    F = C*x + D*velocityVector;
-  else
-    x = zeros(n_states);
-    F = zeros(6);
-  end if;
-  frame_a.f = f_element;
-  frame_a.t = t_element;
+
+  // Calculate the radiation force/torque vector
+  der(x) = A * x + B * radiationB2BCoupler.vCoupled;
+  F = C * x + D * radiationB2BCoupler.vCoupled;
+  
+  
   annotation(
-    Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Radiation Force")}));
-    
-    */
+    Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "B2B Radiation Force")}),
+    Diagram(coordinateSystem(extent = {{-120, 140}, {40, -20}})));
 
 end RadiationForceB2B;
