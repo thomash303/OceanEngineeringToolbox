@@ -11,7 +11,6 @@ function waveSpreadingBins
   import Modelica.Math.{wrapAngle,Vectors};
   
   // Inputs
-  //input Integer n = 1 "Spreading function constant";
   input SI.Angle waveHeading = 0 "Mean wave heading";
   input SI.Angle waveHeadingSpread = pi/2 "Maximum spread (+/-) from the mean wave heading (must be <= pi/2)";
   input Integer waveHeadingSpreadBins = 5 "Number of discrete headings centered around the mean heading to consider in the spectrum spread";
