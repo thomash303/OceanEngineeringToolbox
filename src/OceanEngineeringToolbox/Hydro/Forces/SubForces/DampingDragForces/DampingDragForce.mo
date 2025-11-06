@@ -8,6 +8,7 @@ model DampingDragForce
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Blocks.Interfaces;
+  import Modelica.Math.Vectors.length;
   
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
@@ -32,7 +33,7 @@ protected
 equation
 
   // Calculate the damping/drag force/torque vector
-  F = Cv.*velocity + 0.5*rho.*Ad.*Cd.*velocity.*abs(velocity);
+  F = Cv.*velocity + 0.5*rho.*Ad.*Cd.*velocity.*length(velocity);
   
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Damping/Drag Force")}));

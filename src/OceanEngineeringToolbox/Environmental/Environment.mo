@@ -14,16 +14,20 @@ model Environment
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
     
+  // Wave parameters
+  replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave  "Wave type" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare NoWave wave(file = fileDirectory.file) "No wave"), choice(redeclare RegularWave wave(file = fileDirectory.file) "Regular wave"), choice(redeclare IrregularWave wave(file = fileDirectory.file) "Irregular wave"), choice(redeclare SpectrumImportWave wave(file = fileDirectory.file) "Spectrum import wave")));
+      
   // Current parameters
   parameter SI.Velocity Uc0 = 1 "Current velocity at the mean water level" annotation(Dialog(group = "Current Parameters (for Morison only)"));
   parameter SI.Angle currentHeading = 0 "Current heading" annotation(Dialog(group = "Current Parameters (for Morison only)"));
-  parameter Real alphaCur = 0.14 "Power-law exponent" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  parameter SI.Height currentDepth = 100 "Current depth" annotation(Dialog(group = "Current Parameters (for Morison only)")); 
+  parameter Real alphaCur = 0.14 "Current power-law exponent" annotation(Dialog(group = "Current Parameters (for Morison only)"));
   
   // Simulation parameters
   parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase" annotation(
     Dialog(group = "Simulation Parameters"));
     
-  replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave  "Wave type" annotation(choices(choice(redeclare NoWave wave(file = fileDirectory.file) "No wave"), choice(redeclare RegularWave wave(file = fileDirectory.file) "Regular wave"), choice(redeclare IrregularWave wave(file = fileDirectory.file) "Irregular wave"), choice(redeclare SpectrumImportWave wave(file = fileDirectory.file) "Spectrum import wave")));
+
   
 
     

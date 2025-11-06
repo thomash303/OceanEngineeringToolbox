@@ -59,7 +59,7 @@ model IrregularWave
   parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(Dialog(enable = false, tab = "Misc"));
 
   // Random frequency discritization model
-  replaceable randomGenerator frequencySelector(file = fileDirectory.file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = fileDirectory.file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = fileDirectory.file) "Equal-energy frequency selection")));
+  replaceable randomGenerator frequencySelector(file = file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = file) "Equal-energy frequency selection")));
  
   // Output variables for excitation, Morison, and wave gauge
   parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = frequencySelector.zeta "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));

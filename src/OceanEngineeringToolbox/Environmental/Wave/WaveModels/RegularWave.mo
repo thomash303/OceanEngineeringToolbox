@@ -40,7 +40,7 @@ model RegularWave
   parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = fill(A,waveHeadingSpreadBins,n_omega) "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.Angle phi[waveHeadingSpreadBins, n_omega] = zeros(waveHeadingSpreadBins,n_omega) "Wave components phase shift"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.AngularFrequency omega[n_omega] = vector(omegaPeak) "Frequency components selected for simulation" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-    parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Bin centres" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+    parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = fill(waveHeading,waveHeadingSpreadBins) "Bin centres" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Real D[waveHeadingSpreadBins] = zeros(waveHeadingSpreadBins) "Directional spreading weights" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
 
   // Wave elevation

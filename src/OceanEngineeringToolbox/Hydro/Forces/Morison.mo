@@ -21,7 +21,7 @@ model Morison
     Placement(transformation(origin = {0, -200}, extent = {{-116, -16}, {-84, 16}}, rotation = -90), iconTransformation(extent = {{-116, -16}, {-84, 16}}, rotation = 90)));
   
   // Morison parameters
-  parameter Integer nME "Number of Morison Morison elements" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter Integer nME "Number of Morison Morison elements" annotation(HideResult = true,Dialog(enable = false, tab = "Misc"));
   parameter SI.Position rME[3,nME] "Vector to the Morison element from the CG in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Real nHatME[3,nME] "Orientation unit vector in the body frame" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Real Cfk[2,nME] "Froude-Krylov coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  

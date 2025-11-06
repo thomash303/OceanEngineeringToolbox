@@ -8,13 +8,13 @@ model PowerLawCurrent
 
   // Importing from the MSL
   import Modelica.Units.SI;
-  extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   
   // Current parameters
-  parameter Real alphaCur = environment.alphaCur "Power-law exponent";
+  parameter SI.Height currentDepth = environemnt.currentDepth "Current depth" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Real alphaCur = environment.alphaCur "Power-law exponent" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
  
 equation
 
-  UcA = Uc0 .* (1 .+ positionME[3,:] ./ d).^alphaCur;
+  UcA = Uc0 .* (1 .+ positionME[3,:] ./ currentDepth).^alphaCur;
 
 end PowerLawCurrent;

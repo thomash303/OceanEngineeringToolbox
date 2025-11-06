@@ -2,7 +2,7 @@ within OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces;
 
 model MorisonForce 
   "Model representing the Morison force"
-  /* The development of this model referenced the Morison formulation in WEC-Sim. */
+  /* The development of this model is derived from the Morison formulation in WEC-Sim. */
 
   // Importing from the MSL
   import Modelica.Units.SI;
@@ -10,10 +10,10 @@ model MorisonForce
   import Modelica.Blocks.Interfaces;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Mechanics.MultiBody.Frames;
-  import Modelica.Math.Vectors.normalizeWithAssert;
+  import Modelica.Math.Vectors.{length, normalizeWithAssert};
   
   // Importing and extending from the OET
-  extends BaseHydroForce;
+  extends BaseHydroForce(redeclare Real F[6] = cat(1, -f_element, -t_element));
   import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
   import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.WaveModels.*;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
@@ -22,19 +22,19 @@ model MorisonForce
   outer DataImport.FileDirectory fileDirectory;
 
   // Displacement connectors
-  Interfaces.RealVectorInput u_abs[3] "Absolute translational position vector" annotation(
+  Interfaces.RealVectorInput u_abs[3] "Absolute translational position vector" annotation(HideResult = true,
     Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {0, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
     
   // Velocity connectors
-  Interfaces.RealVectorInput v_abs[3] "Translational velocity vector" annotation(
+  Interfaces.RealVectorInput v_abs[3] "Translational velocity vector" annotation(HideResult = true,
     Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-88, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-  Interfaces.RealVectorInput omega_abs[3] "Angular velocity vector" annotation(
+  Interfaces.RealVectorInput omega_abs[3] "Angular velocity vector" annotation(HideResult = true,
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-46, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
     
   // Acceleration connectors
-  Interfaces.RealVectorInput a_abs[3] "Translational acceleration vector" annotation(
+  Interfaces.RealVectorInput a_abs[3] "Translational acceleration vector" annotation(HideResult = true,
     Placement(transformation(origin = {-20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {44, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
-  Interfaces.RealVectorInput alpha_abs[3] "Angular acceleration vector" annotation(
+  Interfaces.RealVectorInput alpha_abs[3] "Angular acceleration vector" annotation(HideResult = true,
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {86, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   
   // Morison parameters
@@ -45,63 +45,63 @@ model MorisonForce
   parameter Real Cd[2,nME] "Drag coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));  
   parameter SI.Area Ac[2,nME] "Characteristic drag area [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter Real Cam[2,nME] "Added mass coefficients [normal, tangential]" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
-  parameter SI.Volume VME[nME] "Displaced volume" annotation(Dialog(enable = false, tab = "Misc"));
+  parameter SI.Volume VME[nME] "Displaced volume" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
 
   // Fluid kinematics
-  SI.Velocity Uf[3,nME] "Combined wave and current fluid velocity";
-  SI.Velocity UfT[3,nME] "Tangential component of the combined wave and current fluid velocity";
-  SI.Velocity UfN[3,nME] "Normal component of the combined wave and current fluid velocity";
-  SI.Velocity Af[3,nME] "Wave fluid acceleration";
-  SI.Velocity AfT[3,nME] "Tangential component of the wave fluid acceleration";
-  SI.Velocity AfN[3,nME] "Normal component of the wave fluid acceleration";
+  SI.Velocity Uf[3,nME] "Combined wave and current fluid velocity" annotation(HideResult = true);
+  SI.Velocity UfT[3,nME] "Tangential component of the combined wave and current fluid velocity" annotation(HideResult = true);
+  SI.Velocity UfN[3,nME] "Normal component of the combined wave and current fluid velocity" annotation(HideResult = true);
+  SI.Velocity Af[3,nME] "Wave fluid acceleration" annotation(HideResult = true);
+  SI.Velocity AfT[3,nME] "Tangential component of the wave fluid acceleration" annotation(HideResult = true);
+  SI.Velocity AfN[3,nME] "Normal component of the wave fluid acceleration" annotation(HideResult = true);
   
   // Body kinematics
-  SI.Position position[3] = u_abs "Translational position vector";
-  Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";
-  Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined acceleration vector";
-  Interfaces.RealOutput  positionME[3,nME] "Absolute translational position vector for all Morison elements";
+  SI.Position position[3] = u_abs "Translational position vector" annotation(HideResult = true);
+  Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector" annotation(HideResult = true);
+  Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined acceleration vector" annotation(HideResult = true);
+  Interfaces.RealOutput positionME[3,nME] "Absolute translational position vector for all Morison elements" annotation(HideResult = true);
   
   // Global Morison quantities
-  SI.Position rMEG[3,nME] "Vector to the Morison element from the CG in the global frame";
-  Real nHatMEG[3,nME] "Orientation unit vector in the global frame";
+  SI.Position rMEG[3,nME] "Vector to the Morison element from the CG in the global frame" annotation(HideResult = true);
+  Real nHatMEG[3,nME] "Orientation unit vector in the global frame" annotation(HideResult = true);
   
   // Intermediate force components
-  SI.Force fFK[3,nME] "Froude-Krylov force component";
-  SI.Force fFKN[3,nME] "Froude-Krylov normal force component";
+  SI.Force fFK[3,nME] "Froude-Krylov force component" annotation(HideResult = true);
+  SI.Force fFKN[3,nME] "Froude-Krylov normal force component" annotation(HideResult = true);
   // If doing
-  SI.Force fFKT[3,nME] "Froude-Krylov tangential force component";  
-  SI.Force fAM[3,nME] "Added mass force component"; 
-  SI.Force fAMN[3,nME] "Added mass normal force component"; 
+  SI.Force fFKT[3,nME] "Froude-Krylov tangential force component" annotation(HideResult = true);  
+  SI.Force fAM[3,nME] "Added mass force component" annotation(HideResult = true); 
+  SI.Force fAMN[3,nME] "Added mass normal force component" annotation(HideResult = true); 
   // If doing
-  SI.Force fAMT[3,nME] "Added mass tangential force component";
-  SI.Force fI[3,nME] "Inertial force component";
-  SI.Force fD[3,nME] "Drag force component";
-  SI.Force fDN[3,nME] "Drag force normal component";
-  SI.Force fDT[3,nME] "Drag force tangential component"; 
-  SI.Force fME[3,nME] "Morison force";
-  SI.Torque mME[3,nME] "Morison moment"; 
-  Frames.Orientation R "Rotation orientation object between the global and body-fixed frames";
+  SI.Force fAMT[3,nME] "Added mass tangential force component" annotation(HideResult = true);
+  SI.Force fI[3,nME] "Inertial force component" annotation(HideResult = true);
+  SI.Force fD[3,nME] "Drag force component" annotation(HideResult = true);
+  SI.Force fDN[3,nME] "Drag force normal component" annotation(HideResult = true);
+  SI.Force fDT[3,nME] "Drag force tangential component" annotation(HideResult = true); 
+  SI.Force fME[3,nME] "Morison force" annotation(HideResult = true);
+  SI.Torque mME[3,nME] "Morison moment" annotation(HideResult = true); 
+  Frames.Orientation R "Rotation orientation object between the global and body-fixed frames" annotation(HideResult = true);
   
   // Morison element kinematics
-  SI.Velocity UME[3,nME] "Velocity of the Morison elements";
-  SI.Velocity UMEN[3,nME] "Normal velocity of the Morison elements";
-  SI.Velocity UMET[3,nME] "Tangential velocity of the Morison elements";
-  SI.Acceleration AME[3,nME] "Acceleration of the Morison elements"; 
-  SI.Acceleration AMEN[3,nME] "Normal acceleration of the Morison elements";
-  SI.Acceleration AMET[3,nME] "Tangential acceleration of the Morison elements";
+  SI.Velocity UME[3,nME] "Velocity of the Morison elements" annotation(HideResult = true);
+  SI.Velocity UMEN[3,nME] "Normal velocity of the Morison elements" annotation(HideResult = true);
+  SI.Velocity UMET[3,nME] "Tangential velocity of the Morison elements" annotation(HideResult = true);
+  SI.Acceleration AME[3,nME] "Acceleration of the Morison elements" annotation(HideResult = true); 
+  SI.Acceleration AMEN[3,nME] "Normal acceleration of the Morison elements" annotation(HideResult = true);
+  SI.Acceleration AMET[3,nME] "Tangential acceleration of the Morison elements" annotation(HideResult = true);
   
   // Ramp
   Real ramp "Ramping function" annotation(HideResult = true);
   
   // Current model
-  replaceable NoCurrent currentModel(file = fileDirectory.file, nME = nME) constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel(file = fileDirectory.file, nME = nME)  "No current"), choice(redeclare ConstantCurrent currentModel(file = fileDirectory.file, nME = nME) "Constant current profile"), choice(redeclare LinearCurrent currentModel(file = fileDirectory.file, nME = nME) "Linear current profile"), choice(redeclare PowerLawCurrent currentModel(file = fileDirectory.file, nME = nME) "Power law current profile")),
+  replaceable NoCurrent currentModel constrainedby BaseCurrent  "Current profile" annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoCurrent currentModel  "No current"), choice(redeclare ConstantCurrent currentModel "Constant current profile"), choice(redeclare LinearCurrent currentModel "Linear current profile"), choice(redeclare PowerLawCurrent currentModel "Power law current profile")),
     Placement(transformation(origin = {0, 44}, extent = {{-10, -10}, {10, 10}})));
   
   // Wave model
-  replaceable NoWaveKin waveModel(file = fileDirectory.file, nME = nME) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel(file = fileDirectory.file, nME = nME) "No wave kinematics"), choice(redeclare LinearWaveKin waveModel(file = fileDirectory.file, nME = nME) "Linear wave kinematics")),
+  replaceable NoWaveKin waveModel(file = fileDirectory.file) constrainedby BaseWaveKin annotation(Dialog(group = "Wave and current kinematic model selection"),choices(choice(redeclare NoWaveKin waveModel(file = fileDirectory.file) "No wave kinematics"), choice(redeclare LinearWaveKin waveModel(file = fileDirectory.file) "Linear wave kinematics")),
     Placement(transformation(origin = {0, -28}, extent = {{-10, 10}, {10, -10}}, rotation = -0)));
+
 equation
-// Need to first rotate r,n!!!!!!!!!!!!
   R = frame_a.R;
   Uf = currentModel.Uc + waveModel.Uw;
   Af = waveModel.Aw;
@@ -139,13 +139,12 @@ equation
 // Added mass
     fAMN[:, i] = rho*VME[i]*Cam[1, i]*(AfN[:, i] - AMEN[:, i]);
     fAMT[:, i] = rho*VME[i]*Cam[2, i]*(AfT[:, i] - AMET[:, i]);
-    fAM[:, i] = fFKN[:, i] + fAMT[:, i];
+    fAM[:, i] = fAMN[:, i] + fAMT[:, i];
 // Inertial
     fI[:, i] = fFK[:, i] + fAM[:, i];
 // Drag
-// Should Cd be a vector in xyz or a scalar constant for all DoF
-    fDN[:, i] = 1/2*rho*Ac[1, i]*Cd[1, i].*(UfN[:, i] - UMEN[:, i]);
-    fDT[:, i] = 1/2*rho*Ac[2, i]*Cd[2, i].*(UfT[:, i] - UMET[:, i]);
+    fDN[:, i] = 1/2*rho*Ac[1, i]*Cd[1, i].*(UfN[:, i] - UMEN[:, i]) * length(UfN[:, i] - UMEN[:, i]);
+    fDT[:, i] = 1/2*rho*Ac[2, i]*Cd[2, i].*(UfT[:, i] - UMET[:, i]) * length(UfN[:, i] - UMEN[:, i]);
     fD[:, i] = fDN[:, i] + fDT[:, i];
 // Check if Z-coordinate of the Morison element is above the mean free surface
 // Should I Wheeler stretch??

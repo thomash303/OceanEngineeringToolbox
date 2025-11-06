@@ -8,23 +8,23 @@ partial model BaseCurrent
   import Modelica.Blocks.Interfaces;
   
   // Inheriting from the OET
-  extends DataImport.InputRecords.FilePath;
   
   // Calling an outer model at the top-level deployment
   outer Environmental.Environment environment;
+  outer parameter Integer nMETemp "Body index used for the radiation force (to avoid instantiation issue with replaceable objects)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer nME = nMETemp "Body index for radiation force" annotation(HideResult = true, Dialog(enable = false, tab = "Misc")); 
       
   // Translational position connectors
-  Interfaces.RealInput positionME[3,nME] "Absolute translational position vector for all Morison elements" annotation(
+  Interfaces.RealInput positionME[3,nME] "Absolute translational position vector for all Morison elements" annotation(HideResult = true,
     Placement(transformation(origin = {0, 115}, extent = {{15, -15}, {-15, 15}}, rotation = -270), iconTransformation(origin = {0, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
  // Current velocity connectors
   // Base current parameters
-  parameter Integer nME "Number of Morison Morison elements";
-  parameter SI.Velocity Uc0 = environment.Uc0 "Current velocity at the mean water level";
-  parameter SI.Angle currentHeading = environment.currentHeading "Currrent heading";
-  SI.Velocity Uc[3,nME] "Current velocity";
+  parameter SI.Velocity Uc0 = environment.Uc0 "Current velocity at the mean water level" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.Angle currentHeading = environment.currentHeading "Currrent heading" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  SI.Velocity Uc[3,nME] "Current velocity" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Intermediate variables
-  SI.Velocity UcA[nME] "Current velocity amplitude";
+  SI.Velocity UcA[nME] "Current velocity amplitude" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
 equation
 

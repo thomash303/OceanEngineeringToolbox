@@ -114,15 +114,15 @@ for i = 1:bodies
             legend('OET','WEC-Sim','Location','best');
         end
 
-        % Build save name
-        baseName = sprintf('WS_OET_B2B_free_%s_%s', bodyName{i}, lower(kinematicNames{j}));
-        figFile = fullfile(saveFolder, [baseName '.fig']);
-        pngFile = fullfile(saveFolder, [baseName '.png']);
-
-        % Save both .fig and .png
-        saveas(gcf, figFile);
-        saveas(gcf, pngFile);
-        close;
+        % % Build save name
+        % baseName = sprintf('WS_OET_B2B_free_%s_%s', bodyName{i}, lower(kinematicNames{j}));
+        % figFile = fullfile(saveFolder, [baseName '.fig']);
+        % pngFile = fullfile(saveFolder, [baseName '.png']);
+        % 
+        % % Save both .fig and .png
+        % saveas(gcf, figFile);
+        % saveas(gcf, pngFile);
+        % close;
 
     end
 
@@ -143,15 +143,15 @@ for i = 1:bodies
 
         end
 
-        % Build save name
-        baseName = sprintf('WS_OET_B2B__%s_%s', bodyName{i}, lower(dynamicNames{j}));
-        figFile = fullfile(saveFolder, [baseName '.fig']);
-        pngFile = fullfile(saveFolder, [baseName '.png']);
-
-        % Save both .fig and .png
-        saveas(gcf, figFile);
-        saveas(gcf, pngFile);
-        close;
+        % % Build save name
+        % baseName = sprintf('WS_OET_B2B__%s_%s', bodyName{i}, lower(dynamicNames{j}));
+        % figFile = fullfile(saveFolder, [baseName '.fig']);
+        % pngFile = fullfile(saveFolder, [baseName '.png']);
+        % 
+        % % Save both .fig and .png
+        % saveas(gcf, figFile);
+        % saveas(gcf, pngFile);
+        % close;
    end
 end
 

@@ -8,12 +8,12 @@ model LinearCurrent
 
   // Importing from the MSL
   import Modelica.Units.SI;
-  extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   
   // Current parameters
+    parameter SI.Height currentDepth = environment.currentDepth "Current depth" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
 equation
 
-  UcA = Uc0 .* (1 .+ positionME[3,:] ./ d);
+  UcA = Uc0 .* (1 .+ positionME[3,:] ./ currentDepth);
 
 end LinearCurrent;

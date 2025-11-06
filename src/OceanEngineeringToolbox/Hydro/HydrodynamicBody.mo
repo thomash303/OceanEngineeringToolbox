@@ -17,6 +17,8 @@ model HydrodynamicBody
   
   // Body index used for the radiation force (to avoid instantiation issue with replaceable objects)
   inner parameter Integer bodyIndexTemp = bodyIndex "Body index used for the radiation force (to avoid instantiation issue with replaceable objects)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  // Body index used for the radiation force (to avoid instantiation issue with replaceable objects)
+  inner parameter Integer nMETemp = nME "Number of Morison Morison elements (to avoid instantiation issue with replaceable objects)" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Mass parameters
   parameter SI.Mass M[1,1] = readRealMatrix(fileDirectory.file, "hydro.bodies.m" + bodyIndexString, 1, 1) "Total mass of the body (optional input if user wants to specify a mass that is not necessarily in static equilibirum)" annotation(
@@ -74,10 +76,6 @@ model HydrodynamicBody
   parameter Real Ad[6](each min=0) = {0, 0, 0, 0, 0, 0} "Characteristic area vector" annotation(HideResult = true, Dialog(group = "Damping/Drag", enable = enableDampingDragForce));
   // Morison
   parameter Boolean enableMorisonForce = false "Switch to enable/disable Morison force calculation" annotation(
-    HideResult = true,
-    choices(checkBox = true),
-    Dialog(group = "Morison"));
-  parameter Boolean enableMorisonDrag = false "Switch to enable only the drag contribution in the Morison force calculation" annotation(
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
