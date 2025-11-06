@@ -6,7 +6,8 @@ partial class physicalConstantData
   import Modelica.Utilities.Streams.readRealMatrix;  
 
   extends InputRecords.FilePath;
-protected
+
+  // Wave parameters
   parameter SI.Density rho = scalar(readRealMatrix(file, "hydro.parameters.rho", 1, 1)) "Density of water" annotation(
     Dialog(group = "Environmental Parameters"));
   parameter SI.Position d = scalar(readRealMatrix(file, "hydro.parameters.depth", 1, 1)) "Water depth" annotation(

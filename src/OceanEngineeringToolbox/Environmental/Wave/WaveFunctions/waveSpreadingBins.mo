@@ -32,20 +32,28 @@ algorithm
   " deg > " + String(Conversions.to_deg(spreadThresh)) + " deg. Decrease the spreading range.",
   level = AssertionLevel.error);
 
-  for i in 1:waveHeadingSpreadBins+1 loop
-    // Finding bin edges
-    spreadBinEdges[i] := (-waveHeadingSpread + waveHeading) + spreadWidth*(i-1);
-    
-  end for;
-
-  for i in 1:waveHeadingSpreadBins loop
-    // Finding bin centres
-    // Wrapping to [0,360)
-    spreadBinCentres[i] := wrapAngle(u = ((spreadBinEdges[i] + spreadBinEdges[i+1]) / 2), positiveRange = true);
-  end for;
+  // No directional spreading
+  if waveHeadingSpreadBins == 1 then
+    spreadBinCentres := fill(waveHeading,waveHeadingSpreadBins);
   
-  // Sorting to ascending order for interpolation
-  spreadBinCentres := Vectors.sort(spreadBinCentres);
+  // Directional spreading
+  else
+  
+    for i in 1:waveHeadingSpreadBins+1 loop
+      // Finding bin edges
+      spreadBinEdges[i] := (-waveHeadingSpread + waveHeading) + spreadWidth*(i-1);
+      
+    end for;
+  
+    for i in 1:waveHeadingSpreadBins loop
+      // Finding bin centres
+      // Wrapping to [0,360)
+      spreadBinCentres[i] := wrapAngle(u = ((spreadBinEdges[i] + spreadBinEdges[i+1]) / 2), positiveRange = true);
+    end for;
+    
+    // Sorting to ascending order for interpolation
+    spreadBinCentres := Vectors.sort(spreadBinCentres);
+  end if;
   
 
 end waveSpreadingBins;

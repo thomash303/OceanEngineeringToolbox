@@ -6,7 +6,10 @@ function SpectrumGenerator
   // Importing from the MSL
   import Modelica.Units.SI;
   
-  input String waveSelector "Wave Generation Selector";
+  // Importing from the OET
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
+  
+  input WaveSpectrumType waveSpectrum "Wave Spectrum Type";
   input SI.Height Hs "Significant wave height";
   input Real alphaPM "Energy scale (Phillips constant)";
   input SI.AngularFrequency omegaPeak "Peak spectral frequency" annotation(
@@ -26,13 +29,13 @@ function SpectrumGenerator
 protected
   Integer componentSpectra = 2;  
 algorithm
-  if waveSelector == "PiersonMoskowitz" then
+  if waveSpectrum == WaveSpectrumType.PiersonMoskowitz then
     S := SpectrumEquations.spectrumGeneratorPM(alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega);
-  elseif waveSelector == "Bretschneider" then
+  elseif waveSpectrum == WaveSpectrumType.Bretschneider then
     S := SpectrumEquations.spectrumGeneratorBS(Hs = Hs, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega);
-  elseif waveSelector == "JONSWAP" then
+  elseif waveSpectrum == WaveSpectrumType.JONSWAP then
     S := SpectrumEquations.spectrumGeneratorJS(Hs = Hs, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, sigmaA = sigmaA, sigmaB = sigmaB, gamma = gamma);
-  elseif waveSelector == "OchiHubble" then
+  elseif waveSpectrum == WaveSpectrumType.OchiHubble then
     S := SpectrumEquations.spectrumGeneratorOH(Hs = HsOH, omegaPeak = omegaPeakOH, omega = omega, n_omega = n_omega, lambda = lambdaOH);
   end if;
   

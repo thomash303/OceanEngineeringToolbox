@@ -16,23 +16,8 @@ model waveGauge
   parameter SI.Position x = 0 "x-coordinate of the gauge" annotation(Dialog(group = "Coordinates"));
   parameter SI.Position y = 0 "y-coordinate of the gauge" annotation(Dialog(group = "Coordinates"));
   
-  // Regular wave gauge
-  MeasurementModels.RegularWaveGauge regularWaveGauge(A = environment.regularWave.A, omegaPeak = environment.regularWave.omegaPeak, Trmp = environment.Trmp, n_omega = environment.regularWave.n_omega, k = environment.regularWave.k, waveHeading = environment.waveHeading, waveGaugeEnable = waveGaugeEnable, x = x, y = y) if environment.waveSelector == "Regular" annotation(
-    Placement(transformation(origin = {-16, 28}, extent = {{-10, -10}, {10, 10}})));
-  
-  // Irregular wave equal-energy wave gauge
-  MeasurementModels.IrregularWaveGauge irregularWaveGaugeEqualEnergy(zeta = environment.irregularWave.EqualEnergyGenerator.zeta, n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.EqualEnergyGenerator.omega, phi = environment.irregularWave.EqualEnergyGenerator.phi, Trmp = environment.Trmp, k = environment.irregularWave.EqualEnergyGenerator.k, waveHeading = environment.waveHeading, waveHeadingSpreadBins = environment.waveHeadingSpreadBins, waveGaugeEnable = waveGaugeEnable, x = x, y = y) if (environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "Bretschneider" or environment.waveSelector == "JONSWAP" or environment.waveSelector == "OchiHubble") and environment.frequencySelection == "equalEnergy" annotation(
-    Placement(transformation(origin = {-16, -20}, extent = {{-10, -10}, {10, 10}})));
- 
- // Irregular wave random wave gauge
- MeasurementModels.IrregularWaveGauge irregularWaveGaugeRandom(zeta = environment.irregularWave.RandomGenerator.zeta, n_omega = environment.irregularWave.n_omega, omega = environment.irregularWave.RandomGenerator.omega, phi = environment.irregularWave.RandomGenerator.phi, Trmp = environment.Trmp, k = environment.irregularWave.RandomGenerator.k, waveHeading = environment.waveHeading, waveHeadingSpreadBins = environment.waveHeadingSpreadBins, waveGaugeEnable = waveGaugeEnable, x = x, y = y) if (environment.waveSelector == "PiersonMoskowitz" or environment.waveSelector == "Bretschneider" or environment.waveSelector == "JONSWAP" or environment.waveSelector == "OchiHubble") and environment.frequencySelection == "random" annotation(
-    Placement(transformation(origin = {-16, 4}, extent = {{-10, -10}, {10, 10}})));
- 
-// Irregular wave spectrum import wave Gauge
- MeasurementModels.IrregularWaveGauge irregularWaveGaugeSpectrumImport(zeta = environment.spectrumImport.zeta, n_omega = environment.spectrumImport.n_omega, omega = environment.spectrumImport.omega, phi = environment.spectrumImport.phi, Trmp = environment.Trmp, k = environment.spectrumImport.k, waveHeading = environment.waveHeading, waveHeadingSpreadBins = environment.waveHeadingSpreadBins, waveGaugeEnable = waveGaugeEnable, x = x, y = y) if environment.waveSelector == "spectrumImport" annotation(
-    Placement(transformation(origin = {-16, -44}, extent = {{-10, -10}, {10, 10}})));
-
-equation
+  MeasurementModels.SubWaveGauge subWaveGauge(zeta = environment.wave.zeta, n_omega = environment.wave.n_omega, omega = environment.wave.omega, phi = environment.wave.phi, ramp = environment.wave.ramp, Trmp = environment.Trmp, k = environment.wave.k, waveHeading = environment.wave.waveHeading, waveHeadingSpreadBins = environment.wave.waveHeadingSpreadBins, waveGaugeEnable = waveGaugeEnable, x = x, y = y) annotation(
+    Placement(transformation(origin = {-20, -10}, extent = {{-10, -10}, {10, 10}})));
 
 annotation(
     Diagram(coordinateSystem(extent = {{-40, 40}, {0, -60}})));

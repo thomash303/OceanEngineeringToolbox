@@ -18,7 +18,7 @@ model Hydrostatic
     Placement(transformation(origin = {1, 29}, extent = {{-13, -13}, {13, 13}})));
   SubForces.HydrostaticForces.BuoyancyForce buoyancyForce(file = file, bodyIndex = bodyIndex) annotation(
     Placement(transformation(origin = {2, -32}, extent = {{-14, -14}, {14, 14}})));
-  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Types.ResolveInFrameA.world)  annotation(
+  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Types.ResolveInFrameA.world)  annotation(HideResult = true,
     Placement(transformation(origin = {4, 80}, extent = {{-12, -12}, {12, 12}})));
 equation
   connect(absoluteSensor.frame_a, frame_a) annotation(
