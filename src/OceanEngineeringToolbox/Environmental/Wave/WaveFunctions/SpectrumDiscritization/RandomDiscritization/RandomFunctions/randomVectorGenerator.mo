@@ -1,7 +1,7 @@
 within OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.RandomFunctions;
 
 function randomVectorGenerator
-  "Function to generate a vector random numbers using XOR shift 64 algorithm"
+  "Function to generate a vector of random numbers using XOR shift 64 algorithm"
   
   // Importing from the MSL
   import Modelica.Math.Random.Generators.Xorshift64star;

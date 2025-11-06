@@ -9,5 +9,5 @@ partial class hydrostaticData
   extends InputRecords.BodyIndex;
   extends MultibodyImport.multibodyData;
 protected
-  parameter SI.TranslationalSpringConstant Khs[bodyDoF, bodyDoF] = readRealMatrix(fileDir, "hydro.coefficients.hydrostatic.Khs" + bodyIndexString, bodyDoF, bodyDoF) "Hydrostatic stiffness";
+  parameter SI.TranslationalSpringConstant Khs[bodyDoF, bodyDoF] = readRealMatrix(file, "hydro.coefficients.hydrostatic.Khs" + bodyIndexString, bodyDoF, bodyDoF) "Hydrostatic stiffness";
 end hydrostaticData;

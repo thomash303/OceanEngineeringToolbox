@@ -7,6 +7,7 @@ partial class frequencyData
   
   extends InputRecords.FilePath;
 protected
-  parameter Integer wDim[2] = readMatrixSize(fileDir, "hydro.parameters.w") "Dimensions of the frequency vector";
-  parameter SI.AngularFrequency w[wDim[1]] = vector(readRealMatrix(fileDir, "hydro.parameters.w", wDim[1], 1)) "Excitation force angular frequency vector";
+  parameter Integer nFDim[2] = readMatrixSize(file, "hydro.parameters.w") "Dimensions of the frequency vector";
+  parameter Integer nF = nFDim[1] "Dimensions of the frequency vector";  
+  parameter SI.AngularFrequency w[nF] = vector(readRealMatrix(file, "hydro.parameters.w", nF, 1)) "Excitation force angular frequency vector";
 end frequencyData;

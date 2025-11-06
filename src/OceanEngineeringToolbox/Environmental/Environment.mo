@@ -8,69 +8,37 @@ model Environment
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
-
-  // Spectrum Parameters
-  parameter String waveSelector = "Regular" annotation(
-    Dialog(group = "Wave Spectrum Parameters"),
-    choices(choice = "None", choice = "Regular", choice = "PiersonMoskowitz", choice = "Bretschneider", choice = "JONSWAP", choice = "OchiHubble", choice = "spectrumImport"));
-  parameter String frequencySelection = "random" annotation(
-    Dialog(group = "Wave Spectrum Parameters", enable = (waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble")),
-    choices(choice = "random", choice = "equalEnergy"));
-  parameter SI.Height Hs = 2 "Significant wave height" annotation(
-    Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "None"));
-  parameter SI.Time Tp = 8 "Peak wave period" annotation(
-    Dialog(group = "Wave Spectrum Parameters", enable = waveSelector <> "spectrumImport" and waveSelector <> "OchiHubble" and waveSelector <> "None"));
   
-  // Pierson-Moskowitz parameters
-  parameter Real alphaPM = 0.0081 "Energy scale (Phillips constant)" annotation(
-    Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSelector == "PiersonMoskowitz"));
+  import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
+    
+  // Wave parameters
+  replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave  "Wave type" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare NoWave wave(file = fileDirectory.file) "No wave"), choice(redeclare RegularWave wave(file = fileDirectory.file) "Regular wave"), choice(redeclare IrregularWave wave(file = fileDirectory.file) "Irregular wave"), choice(redeclare SpectrumImportWave wave(file = fileDirectory.file) "Spectrum import wave")));
+      
+  // Current parameters
+  parameter SI.Velocity Uc0 = 1 "Current velocity at the mean water level" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  parameter SI.Angle currentHeading = 0 "Current heading" annotation(Dialog(group = "Current Parameters (for Morison only)"));
+  parameter SI.Height currentDepth = 100 "Current depth" annotation(Dialog(group = "Current Parameters (for Morison only)")); 
+  parameter Real alphaCur = 0.14 "Current power-law exponent" annotation(Dialog(group = "Current Parameters (for Morison only)"));
   
-  // JONSWAP parameters
-  parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
-  parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
-  parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSelector == "JONSWAP"));
+  // Simulation parameters
+  parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase" annotation(
+    Dialog(group = "Simulation Parameters"));
+    
 
-  // Ochi-Hubble Parameters (including sample values from original paper)
-  // Default parameters computed from most likely sea state
-  parameter SI.Height HsOH[componentSpectra] = {0.84*Hs,0.54*Hs} "Significant wave heights" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {4.14,3.27}
-  parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0.7*exp(-0.046*Hs),1.15*exp(-0.039*Hs)} "Peak spectral frequencies" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {0.58, 1} 
-  parameter Real lambdaOH[componentSpectra] = {3,1.54*exp(-0.062*Hs)} "Peak shape parameter" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSelector == "OchiHubble")); // {2.67, 1.37}
   
-  // Ramp
-  parameter SI.Time Trmp = 100 "Interval for ramping up of waves during start phase [s]" annotation(
-    Dialog(group = "Simulation Parameters", enable = waveSelector <> "None"));
-    // Spectrum Variables
-  SI.Height SSE "Sea surface elevation";
 
-  // Regular wave model
-  Wave.RegularWave regularWave(Hs = Hs, omegaPeak = omegaPeak, Trmp = Trmp) if waveSelector == "Regular" annotation(
-    Placement(transformation(origin = {0, 54}, extent = {{-12, -12}, {12, 12}})));
-  // Irregular wave model
-  Wave.IrregularWave irregularWave(Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
+    
+/*  // Irregular wave model
+  replaceable Wave.IrregularWave irregularWave(waveSpectrum = waveSpectrum, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH, Trmp = Trmp, frequencySelection = frequencySelection, waveSelector = waveSelector, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread, waveHeadingSpreadBins = waveHeadingSpreadBins, redeclare randomGenerator spectrumGeneration "Random frequency selection") if waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or  waveSelector == "JONSWAP" or waveSelector == "OchiHubble" annotation(
     Placement(transformation(extent = {{-12, -12}, {12, 12}})));
  // Imported spectrum model
-  Wave.SpectrumImport spectrumImport(Trmp = Trmp, filePath = fileDirectory.filePath, hydroCoeffFile = fileDirectory.hydroCoeffFile) if waveSelector == "spectrumImport" annotation(
+  Wave.SpectrumImport spectrumImport(Trmp = Trmp, file = fileDirectory.file, n = n, waveHeading = waveHeading, multidirectionalEnable = multidirectionalEnable, waveHeadingSpread = waveHeadingSpread) if waveSelector == "spectrumImport" annotation(
     Placement(transformation(origin = {0, -54}, extent = {{-12, -12}, {12, 12}})));
+ */
 
-protected
-  parameter SI.AngularFrequency omegaPeak = 2*pi/Tp "Peak angular frequency";
-  final parameter Integer componentSpectra = 2;
-equation
-  if waveSelector == "None" then
-    SSE = 0;
-  elseif waveSelector == "Regular" then
-    SSE = regularWave.SSE;
-  elseif waveSelector == "PiersonMoskowitz" or waveSelector == "Bretschneider" or waveSelector == "JONSWAP" or waveSelector == "OchiHubble" then
-    SSE = irregularWave.SSE;
-  elseif waveSelector == "spectrumImport" then
-    SSE = spectrumImport.SSE;
-  end if;
 
   annotation(
     defaultComponentName = "environment",
@@ -88,6 +56,5 @@ equation
       Text(extent={{-150, -140}, {150, -110}}, textString="waveType=%waveSelector")
     }
   ),
-  Diagram
-);
+  Diagram(coordinateSystem(extent = {{-20, 80}, {20, -80}})));
 end Environment;

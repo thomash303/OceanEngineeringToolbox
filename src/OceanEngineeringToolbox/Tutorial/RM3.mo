@@ -11,9 +11,9 @@ model RM3
     Placement(transformation(origin = {-3, -1}, extent = {{-15, -15}, {15, 15}})));
   Hydro.HydrodynamicBody float(enableRadiationForce = false, enableDampingDragForce = false, ra_CM = {0, 0, 20.57}, enableHydrostaticForce = true, bodyIndex = 1, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, enableExcitationForce = true, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", animationEnable = true, bodyColour = {255, 255, 0})  annotation(
     Placement(transformation(origin = {69, 7}, extent = {{-15, -15}, {15, 15}})));
-  inner Environmental.Environment environment(waveSelector = "Regular", frequencySelection = "equalEnergy")  annotation(
+  inner Environmental.Environment environment(waveSelector = "OchiHubble", frequencySelection = "random")  annotation(
     Placement(transformation(origin = {8, 56}, extent = {{-12, -12}, {12, 12}})));
-  inner DataImport.FileDirectory fileDirectory annotation(
+  inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3HydroCoeff.mat")  annotation(
     Placement(transformation(origin = {57, 57}, extent = {{-13, -13}, {13, 13}})));
   Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
     Placement(transformation(origin = {38, -30}, extent = {{-10, -10}, {10, 10}})));

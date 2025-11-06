@@ -2,7 +2,7 @@ within OceanEngineeringToolbox.DataImport;
 
 model FileDirectory
   "Model to define the file directory to the hydrodynamic data"
-  extends DataImport.InputRecords.FilePath(filePath = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox", hydroCoeffFile = "/applications/Validation/RM3/RM3HydroCoeff.mat");
+  extends DataImport.InputRecords.FilePath;
   annotation(
     defaultComponentName = "fileDirectory",
     defaultComponentPrefixes = "inner",

@@ -20,7 +20,7 @@ model Prismatic
   parameter Boolean useAxisFlange=false "= true, if axis flange is enabled"
     annotation(Evaluate=true, HideResult=true, choices(checkBox=true));
   parameter Boolean animation=true "= true, if animation shall be enabled";
-  parameter Types.Axis n={1,0,0}
+  parameter Types.Axis n={0,0,1}
     "Axis of translation resolved in frame_a (= same as in frame_b)"
     annotation (Evaluate=true);
   parameter Types.Axis boxWidthDirection={0,1,0}

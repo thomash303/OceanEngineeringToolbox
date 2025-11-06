@@ -29,7 +29,7 @@ algorithm
 
   for i in 1:componentSpectra loop
     beta[i] := (4*lambda[i] + 1)/4;
-    kappa[i] := (beta[i]^lambda[i]*omegaPeak[i]^(4*lambda[i])*Hs[i]^2)/(4*SpectrumGenerationCalculations.gamma(lambda[i]));
+    kappa[i] := (beta[i]^lambda[i]*omegaPeak[i]^(4*lambda[i])*Hs[i]^2)/(4*gamma(lambda[i]));
     delta[i,:] := omega.^(-(4*lambda[i]+1));
     epsilon[i,:] := exp(-beta[i]*(omega./omegaPeak[i]).^(-4));
     Sint[i,:] := kappa[i].*delta[i,:].*epsilon[i,:];
