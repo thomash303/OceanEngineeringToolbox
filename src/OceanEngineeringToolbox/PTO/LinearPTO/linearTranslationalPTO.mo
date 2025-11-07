@@ -49,22 +49,13 @@ equation
   connect(springDamper.flange_b, prismatic.axis) annotation(
     Line(points = {{14, 46}, {18, 46}, {18, 6}, {12, 6}}, color = {0, 127, 0}));
     
-  annotation(
-  Icon(
-    coordinateSystem(
-      preserveAspectRatio=true,
-      extent={{-100, -100}, {100, 100}}
-    ),
-    graphics={
-      Text(extent={{-150, 220}, {150, 195}}, textString="Cpto=%Cpto"),
-      Text(extent={{-150, 180}, {150, 155}}, textString="Kpto=%Kpto"),
-      Text(extent={{-150, 145}, {150, 105}}, textString="%name", textColor={0, 0, 255}),
-      Rectangle(extent={{-100, -100}, {100, 100}}),
-      Text(extent={{-100, -100}, {100, 100}}, textString="Linear Translational PTO"),
-      Text(extent={{-150, -140}, {150, -110}}, textString="n=%n")
-    }
-  ),
-  Diagram
-);
+annotation(
+    Icon(coordinateSystem(preserveAspectRatio = false, extent = {{-100, -40}, {100, 40}}), graphics = {Rectangle(fillColor = {200, 200, 200}, fillPattern = FillPattern.Solid, lineThickness = 2, extent = {{-70, 30}, {70, -30}}), Rectangle(lineColor = {50, 50, 50}, fillColor = {160, 160, 160}, fillPattern = FillPattern.Solid, lineThickness = 2, extent = {{-70, -8}, {20, 8}}), Rectangle(origin = {-19, 0}, lineColor = {50, 50, 50}, fillColor = {0, 85, 0}, fillPattern = FillPattern.Solid, lineThickness = 2, extent = {{-71, -8}, {71, 8}}), Rectangle(origin = {17, 0}, fillPattern = FillPattern.Solid, lineThickness = 2, extent = {{37, 29}, {15, -29}}), Text(origin = {0, 95}, textColor = {0, 0, 255}, extent = {{-50, 100}, {50, 90}}, textString = "%name")}));
+
+
+
+
+
+
 
 end linearTranslationalPTO;
