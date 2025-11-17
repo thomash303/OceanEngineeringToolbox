@@ -2,7 +2,6 @@ within OceanEngineeringToolbox.Tutorial;
 
 model RM3
   "Tutorial model for representing the RM3"
-  
   // Importing from the OET
   import OceanEngineeringToolbox.Hydro.*;
   import OceanEngineeringToolbox.Hydro.Forces.SubForces.MorisonForces.CurrentModels.*;
@@ -21,7 +20,7 @@ model RM3
     Placement(transformation(origin = {69, 7}, extent = {{-15, -15}, {15, 15}})));
   inner Environmental.Environment environment  annotation(
     Placement(transformation(origin = {-16, 46}, extent = {{-12, -12}, {12, 12}})));
-  inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3HydroCoeff.mat")  annotation(
+  inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/src/Processing/Python/Preprocess/rm3hydroCoeff_pyTester.mat")  annotation(
     Placement(transformation(origin = {58, 58}, extent = {{-12, -12}, {12, 12}})));
   Multibody.Joints.Prismatic prismatic(n = {0, 0, 1})  annotation(
     Placement(transformation(origin = {38, -30}, extent = {{-10, -10}, {10, 10}})));
