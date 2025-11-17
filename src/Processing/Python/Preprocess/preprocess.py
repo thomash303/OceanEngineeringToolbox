@@ -211,62 +211,70 @@ def preprocess(current_path, file_path, device_name):
                 LDoF = hydro['bodies']['Nb'] * hydro['bodies']['dof'][0]  # total DoF over all bodies
 
                 # B2B radiation matrices
-                nDoF = hydro['bodies']['nDoF']
-                LDoF = hydro['bodies']['Nb'] * hydro['bodies']['dof'][0]
+                try:
+                    nDoF = hydro['bodies']['nDoF']
+                    LDoF = hydro['bodies']['Nb'] * hydro['bodies']['dof'][0]
 
-                # Precompute total state size from order
-                totalState = int(np.sum(order))
-                Af = np.zeros((totalState, totalState))
-                Bf = np.zeros((totalState, LDoF))
-                Cf = np.zeros((nDoF, totalState))
+                    # Precompute total state size from order
+                    totalState = int(np.sum(order))
+                    Af = np.zeros((totalState, totalState))
+                    Bf = np.zeros((totalState, LDoF))
+                    Cf = np.zeros((nDoF, totalState))
 
-                stateStart = 0  # cumulative row/col index for Af/Cf
+                    stateStart = 0  # cumulative row/col index for Af/Cf
 
-                for ii in range(nDoF):
-                    for jj in range(LDoF):
-                        arraySize = int(order[ii, jj])
-                        stateEnd = stateStart + arraySize
+                    for ii in range(nDoF):
+                        for jj in range(LDoF):
+                            arraySize = int(order[ii, jj])
+                            stateEnd = stateStart + arraySize
 
-                        # Assign blocks directly from ss_A, ss_B, ss_C
-                        Af[stateStart:stateEnd, stateStart:stateEnd] = ss_A[ii,jj,:arraySize,:arraySize]
-                        Bf[stateStart:stateEnd, jj:jj+1] = ss_B[ii,jj,:arraySize,0:1]
-                        Cf[ii:ii+1, stateStart:stateEnd] = ss_C[ii,jj,0,:arraySize].reshape(1,-1)
+                            # Assign blocks directly from ss_A, ss_B, ss_C
+                            Af[stateStart:stateEnd, stateStart:stateEnd] = ss_A[ii,jj,:arraySize,:arraySize]
+                            Bf[stateStart:stateEnd, jj:jj+1] = ss_B[ii,jj,:arraySize,0:1]
+                            Cf[ii:ii+1, stateStart:stateEnd] = ss_C[ii,jj,0,:arraySize].reshape(1,-1)
 
-                        stateStart = stateEnd  # increment cumulative index
+                            stateStart = stateEnd  # increment cumulative index
 
-                hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSAName] = Af
-                hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSBName] = Bf
-                hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSCName] = Cf * hydro['parameters']['rho']
-                hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSDName] = np.zeros((nDoF, LDoF))
+                    hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSAName] = Af
+                    hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSBName] = Bf
+                    hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSCName] = Cf * hydro['parameters']['rho']
+                    hydro['coefficients']['radiation']['stateSpace']['B2B'][radSSDName] = np.zeros((nDoF, LDoF))
+
+                except Exception:
+                    print(f'B2B radiation state-space data was not loaded for body {idx} ({hydro["bodies"]["body"][idx-1]})')
 
                 # No B2B radiation matrices
-                LDoF_noB2B = hydro['bodies']['dof'][0]
-                totalState_noB2B = int(np.sum(order[:, hydro['bodies']['dofStart'][idx-1] : hydro['bodies']['dofEnd'][idx-1]]))
+                try:
+                    LDoF_noB2B = hydro['bodies']['dof'][0]
+                    totalState_noB2B = int(np.sum(order[:, hydro['bodies']['dofStart'][idx-1] : hydro['bodies']['dofEnd'][idx-1]]))
 
-                Af = np.zeros((totalState_noB2B, totalState_noB2B))
-                Bf = np.zeros((totalState_noB2B, LDoF_noB2B))
-                Cf = np.zeros((nDoF, totalState_noB2B))
+                    Af = np.zeros((totalState_noB2B, totalState_noB2B))
+                    Bf = np.zeros((totalState_noB2B, LDoF_noB2B))
+                    Cf = np.zeros((nDoF, totalState_noB2B))
 
-                stateStart = 0
+                    stateStart = 0
 
-                for ii in range(nDoF):
-                    for jj in range(hydro['bodies']['dofStart'][idx-1], hydro['bodies']['dofEnd'][idx-1]):
-                        jInd = jj - (hydro['bodies']['dofStart'][idx-1])
-                        arraySize = int(order[ii, jj])
-                        stateEnd = stateStart + arraySize
+                    for ii in range(nDoF):
+                        for jj in range(hydro['bodies']['dofStart'][idx-1], hydro['bodies']['dofEnd'][idx-1]):
+                            jInd = jj - (hydro['bodies']['dofStart'][idx-1])
+                            arraySize = int(order[ii, jj])
+                            stateEnd = stateStart + arraySize
 
-                        # Assign directly
-                        Af[stateStart:stateEnd, stateStart:stateEnd] = ss_A[ii,jj,:arraySize,:arraySize]
-                        Bf[stateStart:stateEnd, jInd:jInd+1] = ss_B[ii,jj,:arraySize,0:1]
-                        Cf[ii:ii+1, stateStart:stateEnd] = ss_C[ii,jj,0,:arraySize].reshape(1,-1)
+                            # Assign directly
+                            Af[stateStart:stateEnd, stateStart:stateEnd] = ss_A[ii,jj,:arraySize,:arraySize]
+                            Bf[stateStart:stateEnd, jInd:jInd+1] = ss_B[ii,jj,:arraySize,0:1]
+                            Cf[ii:ii+1, stateStart:stateEnd] = ss_C[ii,jj,0,:arraySize].reshape(1,-1)
 
-                        stateStart = stateEnd
+                            stateStart = stateEnd
 
-                hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSAName] = Af
-                hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSBName] = Bf
-                hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSCName] = Cf * hydro['parameters']['rho']
-                hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSDName] = np.zeros((nDoF, LDoF_noB2B))
+                    hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSAName] = Af
+                    hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSBName] = Bf
+                    hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSCName] = Cf * hydro['parameters']['rho']
+                    hydro['coefficients']['radiation']['stateSpace']['noB2B'][radSSDName] = np.zeros((nDoF, LDoF_noB2B))
             
+                except Exception:
+                    print(f'No B2B radiation state-space data was not loaded for body {idx} ({hydro["bodies"]["body"][idx-1]})')
+                    
             except KeyError:
                 print(f'Radiation state-space data was not loaded for body {idx} ({hydro["bodies"]["body"][idx-1]})')
 

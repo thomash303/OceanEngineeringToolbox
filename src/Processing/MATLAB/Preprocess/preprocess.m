@@ -221,55 +221,65 @@ for i = 1:hydro.bodies.Nb
             reverseDimensionOrder(h5read(filePath, [h5BodyName '/hydro_coeffs/radiation_damping/state_space/r2t']));
     
         % B2B radiation matrices
-        Af = []; Bf = []; Cf = [];
-        hydro.bodies.LDoF = hydro.bodies.Nb * hydro.bodies.dof(1);
-    
-        for ii = 1:hydro.bodies.nDoF
-            for jj = 1:hydro.bodies.LDoF
-                arraySize = hydro.coefficients.radiation.stateSpace.order(ii,jj);
-                if ii == 1 && jj == 1
-                    Af(1:arraySize,1:arraySize) = ss_A(ii,jj,1:arraySize,1:arraySize);
-                    Bf(1:arraySize,jj) = ss_B(ii,jj,1:arraySize,1);
-                    Cf(ii,1:arraySize) = ss_C(ii,jj,1,1:arraySize);
-                else
-                    Af(size(Af,1)+1:size(Af,1)+arraySize, size(Af,2)+1:size(Af,2)+arraySize) = ...
-                        ss_A(ii,jj,1:arraySize,1:arraySize);
-                    Bf(size(Bf,1)+1:size(Bf,1)+arraySize, jj) = ss_B(ii,jj,1:arraySize,1);
-                    Cf(ii,size(Cf,2)+1:size(Cf,2)+arraySize) = ss_C(ii,jj,1,1:arraySize);
+        try
+            Af = []; Bf = []; Cf = [];
+            hydro.bodies.LDoF = hydro.bodies.Nb * hydro.bodies.dof(1);
+            for ii = 1:hydro.bodies.nDoF
+                for jj = 1:hydro.bodies.LDoF
+                    arraySize = hydro.coefficients.radiation.stateSpace.order(ii,jj);
+                    if ii == 1 && jj == 1
+                        Af(1:arraySize,1:arraySize) = ss_A(ii,jj,1:arraySize,1:arraySize);
+                        Bf(1:arraySize,jj) = ss_B(ii,jj,1:arraySize,1);
+                        Cf(ii,1:arraySize) = ss_C(ii,jj,1,1:arraySize);
+                    else
+                        Af(size(Af,1)+1:size(Af,1)+arraySize, size(Af,2)+1:size(Af,2)+arraySize) = ...
+                            ss_A(ii,jj,1:arraySize,1:arraySize);
+                        Bf(size(Bf,1)+1:size(Bf,1)+arraySize, jj) = ss_B(ii,jj,1:arraySize,1);
+                        Cf(ii,size(Cf,2)+1:size(Cf,2)+arraySize) = ss_C(ii,jj,1,1:arraySize);
+                    end
                 end
             end
+        
+            hydro.coefficients.radiation.stateSpace.B2B.(radSSAName) = Af;
+            hydro.coefficients.radiation.stateSpace.B2B.(radSSBName) = Bf;
+            hydro.coefficients.radiation.stateSpace.B2B.(radSSCName) = Cf .* hydro.parameters.rho;
+            hydro.coefficients.radiation.stateSpace.B2B.(radSSDName) = zeros(hydro.bodies.nDoF, hydro.bodies.LDoF);
+        
+        catch
+          fprintf('The B2B radiation state-space data was not loaded  for body %d (%s).\n', ...
+            i, string(hydro.bodies.body{i}))
+
         end
-    
-        hydro.coefficients.radiation.stateSpace.B2B.(radSSAName) = Af;
-        hydro.coefficients.radiation.stateSpace.B2B.(radSSBName) = Bf;
-        hydro.coefficients.radiation.stateSpace.B2B.(radSSCName) = Cf .* hydro.parameters.rho;
-        hydro.coefficients.radiation.stateSpace.B2B.(radSSDName) = zeros(hydro.bodies.nDoF, hydro.bodies.LDoF);
-    
+        
         % No B2B radiation matrices
-        Af = []; Bf = []; Cf = [];
-        hydro.bodies.LDoF = hydro.bodies.dof(1);
-        for ii = 1:hydro.bodies.nDoF
-            for jj = hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i)
-                jInd = jj - hydro.bodies.dofStart(i) + 1;
-                arraySize = hydro.coefficients.radiation.stateSpace.order(ii,jj);
-                if ii == 1 && jj == hydro.bodies.dofStart(i)
-                    Af(1:arraySize,1:arraySize) = ss_A(ii,jj,1:arraySize,1:arraySize);
-                    Bf(1:arraySize,jInd) = ss_B(ii,jj,1:arraySize,1);
-                    Cf(ii,1:arraySize) = ss_C(ii,jj,1,1:arraySize);
-                else
-                    Af(size(Af,1)+1:size(Af,1)+arraySize, size(Af,2)+1:size(Af,2)+arraySize) = ...
-                        ss_A(ii,jj,1:arraySize,1:arraySize);
-                    Bf(size(Bf,1)+1:size(Bf,1)+arraySize, jInd) = ss_B(ii,jj,1:arraySize,1);
-                    Cf(ii,size(Cf,2)+1:size(Cf,2)+arraySize) = ss_C(ii,jj,1,1:arraySize);
+        try
+            Af = []; Bf = []; Cf = [];
+            hydro.bodies.LDoF = hydro.bodies.dof(1);
+            for ii = 1:hydro.bodies.nDoF
+                for jj = hydro.bodies.dofStart(i):hydro.bodies.dofEnd(i)
+                    jInd = jj - hydro.bodies.dofStart(i) + 1;
+                    arraySize = hydro.coefficients.radiation.stateSpace.order(ii,jj);
+                    if ii == 1 && jj == hydro.bodies.dofStart(i)
+                        Af(1:arraySize,1:arraySize) = ss_A(ii,jj,1:arraySize,1:arraySize);
+                        Bf(1:arraySize,jInd) = ss_B(ii,jj,1:arraySize,1);
+                        Cf(ii,1:arraySize) = ss_C(ii,jj,1,1:arraySize);
+                    else
+                        Af(size(Af,1)+1:size(Af,1)+arraySize, size(Af,2)+1:size(Af,2)+arraySize) = ...
+                            ss_A(ii,jj,1:arraySize,1:arraySize);
+                        Bf(size(Bf,1)+1:size(Bf,1)+arraySize, jInd) = ss_B(ii,jj,1:arraySize,1);
+                        Cf(ii,size(Cf,2)+1:size(Cf,2)+arraySize) = ss_C(ii,jj,1,1:arraySize);
+                    end
                 end
             end
+        
+            hydro.coefficients.radiation.stateSpace.noB2B.(radSSAName) = Af;
+            hydro.coefficients.radiation.stateSpace.noB2B.(radSSBName) = Bf;
+            hydro.coefficients.radiation.stateSpace.noB2B.(radSSCName) = Cf .* hydro.parameters.rho;
+            hydro.coefficients.radiation.stateSpace.noB2B.(radSSDName) = zeros(hydro.bodies.nDoF, hydro.bodies.LDoF);
+        catch
+          fprintf('The no B2B radiation state-space data was not loaded  for body %d (%s).\n', ...
+            i, string(hydro.bodies.body{i}))
         end
-    
-        hydro.coefficients.radiation.stateSpace.noB2B.(radSSAName) = Af;
-        hydro.coefficients.radiation.stateSpace.noB2B.(radSSBName) = Bf;
-        hydro.coefficients.radiation.stateSpace.noB2B.(radSSCName) = Cf .* hydro.parameters.rho;
-        hydro.coefficients.radiation.stateSpace.noB2B.(radSSDName) = zeros(hydro.bodies.nDoF, hydro.bodies.LDoF);
-    
     catch
         fprintf('Radiation state-space data was not loaded  for body %d (%s).\n', ...
             i, string(hydro.bodies.body{i}));
