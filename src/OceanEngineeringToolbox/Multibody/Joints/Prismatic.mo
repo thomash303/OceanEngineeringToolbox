@@ -112,10 +112,6 @@ equation
   // Connection to internal connectors
   s = internalAxis.s;
   
-  // End-stop
-  
-  //if s < s_min
-  
   // Enable end-stop
   if endStopEnable then
     
