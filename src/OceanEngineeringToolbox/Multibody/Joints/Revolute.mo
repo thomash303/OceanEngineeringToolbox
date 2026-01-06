@@ -145,12 +145,12 @@ equation
     
     // Upper end-stop
     if phi > phi_max then
-      t_stop_max = phi * k_max  + w * b_max;
+      t_stop_max = -((phi - phi_max) * k_max  + w * b_max);
       t_stop_min = 0;
       
     // Lower end-stop
     elseif phi < phi_min then
-      t_stop_min = phi * k_min +  w * b_min;
+      t_stop_min = -((phi - phi_min) * k_min +  w * b_min);
       t_stop_max = 0;
       
     else 

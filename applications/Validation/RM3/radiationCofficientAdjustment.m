@@ -16,8 +16,9 @@ execute this script.
 
 %% Generating a new state-space realization
 % Importing hydrodynamic data
-t = Data.t;
-k = Data.k;
+load('Data.mat')
+t = data.t;
+k = data.k;
 
 % Estimating state-space matrices
 rho = 1000;

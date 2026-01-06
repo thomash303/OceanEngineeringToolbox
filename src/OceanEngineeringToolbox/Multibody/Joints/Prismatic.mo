@@ -73,7 +73,7 @@ Possible reasons:
   // Upper end-stop
   parameter SI.Position s_max = Constants.inf "Upper (maximum) end-stop position (frame_b)" annotation(Dialog(group="End-Stop"));
   parameter SI.TranslationalDampingConstant b_max = 0 "Upper (maximum) end-stop damping coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
-  parameter SI.TranslationalSpringConstant k_umax = 0 "Upper (maximum) end-stop stiffness coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalSpringConstant k_max = 0 "Upper (maximum) end-stop stiffness coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
   SI.Force f_stop_max "Upper (maximum) end-stop force (frame_b)";
 
 protected
@@ -107,7 +107,7 @@ equation
   zeros(3) = frame_a.t + frame_b.t + cross(e*s, frame_b.f);
 
   // d'Alemberts principle
-  f = -e*frame_b.f + f_stop_min + f_stop_max;
+  f = -e*frame_b.f + (if endStopEnable then f_stop_min + f_stop_max else 0);
 
   // Connection to internal connectors
   s = internalAxis.s;
@@ -117,12 +117,12 @@ equation
     
     // Upper end-stop
     if s > s_max then
-      f_stop_max = s * k_max  + v * b_max;
+      f_stop_max = -((s - s_max) * k_max  + v * b_max);
       f_stop_min = 0;
       
     // Lower end-stop
     elseif s < s_min then
-      f_stop_min = s * k_min +  v * b_min;
+      f_stop_min = -((s - s_min) * k_min +  v * b_min);
       f_stop_max = 0;
       
     else 
