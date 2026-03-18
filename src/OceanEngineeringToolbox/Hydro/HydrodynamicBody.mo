@@ -4,7 +4,8 @@ model HydrodynamicBody "Model containing the hydrodynamic body used to represent
   // Importing and inheriting from the MSL
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.PartialTwoFrames;
-  extends PartialTwoFrames;
+  extends Multibody.Frame.PartialThreeFrames_Bottom;
+  
   // Extending from the OceanEngineeringToolbox
   extends DataImport.InputRecords.animationFile(geometryFile = "None");
   extends DataImport.InputRecords.BodyIndex;
@@ -121,6 +122,7 @@ model HydrodynamicBody "Model containing the hydrodynamic body used to represent
     HideResult = true,
     choices(checkBox = true),
     Dialog(group = "Morison"));
+  
 equation
 //Conections
   connect(hydrostatic.frame_a, body.frame_c) annotation(
@@ -137,6 +139,8 @@ equation
     Line(points = {{12, -38}, {100, -38}, {100, 0}}, color = {95, 95, 95}));
   connect(morison.frame_a, body.frame_c) annotation(
     Line(points = {{-4, 74}, {-4, 23}, {0, 23}, {0, -26}}, color = {95, 95, 95}));
+  connect(body.frame_c, frame_c) annotation(
+    Line(points = {{0, -26}, {28, -26}, {28, -80}, {0, -80}, {0, -100}}, color = {95, 95, 95}));
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Text(textColor = {0, 0, 255}, extent = {{-150, 145}, {150, 105}}, textString = "%name"), Ellipse(origin = {1, -3},fillColor = {169, 169, 169}, fillPattern = FillPattern.Solid, lineThickness = 1.5, extent = {{-64, -55}, {64, -20}}), Rectangle(origin = {0, 28},fillColor = {169, 169, 169}, fillPattern = FillPattern.Solid, lineThickness = 1.5, extent = {{-15, -65}, {15, 52}}, radius = 1.5), Rectangle(origin = {0, 45},fillColor = {255, 255, 0}, fillPattern = FillPattern.Solid, lineThickness = 1.5, extent = {{-39, -2}, {39, 17}}, radius = 6)}),
     Diagram);
