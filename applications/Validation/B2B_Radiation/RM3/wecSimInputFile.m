@@ -1,9 +1,9 @@
 %% Simulation Data
 simu = simulationClass();               % Initialize Simulation Class
 % simu.simMechanicsFile = 'RM3_heave.slx';      % Specify Simulink Model File
-simu.simMechanicsFile = 'RM3_free.slx';      % Specify Simulink Model File
+simu.simMechanicsFile = 'RM3_heave.slx';      % Specify Simulink Model File
 simu.mode = 'normal';                   % Specify Simulation Mode ('normal','accelerator','rapid-accelerator')
-simu.explorer = 'on';                   % Turn SimMechanics Explorer (on/off)
+simu.explorer = 'off';                   % Turn SimMechanics Explorer (on/off)
 simu.startTime = 0;                     % Simulation Start Time [s]
 simu.rampTime = 100;                    % Wave Ramp Time [s]
 simu.endTime = 400;                     % Simulation End Time [s]

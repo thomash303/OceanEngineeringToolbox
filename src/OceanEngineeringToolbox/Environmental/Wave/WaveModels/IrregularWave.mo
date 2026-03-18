@@ -68,6 +68,9 @@ model IrregularWave
   parameter SI.WaveNumber k[n_omega] = frequencySelector.k "Wave number component" annotation(Dialog(enable = false, tab = "Misc"));
   parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = frequencySelector.spreadBinCentres "Bin centres" annotation(Dialog(enable = false, tab = "Misc"));
   parameter Real D[waveHeadingSpreadBins] = frequencySelector.D "Directional spreading weights" annotation(Dialog(enable = false, tab = "Misc"));
+  
+  // Wave elevation
+  SI.Position SSE = frequencySelector.SSE "Sea surface elevation";
 
 equation
   // Assert

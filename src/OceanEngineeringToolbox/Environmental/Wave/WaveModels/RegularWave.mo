@@ -48,7 +48,7 @@ model RegularWave
 
 equation
   
-  SSE = WaveFunctions.waveElevation(A = A, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega);
+  SSE = WaveFunctions.waveElevation(zeta = zeta, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega);
   
   annotation(
     defaultComponentName = "regularWave",
