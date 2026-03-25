@@ -29,7 +29,7 @@
 % outputData = outputData(uidx, :);
 % time = outputData.time;
 
-close all
+% close all
 
 % Conversions
 paToBar = 1e-5;

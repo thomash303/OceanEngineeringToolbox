@@ -71,6 +71,7 @@ model IrregularWave
   
   // Wave elevation
   SI.Position SSE = frequencySelector.SSE "Sea surface elevation";
+  WaveUnits.powerPerUnitLength P = frequencySelector.P "Wave time-average power per unit wave crest length";
 
 equation
   // Assert
