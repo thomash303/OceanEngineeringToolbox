@@ -44,9 +44,12 @@ model HydrodynamicBody "Model containing the hydrodynamic body used to represent
   parameter SI.Inertia I_32(min = 0) = 0 "Element (3,2) of inertia tensor" annotation(
     Dialog(group = "Mass"));
   // Excitation
-  Forces.Excitation excitation(file = fileDirectory.file, bodyIndex = bodyIndex) if enableExcitationForce annotation(
+  Forces.Excitation excitation(file = fileDirectory.file, bodyIndex = bodyIndex, meanDriftEnable = meanDriftEnable) if enableExcitationForce annotation(
     Placement(transformation(origin = {-32, 48}, extent = {{18, -18}, {-18, 18}})));
   parameter Boolean enableExcitationForce = true "Switch to enable/disable excitation force calculation" annotation(
+    choices(checkBox = true),
+    Dialog(group = "Excitation"));
+  parameter Boolean meanDriftEnable = false "Switch to enable/disable the mean drift force calculation" annotation(
     choices(checkBox = true),
     Dialog(group = "Excitation"));
   // Radiation

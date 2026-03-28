@@ -1,7 +1,7 @@
 within OceanEngineeringToolbox.Hydro.Forces.SubForces.ExcitationForces;
 
-model ExcitationForce
-  "Model representing the excitation force"
+model MeanDriftForce
+  "Model representing the mean drift force"
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
@@ -11,7 +11,7 @@ model ExcitationForce
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
-  extends DataImport.ImportRecords.HydroImport.excitationData;
+  extends DataImport.ImportRecords.HydroImport.meanDriftData;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   extends BaseHydroForce(redeclare Real F[6] = cat(1, -f_element, -t_element));
   
@@ -27,24 +27,26 @@ model ExcitationForce
   // Wave Heading Parameters
   parameter SI.Angle waveHeading "Wave heading";
   parameter Integer waveHeadingSpreadBins = 2 "Number of discrete headings centered around the mean heading to consider in the spectrum spread";  
- parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
+  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
 
 protected
   
-  parameter Real ExcCoeffRe[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
-  parameter Real ExcCoeffIm[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Imaginary component of excitation coefficient for frequency components" annotation(HideResult = true);
+  parameter Real ExcCoeffMd[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) = ExcitationFunctions.interpolateMeanDriftCoeffs(w = w, F_excMd2D = F_excMd2D, nH = nH, nF = nF, omega = omega, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres, theta = theta) "Mean drift coefficients for frequency components" annotation(HideResult = true);
+  parameter SI.Force Fmd[6](each fixed=false) "Mean drift force (no ramp)" annotation(HideResult = true);
   
 initial equation
- // Interpolate excitation coefficients (Re & Im) for each frequency component and for each DoF
- (ExcCoeffRe, ExcCoeffIm) = ExcitationFunctions.interpolateExcitationCoeffs(w = w, F_excRe2D = F_excRe2D, F_excIm2D = F_excIm2D, nH = nH, nF = nF, omega = omega, bodyDoF = bodyDoF, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, spreadBinCentres = spreadBinCentres, theta = theta);
-equation
-
-  F = {sum(ramp * sum((ExcCoeffRe[j, i, :] .* zeta[j, :] .* cos(omega*time + phi[j,:])
-      - ExcCoeffIm[j, i, :] .* zeta[j, :] .* sin(omega*time + phi[j, :]))
+ 
+   Fmd = {sum(sum((ExcCoeffMd[j, i, :] .* zeta[j, :].^2)
       ) for j in 1:waveHeadingSpreadBins
       ) for i in 1:bodyDoF}; 
+      
+equation
+
+  F = ramp * Fmd; 
+  //F = zeros(6);
   
   annotation(
-    Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitation Force")}),
+    Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Mean Drift Force")}),
     Diagram(coordinateSystem(extent = {{-120, 20}, {-80, -20}})));
-end ExcitationForce;
+
+end MeanDriftForce;

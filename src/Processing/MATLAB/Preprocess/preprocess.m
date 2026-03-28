@@ -97,6 +97,7 @@ for i = 1:hydro.bodies.Nb
     
     excReName = sprintf('re%d', i);
     excImName = sprintf('im%d', i);
+    excMdName = sprintf('md%d', i);
 
     radSSAName = sprintf('A%d', i);
     radSSBName = sprintf('B%d', i);
@@ -205,6 +206,60 @@ for i = 1:hydro.bodies.Nb
             i, string(hydro.bodies.body{i}));
     end
 
+    % Mean drift
+    % Attempt to get data from control surface, then pressure integration, then
+    % momentum conservation
+    try
+        % Control surface
+        md3D = permute(h5read(filePath, [h5BodyName '/hydro_coeffs/mean_drift/control_surface/val']), [3,1,2]);
+
+
+        fprintf(['Mean drift data obtained with the control surface method'...
+            'was loaded for body %d (%s).\n'], i, string(hydro.bodies.body{i}));
+    
+    catch
+        try
+            % Pressure integration
+            md3D = permute(h5read(filePath, [h5BodyName '/hydro_coeffs/mean_drift/pressure_integration/val']), [3,1,2]);
+
+            fprintf(['Mean drift data obtained with the pressure integration method'...
+            'was loaded for body %d (%s).\n'], i, string(hydro.bodies.body{i}));
+
+        catch
+            try
+                % Momentum conservation
+                md3D = permute(h5read(filePath, [h5BodyName '/hydro_coeffs/mean_drift/momemtum_conservation/val']), [3,1,2]);
+
+                fprintf(['Mean drift data obtained with the momentum conservation method'...
+            'was loaded for body %d (%s).\n'], i, string(hydro.bodies.body{i}));
+    
+            catch
+                % Not mean drift data available
+                fprintf('Mean drift data was not loaded for body %d (%s).\n', ...
+                    i, string(hydro.bodies.body{i}));
+            end
+        end
+    end
+
+    try 
+        md3D = md3D * hydro.parameters.rho * hydro.parameters.g;
+    
+        hydro.coefficients.excitation.meanDrift.(excMdName) = md3D;
+    
+        md2D = zeros(hydro.bodies.nDoF, hydro.parameters.Nf * hydro.parameters.Nh);
+    
+        % Flatten 3D → 2D
+        for j = 1:hydro.parameters.Nh
+            cols = (j-1)*hydro.parameters.Nf + (1:hydro.parameters.Nf);
+            md2D(:, cols) = md3D(:,:,j);
+        end
+    
+        hydro.coefficients.excitation.meanDrift.(excMdName) = md2D;
+
+    catch
+
+    end
+ 
     % Radiation state-space
     try
         % Reading

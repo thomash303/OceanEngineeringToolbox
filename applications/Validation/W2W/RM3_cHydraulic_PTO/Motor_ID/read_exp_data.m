@@ -1,4 +1,4 @@
-
+% Read in the experimental data
 
 table = readtable('Experimental_data\Master_ExpData.xlsx');
 headers = table.Properties.VariableNames;

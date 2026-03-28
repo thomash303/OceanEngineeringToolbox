@@ -1,3 +1,5 @@
+% Code to fit the motor loss model to the experimental data
+
 %% Motor parameters
 D_in = 180;
 D    = D_in / 1e6;

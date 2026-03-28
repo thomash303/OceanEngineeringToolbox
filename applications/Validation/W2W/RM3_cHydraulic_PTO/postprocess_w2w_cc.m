@@ -1,3 +1,4 @@
+% Plot general CC and OET data for the hydraulic PTO
 
 %% Preprocessing
 projectRoot = fileparts(fileparts(fileparts(pwd)));

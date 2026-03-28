@@ -1,4 +1,4 @@
-
+% Read in graph grabbed experimental data for the hydraulic PTO
 
 direc = pwd;
 basePath = fullfile('Cargo_Data','Tuning');

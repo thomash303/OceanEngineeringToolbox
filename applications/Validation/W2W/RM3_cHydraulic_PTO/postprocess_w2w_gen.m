@@ -1,33 +1,35 @@
+% Full postprocessing script for OET W2W model
+
 
 %% Preprocessing
-% projectRoot = fileparts(fileparts(fileparts(pwd)));
-% 
-% % Entering RM3 specific data
-% filePath = {''};
-% deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens','w2w_sens'};
-% 
-% currentPath = {pwd};
-% 
-% % Importing Modelica simulation data
-% % File directory
-% temp = tempdir;
-% basePath = fullfile('OpenModelica', 'OMEdit');  % Path to default OMEdit result file
-% fileName = fullfile([filePath{1} '' deviceName{1}], [deviceName{2} '_res.csv']);  % Path to current file                  
-% %{
-% The default result file and file name are shown in the output tab of the 
-%  simulation setup as "Result File (optional) and File Name Prefix
-%  (optional).
-% %}
-% 
-% % Importing Modelica data
-% filePath = fullfile(temp, basePath, fileName);
-% outputData = readtable(filePath);
-% 
-% % Remove duplicate time records from OET output file
-% time = outputData.time;
-% [~, uidx] = unique(time, 'stable');
-% outputData = outputData(uidx, :);
-% time = outputData.time;
+projectRoot = fileparts(fileparts(fileparts(pwd)));
+
+% Entering RM3 specific data
+filePath = {''};
+deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens','w2w_sens'};
+
+currentPath = {pwd};
+
+% Importing Modelica simulation data
+% File directory
+temp = tempdir;
+basePath = fullfile('OpenModelica', 'OMEdit');  % Path to default OMEdit result file
+fileName = fullfile([filePath{1} '' deviceName{1}], [deviceName{2} '_res.csv']);  % Path to current file                  
+%{
+The default result file and file name are shown in the output tab of the 
+ simulation setup as "Result File (optional) and File Name Prefix
+ (optional).
+%}
+
+% Importing Modelica data
+filePath = fullfile(temp, basePath, fileName);
+outputData = readtable(filePath);
+
+% Remove duplicate time records from OET output file
+time = outputData.time;
+[~, uidx] = unique(time, 'stable');
+outputData = outputData(uidx, :);
+time = outputData.time;
 
 % close all
 
