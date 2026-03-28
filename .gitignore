@@ -168,6 +168,7 @@ cython_debug/
 .cursorindexingignore
 
 ## MATLAB
+*workspace*.mat
 
 # Windows default autosave extension
 *.asv
