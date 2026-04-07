@@ -20,7 +20,7 @@ def main():
     fnlfk = np.zeros((6, time.shape[0]))
 
     bodyCentres = mesh.centroids.T
-    bodyNorm = mesh.get_unit_normals()
+    bodyNorm = mesh.get_unit_normals().T
 
     for t in time:
 
@@ -35,7 +35,7 @@ def main():
         R = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
         # Wave
-        elevationType = "mean"
+        elevationType = "instantaneous"
         nF = 15
         nDir = 1
         waveDirections = np.array([0])

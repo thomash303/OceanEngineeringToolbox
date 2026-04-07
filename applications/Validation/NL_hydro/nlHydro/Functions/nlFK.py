@@ -6,7 +6,7 @@ import numpy as np
 
 def main(cg, g, rho, eta, d, nF, nDir, waveDirections, time, centres, norms, areas, ramp, phase, omega, k, zeta):
 
-    z = centres[2, :]
+    z = centres[2, :].copy()
     ffkdy = np.zeros((6, 1))
 	
     for i in range(len(z)):

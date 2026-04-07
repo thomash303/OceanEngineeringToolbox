@@ -9,8 +9,12 @@
                 "-g",
                 "${file}",
                 "${fileDirname}/meshing.c",
+                "${fileDirname}/transformation.c",
+                "${fileDirname}/nl_hydrostatic.c",
+                "${fileDirname}/wave_elevation.c",
+                "${fileDirname}/nl_fk.c",
                 "-o",
-                "${fileDirname}/meshing_test.exe"
+                "${fileDirname}/nl_fk_test.exe"
             ],
             "options": {
                 "cwd":  "${fileDirname}"

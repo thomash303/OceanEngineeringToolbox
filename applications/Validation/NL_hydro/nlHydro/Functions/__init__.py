@@ -1,4 +1,5 @@
-from .nlFK import main as nlfk
+# from .nlFK import main as nlfk
+from .nlFK_test import main as nlfk
 from .nlHydrostatic import main as nlhs
 from .waveElevation import main as waveElevation
 from .transformation import homogeneous_transformation as transform
