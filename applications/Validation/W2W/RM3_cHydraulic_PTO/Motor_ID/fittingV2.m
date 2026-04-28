@@ -228,3 +228,301 @@ grid on;
 xlabel('Normalized Displacement (-)');
 ylabel('C_s');
 title('C_s vs Displacement');
+
+
+%% =========================
+% Thesis-quality plots (D50 only)
+colors = {
+    [0 0.4470 0.7410]
+    [0.8500 0.3250 0.0980]
+    };
+
+Dstr = 'D50';
+x = x_vals.(Dstr);
+
+Cf = fitted.(Dstr).Cf;
+Cv = fitted.(Dstr).Cv;
+Cs = fitted.(Dstr).Cs;
+
+N_fit = linspace(0,3000,300)';
+w_fit = N_fit * 2*pi/60;
+
+% TORQUE
+figure('Name','Torque D50'); hold on;
+
+xlabel('Speed (rpm)');
+ylabel('Torque (Nm)');
+xticks(0:1000:3000)
+ylim([0 150])
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+
+    % --- Experimental ---
+    if isfield(exp_data.torque, Dstr) && isfield(exp_data.torque.(Dstr), Pstr)
+        N_raw = exp_data.torque.(Dstr).(Pstr).N(:);
+        T_raw = exp_data.torque.(Dstr).(Pstr).T(:);
+
+        mask = ~isnan(N_raw) & ~isnan(T_raw);
+
+        plot(N_raw(mask), T_raw(mask), markers{j}, ...
+            'Color', colors{j}, ...
+            'MarkerSize', 6, ...
+            'LineWidth', 0.8);   % thinner markers
+
+        leg{end+1} = [Pstr ' data'];
+    end
+
+    % --- Model ---
+    dp = P_vals.(Pstr);
+
+    T_fit = x*D*dp/(2*pi) - Cf*D*dp - Cv*D*mu*w_fit/(2*pi);
+
+    plot(N_fit, T_fit, '-', ...
+        'Color', colors{j}, ...
+        'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' model'];
+end
+
+legend(leg,'Location','best')
+
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+
+
+% FLOW
+figure('Name','Flow D50'); hold on;
+
+xlabel('Speed (rpm)');
+ylabel('Flow (L/min)');
+xticks(0:1000:3000)
+ylim(ylims_flow.(Dstr))
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+
+    % --- Experimental ---
+    if isfield(exp_data.flow, Dstr) && isfield(exp_data.flow.(Dstr), Pstr)
+        N_raw = exp_data.flow.(Dstr).(Pstr).N(:);
+        q_raw = exp_data.flow.(Dstr).(Pstr).q(:);
+
+        mask = ~isnan(N_raw) & ~isnan(q_raw);
+
+        plot(N_raw(mask), q_raw(mask), markers{j}, ...
+            'Color', colors{j}, ...
+            'MarkerSize', 6, ...
+            'LineWidth', 0.8);
+
+        leg{end+1} = [Pstr ' data'];
+    end
+
+    % --- Model ---
+    dp = P_vals.(Pstr);
+
+    q_fit = (x*D*w_fit/(2*pi) - Cs*D*dp/mu) * 60000;
+
+    plot(N_fit, q_fit, '-', ...
+        'Color', colors{j}, ...
+        'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' model'];
+end
+
+legend(leg,'Location','best')
+
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+
+
+% EFFICIENCY
+figure('Name','Efficiency D50'); hold on;
+
+xlabel('Speed (rpm)');
+ylabel('Efficiency (%)');
+xticks(0:1000:3000)
+ylim([0 100])
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+    dp = P_vals.(Pstr);
+
+    % --- Experimental ---
+    if isfield(exp_data.efficiency, Dstr) && isfield(exp_data.efficiency.(Dstr), Pstr)
+        N_raw = exp_data.efficiency.(Dstr).(Pstr).N(:);
+        eta_raw = exp_data.efficiency.(Dstr).(Pstr).ef(:);
+
+        mask = ~isnan(N_raw) & ~isnan(eta_raw);
+
+        plot(N_raw(mask), eta_raw(mask), markers{j}, ...
+            'Color', colors{j}, ...
+            'MarkerSize', 6, ...
+            'LineWidth', 0.8);
+
+        leg{end+1} = [Pstr ' data'];
+    end
+
+    % --- Model ---
+    T_fit = x*D*dp/(2*pi) - Cf*D*dp - Cv*D*mu*w_fit/(2*pi);
+    q_fit = x*D*w_fit/(2*pi) - Cs*D*dp/mu;
+
+    eta = (T_fit .* w_fit) ./ (q_fit * dp) * 100;
+    eta(q_fit <= 0) = NaN;
+
+    plot(N_fit, eta, '-', ...
+        'Color', colors{j}, ...
+        'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' model'];
+end
+
+legend(leg,'Location','best')
+
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+
+%% Combined plot (to be used)
+figure('Name','D50 Combined');
+
+Dstr = 'D50';
+x = x_vals.(Dstr);
+
+Cf = fitted.(Dstr).Cf;
+Cv = fitted.(Dstr).Cv;
+Cs = fitted.(Dstr).Cs;
+
+N_fit = linspace(0,3000,300)';
+w_fit = N_fit * 2*pi/60;
+
+% -------------------------
+% TORQUE
+% -------------------------
+subplot(3,1,1); hold on;
+
+ylabel('$T\;[Nm]$', 'Interpreter','latex');
+xticks(0:1000:3000)
+ylim([0 150])
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+    dp = P_vals.(Pstr);
+
+    if isfield(exp_data.torque, Dstr) && isfield(exp_data.torque.(Dstr), Pstr)
+        N_raw = exp_data.torque.(Dstr).(Pstr).N(:);
+        T_raw = exp_data.torque.(Dstr).(Pstr).T(:);
+        mask = ~isnan(N_raw) & ~isnan(T_raw);
+
+        plot(N_raw(mask), T_raw(mask), markers{j}, ...
+            'Color', colors{j}, 'MarkerSize', 6, 'LineWidth', 0.8);
+
+        leg{end+1} = [Pstr ' bar exp'];
+    end
+
+    T_fit = x*D*dp/(2*pi) - Cf*D*dp - Cv*D*mu*w_fit/(2*pi);
+
+    plot(N_fit, T_fit, '-', 'Color', colors{j}, 'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' bar model'];
+end
+
+legend(leg,'Location','best', 'Interpreter','latex')
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+legend box off
+
+
+% -------------------------
+% FLOW
+% -------------------------
+subplot(3,1,2); hold on;
+
+ylabel('$Q\;[L/min]$', 'Interpreter','latex');
+xticks(0:1000:3000)
+ylim([0 300])
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+    dp = P_vals.(Pstr);
+
+    if isfield(exp_data.flow, Dstr) && isfield(exp_data.flow.(Dstr), Pstr)
+        N_raw = exp_data.flow.(Dstr).(Pstr).N(:);
+        q_raw = exp_data.flow.(Dstr).(Pstr).q(:);
+        mask = ~isnan(N_raw) & ~isnan(q_raw);
+
+        plot(N_raw(mask), q_raw(mask), markers{j}, ...
+            'Color', colors{j}, 'MarkerSize', 6, 'LineWidth', 0.8);
+
+        leg{end+1} = [Pstr ' data'];
+    end
+
+    q_fit = (x*D*w_fit/(2*pi) - Cs*D*dp/mu) * 60000;
+
+    plot(N_fit, q_fit, '-', 'Color', colors{j}, 'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' model'];
+end
+
+%legend(leg,'Location','best')
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+legend off
+
+
+% -------------------------
+% EFFICIENCY
+% -------------------------
+subplot(3,1,3); hold on;
+
+xlabel('$N\;(rpm)$', 'Interpreter','latex');
+ylabel('$\eta\;[\%]$', 'Interpreter','latex');
+xticks(0:1000:3000)
+ylim([0 100])
+
+leg = {};
+
+for j = 1:numel(P_list)
+    Pstr = P_list{j};
+    dp = P_vals.(Pstr);
+
+    if isfield(exp_data.efficiency, Dstr) && isfield(exp_data.efficiency.(Dstr), Pstr)
+        N_raw = exp_data.efficiency.(Dstr).(Pstr).N(:);
+        eta_raw = exp_data.efficiency.(Dstr).(Pstr).ef(:);
+        mask = ~isnan(N_raw) & ~isnan(eta_raw);
+
+        plot(N_raw(mask), eta_raw(mask), markers{j}, ...
+            'Color', colors{j}, 'MarkerSize', 6, 'LineWidth', 0.8);
+
+        leg{end+1} = [Pstr ' data'];
+    end
+
+    T_fit = x*D*dp/(2*pi) - Cf*D*dp - Cv*D*mu*w_fit/(2*pi);
+    q_fit = x*D*w_fit/(2*pi) - Cs*D*dp/mu;
+
+    eta = (T_fit .* w_fit) ./ (q_fit * dp) * 100;
+    eta(q_fit <= 0) = NaN;
+
+    plot(N_fit, eta, '-', 'Color', colors{j}, 'LineWidth', 2);
+
+    leg{end+1} = [Pstr ' model'];
+end
+
+%legend(leg,'Location','best')
+set(gca,'TickDir','out','LineWidth',AxisLineWidth,'FontSize',Fsize)
+box off
+grid off
+legend off

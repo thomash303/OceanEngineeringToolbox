@@ -3,137 +3,137 @@
 
 
 %% Preprocessing
-% projectRoot = fileparts(fileparts(fileparts(pwd)));
-% 
-% % Entering RM3 specific data
-% filePath = {''};
-% % deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens_control','w2w_sens_control'};
-% deviceName = {'w2w_sens_control_none','w2w_sens_control_none'};
-% currentPath = {pwd};
-% 
-% % Importing Modelica simulation data
-% % File directory
-% temp = tempdir;
-% basePath = fullfile('OpenModelica', 'OMEdit');  % Path to default OMEdit result file
-% fileName = fullfile([filePath{1} '' deviceName{1}], [deviceName{2} '_res.csv']);  % Path to current file                  
-% %{
-% The default result file and file name are shown in the output tab of the 
-%  simulation setup as "Result File (optional) and File Name Prefix
-%  (optional).
-% %}
-% 
-% % Importing Modelica data
-% filePath = fullfile(temp, basePath, fileName);
-% outputData = readtable(filePath);
-% 
-% % Remove duplicate time records from OET output file
-% time = outputData.time;
-% [~, uidx] = unique(time, 'stable');
-% outputData = outputData(uidx, :);
-% time = outputData.time;
-% 
-% % close all
-% 
-% 
-% %% Reading
-% % Conversions
-% paToBar = 1e-5;
-% nToKN = 1e-3;
-% kNToMN = 1e-3;
-% kNToN = 1e3;
-% mNToN = 1e6;
-% nToMN = 1e-6;
-% 
-% % Ramp Time
-% Tramp = 100;
-% idx = time >= Tramp;
-% t_idx = time(idx);
-% % Body
-% s = outputData.daq_sensor_bus_s;
-% v = outputData.daq_sensor_bus_v;
-% 
-% % Pressures
-% pA = outputData.daq_sensor_bus_pA*paToBar;
-% pB = outputData.daq_sensor_bus_pB*paToBar;
-% pHP = outputData.daq_sensor_bus_pHP*paToBar;
-% pLP = outputData.daq_sensor_bus_pLP*paToBar;
-% 
-% % Mass flows
-% mHP = outputData.daq_sensor_bus_mHP;
-% mLP = outputData.daq_sensor_bus_mLP;
-% mm = outputData.daq_sensor_bus_mm;
-% %D = outputData.daq_D;
-% 
-% % Shaft
-% omega = outputData.daq_sensor_bus_omega;
-% T = outputData.daq_sensor_bus_T;
-% 
-% % Generator
-% V = outputData.daq_sensor_bus_V;
-% i = outputData.daq_sensor_bus_i;
-% 
-% % Wave
-% eta = outputData.daq_eta;
-% 
-% % Hydro forces
-% Fpto = outputData.daq_Fpto*nToKN;
-% Fexc = outputData.daq_Fexc*nToKN;
-% 
-% % PTO force
-% Fcyl_iner = outputData.daq_Finer;
-% Fcyl_fric = outputData.daq_Ffric;
-% 
-% % Generator losses
-% Pgen_fric = outputData.daq_Pgen_fric;
-% Pgen_cop = outputData.daq_Pgen_cop;
-% Pgen_elec = outputData.daq_Pelec;
-% Pgen_mech = outputData.daq_Pgen_mech;
+projectRoot = fileparts(fileparts(fileparts(pwd)));
 
-% % Energy stored in accumulators (not currently used)
-% gamma = 1.4;
-% Tmax = max(time);
-% 
-% VHP = outputData.hpAccumulator_liquidChamber_V;         
-% pHP = outputData.hpAccumulator_liquidChamber_p_vol;
-% VLP = outputData.lpAccumulator_liquidChamber_V;
-% pLP = outputData.lpAccumulator_liquidChamber_p_vol;
-% 
-% EHP = (pHP .* VHP) / (gamma - 1);                      
-% dEHP_t = EHP - EHP(1);                                 
-% dpHP_t = gradient(EHP, time);                             
-% dEHP  = EHP(end) - EHP(1);                              
-% dpHP  = dEHP / Tmax;         
-% 
-% ELP = (pLP .* VLP) / (gamma - 1);                       
-% dELP_t = ELP - ELP(1);                                  
-% dpLP_t = gradient(ELP, time);                              
-% dELP  = ELP(end) - ELP(1);                              
-% dpLP  = dELP / Tmax;                                       
-% 
-% % Power (not saved in output data for some reason)
-% %Pwav = outputData.environment_wave_P;
-% Pwav = 57e3;
-% Pcap = outputData.daq_Pcyl_mech;
-% Ptrans = Pgen_mech;
-% Pgen = Pgen_elec;
-% 
-% 
-% Energy
-% Ecap = outputData.daq_Ecyl_mech;
-% Etrans = -outputData.daq_E_mech;
-% Egen = -outputData.daq_Eelec;
-% 
-% Ecap  =  cumtrapz(t_idx, Pcap(idx));
-% Etrans = cumtrapz(t_idx, Ptrans(idx));
-% Egen  = cumtrapz(t_idx, Pgen(idx));
-% 
-% % Efficiency (this will have to be as a table)
-% ncap = mean(Pcap(idx)) / mean(Pwav) * 100;
-% ntrans = mean(Ptrans(idx))/ mean(Pcap(idx)) * 100;
-% ngen = mean(Pgen(idx)) / mean(Ptrans(idx)) * 100;
-% 
-% npto = (ntrans * ngen) / 100;
-% nw2w = ncap * npto /100;
+% Entering RM3 specific data
+filePath = {''};
+% deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens_control','w2w_sens_control'};
+deviceName = {'w2w_sens_control_none','w2w_sens_control_none'};
+currentPath = {pwd};
+
+% Importing Modelica simulation data
+% File directory
+temp = tempdir;
+basePath = fullfile('OpenModelica', 'OMEdit');  % Path to default OMEdit result file
+fileName = fullfile([filePath{1} '' deviceName{1}], [deviceName{2} '_res.csv']);  % Path to current file                  
+%{
+The default result file and file name are shown in the output tab of the 
+ simulation setup as "Result File (optional) and File Name Prefix
+ (optional).
+%}
+
+% Importing Modelica data
+filePath = fullfile(temp, basePath, fileName);
+outputData = readtable(filePath);
+
+% Remove duplicate time records from OET output file
+time = outputData.time;
+[~, uidx] = unique(time, 'stable');
+outputData = outputData(uidx, :);
+time = outputData.time;
+
+% close all
+
+
+%% Reading
+% Conversions
+paToBar = 1e-5;
+nToKN = 1e-3;
+kNToMN = 1e-3;
+kNToN = 1e3;
+mNToN = 1e6;
+nToMN = 1e-6;
+
+% Ramp Time
+Tramp = 100;
+idx = time >= Tramp;
+t_idx = time(idx);
+% Body
+s = outputData.daq_sensor_bus_s;
+v = outputData.daq_sensor_bus_v;
+
+% Pressures
+pA = outputData.daq_sensor_bus_pA*paToBar;
+pB = outputData.daq_sensor_bus_pB*paToBar;
+pHP = outputData.daq_sensor_bus_pHP*paToBar;
+pLP = outputData.daq_sensor_bus_pLP*paToBar;
+
+% Mass flows
+mHP = outputData.daq_sensor_bus_mHP;
+mLP = outputData.daq_sensor_bus_mLP;
+mm = outputData.daq_sensor_bus_mm;
+%D = outputData.daq_D;
+
+% Shaft
+omega = outputData.daq_sensor_bus_omega;
+T = outputData.daq_sensor_bus_T;
+
+% Generator
+V = outputData.daq_sensor_bus_V;
+i = outputData.daq_sensor_bus_i;
+
+% Wave
+eta = outputData.daq_eta;
+
+% Hydro forces
+Fpto = outputData.daq_Fpto*nToKN;
+Fexc = outputData.daq_Fexc*nToKN;
+
+% PTO force
+Fcyl_iner = outputData.daq_Finer;
+Fcyl_fric = outputData.daq_Ffric;
+
+% Generator losses
+Pgen_fric = outputData.daq_Pgen_fric;
+Pgen_cop = outputData.daq_Pgen_cop;
+Pgen_elec = outputData.daq_Pelec;
+Pgen_mech = outputData.daq_Pgen_mech;
+
+% Energy stored in accumulators (not currently used)
+gamma = 1.4;
+Tmax = max(time);
+
+VHP = outputData.hpAccumulator_liquidChamber_V;         
+pHP = outputData.hpAccumulator_liquidChamber_p_vol;
+VLP = outputData.lpAccumulator_liquidChamber_V;
+pLP = outputData.lpAccumulator_liquidChamber_p_vol;
+
+EHP = (pHP .* VHP) / (gamma - 1);                      
+dEHP_t = EHP - EHP(1);                                 
+dpHP_t = gradient(EHP, time);                             
+dEHP  = EHP(end) - EHP(1);                              
+dpHP  = dEHP / Tmax;         
+
+ELP = (pLP .* VLP) / (gamma - 1);                       
+dELP_t = ELP - ELP(1);                                  
+dpLP_t = gradient(ELP, time);                              
+dELP  = ELP(end) - ELP(1);                              
+dpLP  = dELP / Tmax;                                       
+
+% Power (not saved in output data for some reason)
+%Pwav = outputData.environment_wave_P;
+Pwav = 57e3;
+Pcap = outputData.daq_Pcyl_mech;
+Ptrans = Pgen_mech;
+Pgen = Pgen_elec;
+
+
+Energy
+Ecap = outputData.daq_Ecyl_mech;
+Etrans = -outputData.daq_E_mech;
+Egen = -outputData.daq_Eelec;
+
+Ecap  =  cumtrapz(t_idx, Pcap(idx));
+Etrans = cumtrapz(t_idx, Ptrans(idx));
+Egen  = cumtrapz(t_idx, Pgen(idx));
+
+% Efficiency (this will have to be as a table)
+ncap = mean(Pcap(idx)) / mean(Pwav) * 100;
+ntrans = mean(Ptrans(idx))/ mean(Pcap(idx)) * 100;
+ngen = mean(Pgen(idx)) / mean(Ptrans(idx)) * 100;
+
+npto = (ntrans * ngen) / 100;
+nw2w = ncap * npto /100;
 % 
 % clear outputdata
 
