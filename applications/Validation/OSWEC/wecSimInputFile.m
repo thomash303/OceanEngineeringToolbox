@@ -14,8 +14,20 @@ simu.stateSpace = 1;                            % Radiation state space calculat
 
 %% Wave Information  
 % Waves with imported wave elevation time-history  
-waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
-waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
+% waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
+% waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
+
+% %Regular Waves
+% waves = waveClass('regularCIC');
+% waves.height = 2;
+% waves.period = 15;
+
+%Irregular Waves using PM Spectrum
+waves = waveClass('irregular');
+waves.height = 2.5;
+waves.period = 8;
+waves.spectrumType = 'PM';
+waves.phaseSeed=1;
 
 %% Body Data
 % Flap

@@ -10,7 +10,7 @@ working directory.
 
 projectRoot = fileparts(fileparts(fileparts(pwd)));
 srcPath = fullfile(projectRoot, 'src', 'Processing', 'MATLAB',...
-    'WECSimComparison');
+    'Postprocess');
 addpath(srcPath);
 
 % Entering RM3 specific data
@@ -22,5 +22,5 @@ mooringName = {};
 ptoName = {'linearTranslationalPTO'};
 currentPath = {pwd};
 
-[body, wave, mooring, pto] = postprocess_WS(filePath, deviceName, ...
+[body, wave, mooring, pto] = postprocess(filePath, deviceName, ...
     bodyName, waveName, mooringName, ptoName);

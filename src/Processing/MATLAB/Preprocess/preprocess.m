@@ -338,7 +338,6 @@ for i = 1:hydro.bodies.Nb
     catch
         fprintf('Radiation state-space data was not loaded  for body %d (%s).\n', ...
             i, string(hydro.bodies.body{i}));
-        return;
     end
 
 % End body loop

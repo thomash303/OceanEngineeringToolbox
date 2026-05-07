@@ -3,7 +3,7 @@ projectRoot = fileparts(fileparts(fileparts(pwd)));
 
 % Entering RM3 specific data
 filePath = {''};
-deviceName = {'OpenHydraulics.Developed.Circuits.CC_HIL_sens_no_rot_val','CC_HIL_sens_no_rot_val'};
+deviceName = {'OpenHydraulics.Developed.Circuits.hydraulic_validation_sign','hydraulic_validation_sign'};
 
 currentPath = {pwd};
 
@@ -37,4 +37,4 @@ oet_cargo_data.fpto = outputData.Fpto;
 
 oet_cargo_data.s = outputData.doubleActingCylinder_piston_s;
 
-save('oet_cargo_datav3.mat','oet_cargo_data');
+save('oet_cargo_data_final_sign.mat','oet_cargo_data');
