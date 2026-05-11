@@ -11,20 +11,21 @@ simu.dt = 0.1;                          % Simulation Time-Step [s]
 simu.cicEndTime = 30;                   % Specify CI Time [s]
 simu.b2b = 0;                                   % Radiation B2B interactions toggle
 simu.stateSpace = 1;                            % Radiation state space calculation toggle
+simu.explorer = 'off';
 
 %% Wave Information  
 % Waves with imported wave elevation time-history  
-% waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
-% waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
+waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
+waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
 
 % % noWaveCIC, no waves with radiation CIC  
 % waves = waveClass('noWaveCIC');       % Initialize Wave Class and Specify Type
 % waves.waterDepth = 10.9;
 
 % %Regular Waves
-waves = waveClass('regularCIC');
-waves.height = 2;
-waves.period = 8;
+% waves = waveClass('regularCIC');
+% waves.height = 2;
+% waves.period = 8;
 
 %Irregular Waves using PM Spectrum
 % waves = waveClass('irregular');
@@ -39,7 +40,7 @@ body(1) = bodyClass('hydroData/oswec.h5');      % Initialize bodyClass for Flap
 body(1).geometryFile = 'geometry/flap.stl';     % Geometry File
 body(1).mass = 127000;                          % User-Defined mass [kg]
 body(1).inertia = [1.85e6 1.85e6 1.85e6];       % Moment of Inertia [kg-m^2]
-body(1).setInitDisp([ 0 0 5],[0 1 0 deg2rad(10)],[0 0 0])
+% body(1).setInitDisp([ 0 0 5],[0 1 0 deg2rad(10)],[0 0 0])
 
 
 % Base

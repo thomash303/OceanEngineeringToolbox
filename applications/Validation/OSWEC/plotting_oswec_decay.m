@@ -19,11 +19,22 @@
 % oswec.regular.time_ws = output.bodies(1).time;
 % oswec.regular.ws_pos = output.bodies(1).position(:,5);
 % oswec.regular.ws_vel = output.bodies(1).velocity(:,5);
-% 
+
 % % OET
 % oswec.regular.time_oet = body.time;
 % oswec.regular.oet_pos = body.position(:,5);
 % oswec.regular.oet_vel = body.velocity(:,5);
+
+% % Irregular
+% WEC-Sim
+% oswec.irregular.time_ws = output.bodies(1).time;
+% oswec.irregular.ws_pos = output.bodies(1).position(:,5);
+% oswec.irregular.ws_vel = output.bodies(1).velocity(:,5);
+
+% OET
+% oswec.irregular.time_oet = body.time;
+% oswec.irregular.oet_pos = body.position(:,5);
+% oswec.irregular.oet_vel = body.velocity(:,5);
 % 
 % save('oswec_results.mat','oswec')
 
@@ -138,12 +149,41 @@ set(get(gca,'XLabel'),'FontSize',Fsize);
 set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
 
-%%
-
-figure('Name', 'Wave')
+%% Irregular wave
+figure('Name', 'Irregular')
 
 subplot(2,1,1)
-plot(oswec.regular.time_ws, output.wave.elevation, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+plot(oswec.irregular.time_ws, oswec.irregular.ws_pos, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
 hold on
-plot(oswec.regular.time_oet, outputData.environment_wave_SSE, 'DisplayName', 'OET','LineWidth', LineWidth)
-legend
+plot(oswec.irregular.time_oet, oswec.irregular.oet_pos, 'DisplayName', 'OET','LineWidth', LineWidth)
+title('Irregular')
+xlabel('$t\;[s]$','Interpreter','latex')
+ylabel('$\theta\;[rad]$','Interpreter','latex')
+xlim([0 400])
+
+grid off;
+box off;
+set(gca,'FontSize',Fsize);
+set(gca,'TickDir','out');
+set(gca,'linewidth',AxisLineWidth)
+set(get(gca,'XLabel'),'FontSize',Fsize);
+set(get(gca,'YLabel'),'FontSize',Fsize);
+legend box off
+
+subplot(2,1,2)
+plot(oswec.irregular.time_ws, oswec.irregular.ws_vel, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+hold on
+plot(oswec.irregular.time_oet, oswec.irregular.oet_vel, 'DisplayName', 'OET','LineWidth', LineWidth)
+title('Irregular')
+xlabel('$t\;[s]$','Interpreter','latex')
+ylabel('$\omega\;[rad]$','Interpreter','latex')
+xlim([0 400])
+
+grid off;
+box off;
+set(gca,'FontSize',Fsize);
+set(gca,'TickDir','out');
+set(gca,'linewidth',AxisLineWidth)
+set(get(gca,'XLabel'),'FontSize',Fsize);
+set(get(gca,'YLabel'),'FontSize',Fsize);
+legend box off

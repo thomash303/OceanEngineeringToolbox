@@ -9,10 +9,11 @@ model OSWEC "Tutorial model for representing an OSWEC"
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
   import Modelica.Mechanics.Rotational.Components;
   inner Multibody.Worlds.World world annotation(
     Placement(transformation(origin = {-74, -66}, extent = {{-10, -10}, {10, 10}})));
-  inner Environmental.Environment environment(redeclare RegularWave wave(file = fileDirectory.file) "Regular wave")  annotation(
+  inner Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, waveSpectrum = WaveSpectrumType.Bretschneider) "Irregular wave") annotation(
     Placement(transformation(origin = {-82, 58}, extent = {{-10, -10}, {10, 10}})));
   inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/OSWEC/OSWECHydroCoeff.mat") annotation(
     Placement(transformation(origin = {-50, 58}, extent = {{-10, -10}, {10, 10}})));
@@ -20,7 +21,7 @@ model OSWEC "Tutorial model for representing an OSWEC"
     Placement(transformation(origin = {10, 32}, extent = {{-10, -10}, {10, 10}})));
   Multibody.Joints.Fixed fixed(r = {0, 0, -8.9}) annotation(
     Placement(transformation(origin = {2, -48}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Multibody.Joints.Revolute revolute(n = {0, 1, 0}, useAxisFlange = false, phi(start = 0.17453292519943295, fixed = true)) annotation(
+  Multibody.Joints.Revolute revolute(n = {0, 1, 0}, useAxisFlange = false, phi(fixed = false)) annotation(
     Placement(transformation(origin = {2, -12}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
 equation
   connect(fixed.frame_b, revolute.frame_a) annotation(
