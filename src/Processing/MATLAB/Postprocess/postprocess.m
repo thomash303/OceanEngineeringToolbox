@@ -133,176 +133,177 @@ dyUnits = {'N','N','N','Nm','Nm','Nm'};
 
 
 % Looping to extract data from the structure and plot it
-for i = 1:bodies
-    for j = 1:nKin
-        figure('Name', [bodyName{i} ' ' kinematicNames{j}]);
-        for k = 1:DoF
-            subplot(rows, cols, k); 
-            plot(body(i).time,body(i).(kinematicNames{j})(:,k));
-            title([num2str(modes(k))]); 
-            xlabel('Time (s)');
-            ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
-            legend('OET','Location','best');
-        end
-    end
+% for i = 1:bodies
+%     for j = 1:nKin
+%         figure('Name', [bodyName{i} ' ' kinematicNames{j}]);
+%         for k = 1:DoF
+%             subplot(rows, cols, k); 
+%             plot(body(i).time,body(i).(kinematicNames{j})(:,k));
+%             title([num2str(modes(k))]); 
+%             xlabel('Time (s)');
+%             ylabel([kinematicNames{j} ' (' kinUnits{j,k} ')']); 
+%             legend('OET','Location','best');
+%         end
+%     end
+% 
+%     for j = 1:nDy
+%         if isfield(body(i), dynamicNames{j}) && ~isempty(body(i).(dynamicNames{j}))
+%             figure('Name', [bodyName{i} ' ' dynamicNames{j}]);
+%             for k = 1:DoF
+%                 subplot(rows, cols, k); 
+%                 plot(body(i).time, body(i).(dynamicNames{j})(:,k));
+%                 title([num2str(modes(k))]); 
+%                 xlabel('Time (s)');
+%                 ylabel([forceTorque{k} ' (' dyUnits{k} ')']); 
+%                 legend('OET','Location','best');
+%             end
+%         else
+%             fprintf('Skipping plot: %s not available for body %s.\n', dynamicNames{j}, bodyName{i});
+%         end
+%     end
+% 
+% end
 
-    for j = 1:nDy
-        if isfield(body(i), dynamicNames{j}) && ~isempty(body(i).(dynamicNames{j}))
-            figure('Name', [bodyName{i} ' ' dynamicNames{j}]);
-            for k = 1:DoF
-                subplot(rows, cols, k); 
-                plot(body(i).time, body(i).(dynamicNames{j})(:,k));
-                title([num2str(modes(k))]); 
-                xlabel('Time (s)');
-                ylabel([forceTorque{k} ' (' dyUnits{k} ')']); 
-                legend('OET','Location','best');
-            end
-        else
-            fprintf('Skipping plot: %s not available for body %s.\n', dynamicNames{j}, bodyName{i});
-        end
-    end
-
-end
-
-%% Wave Data
-% Wave Parameters
-wave = {};
-waves = numel(waveName);
-
-% Looping to extract data from the table and save it in a structure
-for i = 1:waves
-    wave(i).time = outputData.time;
-
-    tempName = waveName{1};
-    wave(i).eta = outputData.(tempName);
-end
-
-% Looping to extract data from the structure and plot it
-for i = 1:waves
-    figure('Name',['Wave Surface Elevation' ' ' num2str(i)])
-    plot(wave(i).time,wave(i).eta)
-    title('Wave Surface Elevation')
-    xlabel('Time (s)')
-    ylabel('Wave Elevation (m)')
-    legend('OET','Location','best');
-end
-
-
-
-%% Mooring Data
-% Mooring Parameters
-mooring = {};
-moorings = numel(mooringName);
-
-% Data extration
-moorSourceName = {'linearMooring_'};
-mooringNames = {'mooringForce'};
-
-% Looping to extract data from the table and save it in a structure
-for i = 1:moorings
-    mooring(i).mooring = mooringName{i};
-    mooring(i).time = outputData.time;
-
-    for j = 1:DoF
-        tempName = [moorSourceName{i} mooringName{i} forces{j}];
-        mooring(i).(mooringNames{i})(:,j) = outputData.(tempName);
-    end
-
-end
-
-% Looping to extract data from the structure and plot it
-for i = 1:moorings
-    figure('Name', [mooringName{i} ' ' mooringNames{i}]);
-
-    for j = 1:DoF
-        subplot(rows, cols, j);
-
-        plot(mooring(i).time,mooring(i).(mooringNames{i})(:,j));
-        title([num2str(modes(j))]);
-        xlabel('Time (s)');
-        ylabel([forceTorque{j} ' (' dyUnits{j} ')']);
-        legend('OET','Location','best');
-    end
-
-end
-
-%% PTO Data
-% Data extraction
-pto = {};
-ptos = numel(ptoName);
-ptoNames = {'ptoForce'};
-
-% Looping to extract data from the table and save it in a structure
-for i = 1:ptos
-    pto(i).pto = ptoName{i};
-    pto(i).time = outputData.time;
-
-    tempName = ptoName{i};
-
-    % Prismatic or revolute joint type
-    if ismember([ptoName{i} '_prismatic_f'], outputData.Properties.VariableNames)
-        pto(i).jointType = 'prismatic';
-    
-    elseif ismember([ptoName{i} '_revolute_tau'], outputData.Properties.VariableNames)
-        pto(i).jointType = 'revolute';
-    else
-        fprintf('Warning: PTO %s has neither prismatic nor revolute fields. Skipping.\n', ...
-            ptoName{i});
-    end
-
-    pto(i).power = outputData.([tempName '_P']);
-
-    if pto(i).jointType == 'prismatic'
-        pto(i).velocity = outputData.([ptoName{i} '_prismatic_v']);
-        pto(i).force    = outputData.([ptoName{i} '_prismatic_f']);
-    elseif pto(i).jointType == 'revolute'
-        pto(i).velocity = outputData.([ptoName{i} '_revolute_w']);
-        pto(i).force    = outputData.([ptoName{i} '_revolute_tau']);
-    end
-end
-
-% Looping to extract data from the structure and plot it
-for i = 1:ptos
-    figure('Name', [ptoName{i} ' ' ptoNames{i}]);
-
-    if ismember(pto(i).jointType, {'prismatic', 'revolute'})
-        subplot(3, 2, j);
-
-        if pto(i).jointType == 'prismatic'
-            z = 1;
-        elseif pto(i).jointType == 'revolute'
-            z = 6;
-        end
-
-        % Subplot 1: Velocity
-        subplot(3,1,1);
-        plot(pto(i).time, pto(i).velocity);
-        title('PTO Velocity');
-        xlabel('Time (s)');
-        ylabel([kinematicNames{2} ' (' kinUnits{2,z} ')']);
-        legend('OET','Location','best');
-    
-        % Subplot 2: Force/Torque
-        subplot(3,1,2);
-        plot(pto(i).time, pto(i).force);
-        title('PTO Force/Torque');
-        xlabel('Time (s)');
-        ylabel([forceTorque{z} ' (' dyUnits{z} ')']);
-        legend('OET','Location','best');
-    
-        % Subplot 3: Power
-        subplot(3,1,3);
-        plot(pto(i).time, pto(i).power);
-        title('PTO Power');
-        xlabel('Time (s)');
-        ylabel('Power (W)');
-        legend('OET','Location','best');
-    end
-
-end
+% %% Wave Data
+% % Wave Parameters
+% wave = {};
+% waves = numel(waveName);
+% 
+% % Looping to extract data from the table and save it in a structure
+% for i = 1:waves
+%     wave(i).time = outputData.time;
+% 
+%     tempName = waveName{1};
+%     wave(i).eta = outputData.(tempName);
+% end
+% 
+% % Looping to extract data from the structure and plot it
+% for i = 1:waves
+%     figure('Name',['Wave Surface Elevation' ' ' num2str(i)])
+%     plot(wave(i).time,wave(i).eta)
+%     title('Wave Surface Elevation')
+%     xlabel('Time (s)')
+%     ylabel('Wave Elevation (m)')
+%     legend('OET','Location','best');
+% end
+% 
+% 
+% 
+% %% Mooring Data
+% % Mooring Parameters
+% mooring = {};
+% moorings = numel(mooringName);
+% 
+% % Data extration
+% moorSourceName = {'linearMooring_'};
+% mooringNames = {'mooringForce'};
+% 
+% % Looping to extract data from the table and save it in a structure
+% for i = 1:moorings
+%     mooring(i).mooring = mooringName{i};
+%     mooring(i).time = outputData.time;
+% 
+%     for j = 1:DoF
+%         tempName = [moorSourceName{i} mooringName{i} forces{j}];
+%         mooring(i).(mooringNames{i})(:,j) = outputData.(tempName);
+%     end
+% 
+% end
+% 
+% % Looping to extract data from the structure and plot it
+% for i = 1:moorings
+%     figure('Name', [mooringName{i} ' ' mooringNames{i}]);
+% 
+%     for j = 1:DoF
+%         subplot(rows, cols, j);
+% 
+%         plot(mooring(i).time,mooring(i).(mooringNames{i})(:,j));
+%         title([num2str(modes(j))]);
+%         xlabel('Time (s)');
+%         ylabel([forceTorque{j} ' (' dyUnits{j} ')']);
+%         legend('OET','Location','best');
+%     end
+% 
+% end
+% 
+% %% PTO Data
+% % Data extraction
+% pto = {};
+% ptos = numel(ptoName);
+% ptoNames = {'ptoForce'};
+% 
+% % Looping to extract data from the table and save it in a structure
+% for i = 1:ptos
+%     pto(i).pto = ptoName{i};
+%     pto(i).time = outputData.time;
+% 
+%     tempName = ptoName{i};
+% 
+%     % Prismatic or revolute joint type
+%     if ismember([ptoName{i} '_prismatic_f'], outputData.Properties.VariableNames)
+%         pto(i).jointType = 'prismatic';
+% 
+%     elseif ismember([ptoName{i} '_revolute_tau'], outputData.Properties.VariableNames)
+%         pto(i).jointType = 'revolute';
+%     else
+%         fprintf('Warning: PTO %s has neither prismatic nor revolute fields. Skipping.\n', ...
+%             ptoName{i});
+%     end
+% 
+%     pto(i).power = outputData.([tempName '_P']);
+% 
+%     if pto(i).jointType == 'prismatic'
+%         pto(i).velocity = outputData.([ptoName{i} '_prismatic_v']);
+%         pto(i).force    = outputData.([ptoName{i} '_prismatic_f']);
+%     elseif pto(i).jointType == 'revolute'
+%         pto(i).velocity = outputData.([ptoName{i} '_revolute_w']);
+%         pto(i).force    = outputData.([ptoName{i} '_revolute_tau']);
+%     end
+% end
+% 
+% % Looping to extract data from the structure and plot it
+% for i = 1:ptos
+%     figure('Name', [ptoName{i} ' ' ptoNames{i}]);
+% 
+%     if ismember(pto(i).jointType, {'prismatic', 'revolute'})
+%         subplot(3, 2, j);
+% 
+%         if pto(i).jointType == 'prismatic'
+%             z = 1;
+%         elseif pto(i).jointType == 'revolute'
+%             z = 6;
+%         end
+% 
+%         % Subplot 1: Velocity
+%         subplot(3,1,1);
+%         plot(pto(i).time, pto(i).velocity);
+%         title('PTO Velocity');
+%         xlabel('Time (s)');
+%         ylabel([kinematicNames{2} ' (' kinUnits{2,z} ')']);
+%         legend('OET','Location','best');
+% 
+%         % Subplot 2: Force/Torque
+%         subplot(3,1,2);
+%         plot(pto(i).time, pto(i).force);
+%         title('PTO Force/Torque');
+%         xlabel('Time (s)');
+%         ylabel([forceTorque{z} ' (' dyUnits{z} ')']);
+%         legend('OET','Location','best');
+% 
+%         % Subplot 3: Power
+%         subplot(3,1,3);
+%         plot(pto(i).time, pto(i).power);
+%         title('PTO Power');
+%         xlabel('Time (s)');
+%         ylabel('Power (W)');
+%         legend('OET','Location','best');
+%     end
+% 
+% end
 
 %% Save
-save([deviceName{1} 'Output.mat'],'body', 'wave','mooring','pto')
+% save([deviceName{1} 'Output.mat'],'body', 'wave','mooring','pto')
+save([deviceName{1} 'Output.mat'],'body')
 fprintf('Saved post-processed data to:\n  %s\n', [deviceName{1} 'Output.mat']);
 
 

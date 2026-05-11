@@ -16,11 +16,11 @@ addpath(srcPath);
 % Entering OSWEC specific data
 filePath = {'OceanEngineeringToolbox.Tutorial'};
 deviceName = {'OSWEC'};
-bodyName = {'float', 'spar'};
-waveName = {'environment_SSE'}; % Do not edit
+bodyName = {'flap'};
+waveName = {0}; % Do not edit
 mooringName = {};
-ptoName = {'rotationalTranslationalPTO'};
+ptoName = {};
 currentPath = {pwd};
 
-[body, wave, mooring, pto] = postprocess(filePath, deviceName, ...
+[body] = postprocess(filePath, deviceName, ...
     bodyName, waveName, mooringName, ptoName);

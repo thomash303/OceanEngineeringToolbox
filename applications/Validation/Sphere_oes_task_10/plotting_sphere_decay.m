@@ -101,7 +101,7 @@ cog = -2;
 %% Plot 1m decay test (full)
 figure('Name', 'Decay 1m (full)')
 
-plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.pds, 'DisplayName', 'ProdeusDS (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.pds, 'DisplayName', 'ProteusDS (Lin)', 'LineWidth', LineWidth)
 hold on
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.inw, 'DisplayName', 'InWave (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.ans, 'DisplayName', 'aNySIM (Nlin)', 'LineWidth', LineWidth)
@@ -110,7 +110,7 @@ plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.wvec, 'DisplayName', 'WaveEC 
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.inwh, 'DisplayName', 'InWave-HOTINT (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_1m.time_oet_lin, oes_sphere.decay_1m.oet_lin-cog, 'DisplayName', 'OET (Lin)', 'LineWidth', LineWidth)
 % plot(oes_sphere.decay_1m.time_oet_nlin, oes_sphere.decay_1m.oet_nlin-cog, 'DisplayName', 'OET (NLin)', 'LineWidth', LineWidth)
-plot(oes_sphere.decay_1m.time_hc, oes_sphere.decay_1m.hc-cog, 'DisplayName', 'HydroChrono (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_1m.time_hc, oes_sphere.decay_1m.hc-cog, 'DisplayName', 'HydroChrono (Lin)', 'LineWidth', LineWidth, 'Color', [0.0000 0.5000 0.0000])
 
 title('1m Decay Test (full)')
 xlabel('$t\;[s]$','Interpreter','latex')
@@ -129,7 +129,7 @@ legend box off
 %% Plot 1m decay test (truncated)
 figure('Name', 'Decay 1m (truncated)')
 
-plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.pds, 'DisplayName', 'ProdeusDS (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.pds, 'DisplayName', 'ProteusDS (Lin)', 'LineWidth', LineWidth)
 hold on
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.inw, 'DisplayName', 'InWave (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.ans, 'DisplayName', 'aNySIM (Nlin)', 'LineWidth', LineWidth)
@@ -138,7 +138,7 @@ plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.wvec, 'DisplayName', 'WaveEC 
 plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.inwh, 'DisplayName', 'InWave-HOTINT (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_1m.time_oet_lin, oes_sphere.decay_1m.oet_lin-cog, 'DisplayName', 'OET (Lin)', 'LineWidth', LineWidth)
 % plot(oes_sphere.decay_1m.time_oet_nlin, oes_sphere.decay_1m.oet_nlin-cog, 'DisplayName', 'OET (NLin)', 'LineWidth', LineWidth)
-plot(oes_sphere.decay_1m.time_hc, oes_sphere.decay_1m.hc-cog, 'DisplayName', 'HydroChrono (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_1m.time_hc, oes_sphere.decay_1m.hc-cog, 'DisplayName', 'HydroChrono (Lin)', 'LineWidth', LineWidth, 'Color', [0.0000 0.5000 0.0000])
 
 title('1m Decay Test (truncated)')
 xlabel('$t\;[s]$','Interpreter','latex')
@@ -157,7 +157,7 @@ legend box off
 %% Plot 5m decay test (full)
 figure('Name', 'Decay 5m (full)')
 
-plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.pds, 'DisplayName', 'ProdeusDS (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.pds, 'DisplayName', 'ProteusDS (Lin)', 'LineWidth', LineWidth)
 hold on
 plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.inw, 'DisplayName', 'InWave (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.ans, 'DisplayName', 'aNySIM (Nlin)', 'LineWidth', LineWidth)
@@ -184,7 +184,7 @@ legend box off
 %% Plot 5m decay test (truncated)
 figure('Name', 'Decay 5m (truncated)')
 
-plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.pds, 'DisplayName', 'ProdeusDS (Lin)', 'LineWidth', LineWidth)
+plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.pds, 'DisplayName', 'ProteusDS (Lin)', 'LineWidth', LineWidth)
 hold on
 plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.inw, 'DisplayName', 'InWave (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.ans, 'DisplayName', 'aNySIM (Nlin)', 'LineWidth', LineWidth)

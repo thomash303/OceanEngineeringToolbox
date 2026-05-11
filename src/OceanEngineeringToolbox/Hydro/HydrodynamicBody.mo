@@ -61,7 +61,7 @@ model HydrodynamicBody "Model containing the hydrodynamic body used to represent
      choices(choice(redeclare Forces.Radiation radiation(file = fileDirectory.file) "Radiation Force"), choice(redeclare Forces.RadiationB2B radiation(file = fileDirectory.file) "B2B Radiation Force")),
      Placement(transformation(origin = {34, 48}, extent = {{-18, -18}, {18, 18}})));
   // Hydrostatic
-  Forces.Hydrostatic hydrostatic(file = fileDirectory.file, bodyIndex = bodyIndex) if enableHydrostaticForce annotation(
+  Forces.Hydrostatic hydrostatic(file = fileDirectory.file, bodyIndex = bodyIndex, M = M) if enableHydrostaticForce annotation(
     Placement(transformation(origin = {-80, 48}, extent = {{18, -18}, {-18, 18}})));
   parameter Boolean enableHydrostaticForce = true "Switch to enable/disable hydrostatic force calculation" annotation(
     choices(checkBox = true),

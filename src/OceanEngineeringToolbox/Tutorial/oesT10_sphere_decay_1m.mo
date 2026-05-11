@@ -11,11 +11,11 @@ model oesT10_sphere_decay_1m "Model for representing the OES Task 10 heaving sph
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
-  inner Multibody.Worlds.World world annotation(
+  inner Multibody.Worlds.World world(animateWorld = false, animateGravity = false)  annotation(
     Placement(transformation(origin = {-32, -32}, extent = {{-10, -10}, {10, 10}})));
   Multibody.Joints.Prismatic prismatic(s(start = 1, fixed = true))  annotation(
     Placement(transformation(origin = {-6, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Hydro.HydrodynamicBody sphere(ra_CM = {0, 0, -2}, bodyIndex = 1, enableRadiationForce = true)  annotation(
+  Hydro.HydrodynamicBody sphere(ra_CM = {0, 0, -2}, bodyIndex = 1, enableRadiationForce = true, animationEnable = true, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/Sphere_oes_task_10/geometry/oes_task10_sphere.stl", bodyColour = {255, 255, 0})  annotation(
     Placement(transformation(origin = {8, 38}, extent = {{-10, -10}, {10, 10}})));
   inner Environmental.Environment environment(redeclare NoWave wave(file = fileDirectory.file) "No wave")  annotation(
     Placement(transformation(origin = {-68, 74}, extent = {{-10, -8}, {10, 8}})));

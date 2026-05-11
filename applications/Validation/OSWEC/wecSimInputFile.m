@@ -17,17 +17,21 @@ simu.stateSpace = 1;                            % Radiation state space calculat
 % waves = waveClass('elevationImport');          % Create the Wave Variable and Specify Type
 % waves.elevationFile = 'elevationData.mat';     % Name of User-Defined Time-Series File [:,2] = [time, eta]
 
+% % noWaveCIC, no waves with radiation CIC  
+% waves = waveClass('noWaveCIC');       % Initialize Wave Class and Specify Type
+% waves.waterDepth = 10.9;
+
 % %Regular Waves
-% waves = waveClass('regularCIC');
-% waves.height = 2;
-% waves.period = 15;
+waves = waveClass('regularCIC');
+waves.height = 2;
+waves.period = 8;
 
 %Irregular Waves using PM Spectrum
-waves = waveClass('irregular');
-waves.height = 2.5;
-waves.period = 8;
-waves.spectrumType = 'PM';
-waves.phaseSeed=1;
+% waves = waveClass('irregular');
+% waves.height = 2.5;
+% waves.period = 8;
+% waves.spectrumType = 'PM';
+% waves.phaseSeed=1;
 
 %% Body Data
 % Flap
@@ -35,6 +39,8 @@ body(1) = bodyClass('hydroData/oswec.h5');      % Initialize bodyClass for Flap
 body(1).geometryFile = 'geometry/flap.stl';     % Geometry File
 body(1).mass = 127000;                          % User-Defined mass [kg]
 body(1).inertia = [1.85e6 1.85e6 1.85e6];       % Moment of Inertia [kg-m^2]
+body(1).setInitDisp([ 0 0 5],[0 1 0 deg2rad(10)],[0 0 0])
+
 
 % Base
 body(2) = bodyClass('hydroData/oswec.h5');      % Initialize bodyClass for Base
@@ -50,5 +56,5 @@ constraint(1).location = [0 0 -10];             % Constraint Location [m]
 % Rotational PTO
 pto(1) = ptoClass('PTO1');                      % Initialize ptoClass for PTO1
 pto(1).stiffness = 0;                           % PTO Stiffness Coeff [Nm/rad]
-pto(1).damping = 12000;                         % PTO Damping Coeff [Nsm/rad]
+pto(1).damping = 0;%12000;                         % PTO Damping Coeff [Nsm/rad]
 pto(1).location = [0 0 -8.9];                   % PTO Location [m]
