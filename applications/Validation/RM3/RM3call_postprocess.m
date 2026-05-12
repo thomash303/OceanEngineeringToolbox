@@ -17,10 +17,10 @@ addpath(srcPath);
 filePath = {'OceanEngineeringToolbox.Tutorial'};
 deviceName = {'RM3'};
 bodyName = {'float', 'spar'};
-waveName = {'environment_SSE'}; % Do not edit
+waveName = {}; % Do not edit
 mooringName = {};
 ptoName = {'linearTranslationalPTO'};
 currentPath = {pwd};
 
-[body, wave, mooring, pto] = postprocess(filePath, deviceName, ...
+[body] = postprocess(filePath, deviceName, ...
     bodyName, waveName, mooringName, ptoName);

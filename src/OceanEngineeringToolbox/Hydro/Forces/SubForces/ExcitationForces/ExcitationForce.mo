@@ -48,9 +48,9 @@ equation
       ) for i in 1:bodyDoF}; 
       
       
-  //F[4:6] = resolve2(frame_a.R,F_int[4:6]);
-  //F[1:3] = resolve2(frame_a.R,F_int[1:3]);
-  F = F_int;
+  F[4:6] = resolve2(frame_a.R,F_int[4:6]);
+  F[1:3] = resolve2(frame_a.R,F_int[1:3]);
+  //F = F_int;
   
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Excitation Force")}),

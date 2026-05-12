@@ -1,5 +1,4 @@
-function [body, wave, mooring, pto] = postprocess(filePath, deviceName, bodyName,...
-    waveName, mooringName, ptoName)
+function [body] = postprocess(filePath, deviceName, bodyName)
 %% Ocean Engineering Toolbox - Post-Processing Function
 %{
 A post-processing function for the OET to post-process Modelica simulation data. 
@@ -119,17 +118,20 @@ for i = 1:bodies
 
 end
 
-% Plotting
-rows = 2; % Number of rows
-cols = 3; % Number of columns
+save([deviceName{1} 'Output.mat'],'body')
+fprintf('Saved post-processed data to:\n  %s\n', [deviceName{1} 'Output.mat']);
 
-% Kinematics
-kinUnits = {'m','m','m','rad','rad','rad';
-    'm/s','m/s','m/s','rad/s','rad/s','rad/s';
-    'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
-
-% Dynamics
-dyUnits = {'N','N','N','Nm','Nm','Nm'};
+% % Plotting
+% rows = 2; % Number of rows
+% cols = 3; % Number of columns
+% 
+% % Kinematics
+% kinUnits = {'m','m','m','rad','rad','rad';
+%     'm/s','m/s','m/s','rad/s','rad/s','rad/s';
+%     'm/s^2','m/s^2','m/s^2','rad/s^2','rad/s^2','rad/s^2'};
+% 
+% % Dynamics
+% dyUnits = {'N','N','N','Nm','Nm','Nm'};
 
 
 % Looping to extract data from the structure and plot it

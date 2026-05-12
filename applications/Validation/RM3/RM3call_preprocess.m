@@ -12,6 +12,6 @@ addpath(srcPath);
 
 currentPath = pwd;
 filePath = fullfile('hydroData', 'rm3.h5');
-deviceName = 'RM3';
+deviceName = 'RM3v1';
 
 [hydro] = preprocess(currentPath, filePath, deviceName);

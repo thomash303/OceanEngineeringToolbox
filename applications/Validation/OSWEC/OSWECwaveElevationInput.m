@@ -27,9 +27,6 @@ outputData = outputData(uidx, :);
 elevationData(:,1) = outputData.time;        % Time
 elevationData(:,2) = outputData.environment_wave_SSE;      % Wave elevation
 
-
 % Save the elevation variable to a MATLAB structure. Note, this structure
 % must be saved inside the WEC-Sim simulation directory to enable import.
 save('elevationData.mat','elevationData')
-
-outputData.environment_wave_SSE; 

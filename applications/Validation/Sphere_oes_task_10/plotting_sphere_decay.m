@@ -116,6 +116,7 @@ title('1m Decay Test (full)')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([0 40])
+legend('Location','best','Interpreter','latex')
 
 grid off;
 box off;
@@ -139,6 +140,8 @@ plot(oes_sphere.decay_1m.time, oes_sphere.decay_1m.inwh, 'DisplayName', 'InWave-
 plot(oes_sphere.decay_1m.time_oet_lin, oes_sphere.decay_1m.oet_lin-cog, 'DisplayName', 'OET (Lin)', 'LineWidth', LineWidth)
 % plot(oes_sphere.decay_1m.time_oet_nlin, oes_sphere.decay_1m.oet_nlin-cog, 'DisplayName', 'OET (NLin)', 'LineWidth', LineWidth)
 plot(oes_sphere.decay_1m.time_hc, oes_sphere.decay_1m.hc-cog, 'DisplayName', 'HydroChrono (Lin)', 'LineWidth', LineWidth, 'Color', [0.0000 0.5000 0.0000])
+legend('Location','best','Interpreter','latex')
+
 
 title('1m Decay Test (truncated)')
 xlabel('$t\;[s]$','Interpreter','latex')
@@ -146,7 +149,7 @@ ylabel('$z\;[m]$','Interpreter','latex')
 xlim([30 40])
 ylim([-0.025 0.025])
 grid off;
-box off;
+% box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
@@ -171,6 +174,8 @@ title('5m Decay Test (full)')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([0 40])
+legend('Location','best','Interpreter','latex')
+
 
 grid off;
 box off;
@@ -193,6 +198,8 @@ plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.wvec, 'DisplayName', 'WaveEC 
 plot(oes_sphere.decay_5m.time, oes_sphere.decay_5m.inwh, 'DisplayName', 'InWave-HOTINT (Lin)','LineWidth', LineWidth)
 plot(oes_sphere.decay_5m.time_oet_lin, oes_sphere.decay_5m.oet_lin-cog, 'DisplayName', 'OET (Lin)', 'LineWidth', LineWidth)
 % plot(oes_sphere.decay_5m.time_oet_nlin, oes_sphere.decay_5m.oet_nlin-cog, 'DisplayName', 'OET (NLin)', 'LineWidth', LineWidth)
+legend('Location','best','Interpreter','latex')
+
 
 title('5m Decay Test (truncated)')
 xlabel('$t\;[s]$','Interpreter','latex')
@@ -200,7 +207,7 @@ ylabel('$z\;[m]$','Interpreter','latex')
 xlim([30 40])
 ylim([-0.1 0.15])
 grid off;
-box off;
+% box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
