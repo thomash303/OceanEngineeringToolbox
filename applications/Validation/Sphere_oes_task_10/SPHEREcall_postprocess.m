@@ -22,5 +22,5 @@ mooringName = {};
 ptoName = {};
 currentPath = {pwd};
 
-[body, wave, mooring, pto] = postprocess(filePath, deviceName, ...
-    bodyName, waveName, mooringName, ptoName);
+[body] = postprocess(filePath, deviceName, ...
+    bodyName);

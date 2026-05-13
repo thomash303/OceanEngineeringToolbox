@@ -28,7 +28,6 @@ model HydrostaticForce
   
   import Modelica.Mechanics.MultiBody.Frames.resolve2;
 
-
 protected
   Real CoG[6] = cat(1, vector(cg), zeros(3));
 

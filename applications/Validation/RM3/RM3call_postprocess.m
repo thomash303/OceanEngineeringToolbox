@@ -19,8 +19,8 @@ deviceName = {'RM3'};
 bodyName = {'float', 'spar'};
 waveName = {}; % Do not edit
 mooringName = {};
-ptoName = {'linearTranslationalPTO'};
+ptoName = {};
 currentPath = {pwd};
 
 [body] = postprocess(filePath, deviceName, ...
-    bodyName, waveName, mooringName, ptoName);
+    bodyName);

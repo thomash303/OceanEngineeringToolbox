@@ -47,36 +47,26 @@ nKin = size(kinematicNames,2);
 
 % Dynamics
 dynamicNames = {'excitationForce', 'radiationForce', ...
-    'hydrostaticForce', 'inertialForce'};
+    'hydrostaticForce', 'dampingDragForce', 'morisonForce', 'inertialForce'};
 forceTorque = {'Force', 'Force', 'Force', 'Moment', 'Moment', 'Moment'};
 
-% Account for different excitation options
-excitationForceOptions = {...
-    'excitationForceRegularWave', ...
-    'excitationForceIrregularWaveEqualEnergy', ...
-    'excitationForceIrregularWaveRandom', ...
-    'excitationForcespectrumImport'};
+radiationForceOptions = {...
+    '_radiation_radiationForceNoB2B', ...
+    '_radiation_radiationForceB2B'};
 
-excitationForce = '';
 
-for i = 1:length(excitationForceOptions)
-    keyword = excitationForceOptions{i};
-    % Check if any variable name contains the excitation force keyword
+for i = 1:length(radiationForceOptions)
+    keyword = radiationForceOptions{i};
     matches = contains(outputData.Properties.VariableNames, keyword);
     if any(matches)
-        excitationForce = keyword;
+        radiationForce = keyword;
         break
     end
 end
 
-% If no excitation force is present, set to a default so code can proceed
-if isempty(excitationForce)
-    excitationForce = 'excitationForceRegularWave';
-end
-
-
-dySourceName = {['_excitation_' excitationForce], '_radiation_radiationForceNoB2B', ...
-    '_hydrostatic_hydrostaticForce','_body_body'};
+dySourceName = {'_excitation_excitationForce', radiationForce, ...
+    '_hydrostatic_hydrostaticForce','_dampingDrag_dampingDragForce', ...
+    '_morison_morisonForce', '_body_body'};
 forces = {'_F_1_','_F_2_','_F_3_','_F_4_','_F_5_','_F_6_'};
 nDy = size(dynamicNames,2); 
 
@@ -305,8 +295,8 @@ fprintf('Saved post-processed data to:\n  %s\n', [deviceName{1} 'Output.mat']);
 
 %% Save
 % save([deviceName{1} 'Output.mat'],'body', 'wave','mooring','pto')
-save([deviceName{1} 'Output.mat'],'body')
-fprintf('Saved post-processed data to:\n  %s\n', [deviceName{1} 'Output.mat']);
+% save([deviceName{1} 'Output.mat'],'body')
+% fprintf('Saved post-processed data to:\n  %s\n', [deviceName{1} 'Output.mat']);
 
 
 end

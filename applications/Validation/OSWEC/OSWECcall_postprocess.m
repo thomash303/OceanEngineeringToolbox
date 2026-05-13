@@ -23,4 +23,4 @@ ptoName = {};
 currentPath = {pwd};
 
 [body] = postprocess(filePath, deviceName, ...
-    bodyName, waveName, mooringName, ptoName);
+    bodyName);

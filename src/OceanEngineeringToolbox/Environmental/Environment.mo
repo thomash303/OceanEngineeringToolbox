@@ -9,6 +9,8 @@ model Environment "Model representing the environmental conditions"
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.EqualEnergyDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
+
   // Wave parameters
   replaceable RegularWave wave(file = fileDirectory.file) constrainedby BaseWave "Wave type" annotation(
      Dialog(group = "Wave Parameters"),

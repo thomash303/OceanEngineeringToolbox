@@ -11,14 +11,14 @@ model RM3
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
-  
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
   inner Multibody.Worlds.World world annotation(
     Placement(transformation(origin = {-80, 0}, extent = {{-12, -12}, {12, 12}})));
-  Hydro.HydrodynamicBody spar(enableRadiationForce = true, enableDampingDragForce = false, ra_CM = {0, 0, -21.29}, enableHydrostaticForce = true, bodyIndex = 2, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableExcitationForce = true, animationEnable = true, rCM_b(each displayUnit = "m"), geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/plate.stl", bodyColour = {128, 128, 128})  annotation(
+  Hydro.HydrodynamicBody spar(enableRadiationForce = true, enableDampingDragForce = false, ra_CM = {0, 0, -21.29}, enableHydrostaticForce = true, bodyIndex = 2, I_11 = 94419615, I_22 = 94407091, I_33 = 28542225, enableExcitationForce = true, animationEnable = true, rCM_b(each displayUnit = "m"), geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/plate.stl", bodyColour = {128, 128, 128}, redeclare Forces.RadiationB2B radiation(file = fileDirectory.file) "B2B Radiation Force")  annotation(
     Placement(transformation(origin = {-3, -1}, extent = {{-15, -15}, {15, 15}})));
-  Hydro.HydrodynamicBody float(enableRadiationForce = true, enableDampingDragForce = false, ra_CM = {0, 0, 20.57}, enableHydrostaticForce = true, bodyIndex = 1, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, enableExcitationForce = true, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", animationEnable = true, bodyColour = {255, 255, 0})  annotation(
+  Hydro.HydrodynamicBody float(enableRadiationForce = true, enableDampingDragForce = false, ra_CM = {0, 0, 20.57}, enableHydrostaticForce = true, bodyIndex = 1, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, enableExcitationForce = true, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", animationEnable = true, bodyColour = {255, 255, 0}, redeclare Forces.RadiationB2B radiation(file = fileDirectory.file) "B2B Radiation Force")  annotation(
     Placement(transformation(origin = {67, 7}, extent = {{-15, -15}, {15, 15}})));
-  inner Environmental.Environment environment  annotation(
+  inner Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, waveSpectrum = OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.JONSWAP) "Irregular wave")   annotation(
     Placement(transformation(origin = {-22, 52}, extent = {{-12, -12}, {12, 12}})));
   inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3v1hydroCoeff.mat")  annotation(
     Placement(transformation(origin = {24, 52}, extent = {{-12, -12}, {12, 12}})));

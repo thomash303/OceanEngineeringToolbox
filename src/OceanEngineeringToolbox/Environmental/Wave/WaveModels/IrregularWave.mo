@@ -8,6 +8,7 @@ model IrregularWave
   import Modelica.Constants.pi;
   
   // Extending and inheriting from the OET
+   outer DataImport.FileDirectory fileDirectory;
   extends DataImport.InputRecords.FilePath;
   import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
   extends BaseWave(n_omega = 100);
@@ -15,9 +16,17 @@ model IrregularWave
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.BaseSpectrumDiscritization;
   
-  // Wave parameters
-  parameter WaveSpectrumType waveSpectrum = WaveTypes.WaveSpectrumType.PiersonMoskowitz "Wave Spectrum Type" annotation(
-    Dialog(group = "Wave Parameters"));
+  
+  parameter WaveSpectrumType waveSpectrum = WaveSpectrumType.PiersonMoskowitz 
+    "Wave Spectrum Type" 
+    annotation(
+      Dialog(group = "Wave Parameters"),
+      choices(
+        choice = WaveSpectrumType.PiersonMoskowitz "Pierson-Moskowitz",
+        choice = WaveSpectrumType.Bretschneider    "Bretschneider",
+        choice = WaveSpectrumType.JONSWAP          "JONSWAP",
+        choice = WaveSpectrumType.OchiHubble       "Ochi-Hubble"
+      ));
     
   // Multidirectional wave Parameters
   parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Multidirectional Wave Parameters"));
@@ -59,7 +68,7 @@ model IrregularWave
   parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(Dialog(enable = false, tab = "Misc"));
 
   // Random frequency discritization model
-  replaceable randomGenerator frequencySelector(file = file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = file) "Equal-energy frequency selection")));
+  replaceable randomGenerator frequencySelector(file = fileDirectory.file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = fileDirectory.file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = file) "Equal-energy frequency selection")));
  
   // Output variables for excitation, Morison, and wave gauge
   parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = frequencySelector.zeta "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));

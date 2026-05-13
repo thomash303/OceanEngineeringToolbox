@@ -11,6 +11,8 @@ model oesT10_sphere_decay_1m "Model for representing the OES Task 10 heaving sph
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.*;
   import OceanEngineeringToolbox.Environmental.Wave.WaveModels.*;
+  import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.*;
+
   inner Multibody.Worlds.World world(animateWorld = false, animateGravity = false)  annotation(
     Placement(transformation(origin = {-32, -32}, extent = {{-10, -10}, {10, 10}})));
   Multibody.Joints.Prismatic prismatic(s(start = 1, fixed = true))  annotation(
