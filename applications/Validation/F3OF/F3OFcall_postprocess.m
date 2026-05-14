@@ -1,0 +1,26 @@
+%% Ocean Engineering Toolbox - Calling the Post-Processing Function
+%{
+A script calling the post-processing function for the OET to post-process 
+Modelica simulation data. The user must specify the result folder, 
+result file, and the instantiated hydrodynamic body, wave, mooring, and 
+PTO Modelica model name (cap sensitive). All names must be enclosed in 
+braces. The WEC-Sim output file must be saved as 'output.mat' in the 
+working directory.
+%}
+
+projectRoot = fileparts(fileparts(fileparts(pwd)));
+srcPath = fullfile(projectRoot, 'src', 'Processing', 'MATLAB',...
+    'Postprocess');
+addpath(srcPath);
+
+% Entering RM3 specific data
+filePath = {'OceanEngineeringToolbox.Tutorial'};
+deviceName = {'F3OF_DT1'};
+bodyName = {'base', 'flap1', 'flap2'};
+waveName = {}; % Do not edit
+mooringName = {};
+ptoName = {};
+currentPath = {pwd};
+
+[body] = postprocess(filePath, deviceName, ...
+    bodyName);

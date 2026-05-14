@@ -102,8 +102,12 @@
 % rm3.irreglar.oet.b2b.spar.pos_pitch = body(2).position(:,5);
 % rm3.irreglar.oet.b2b.spar.vel_pitch = body(2).velocity(:,5);
 
+% Regular spar decay
+
+% rm3.decay.oet.time = body.time;
+% rm3.decy.oet.spar.pos_heave = body(2).position(:,3);
 % 
-save('rm3_results.mat','rm3')
+% save('rm3_results.mat','rm3')
 
 
 
@@ -125,10 +129,12 @@ plot(rm3.regular.ws.b2b.time, rm3.regular.ws.b2b.spar.pos_heave, 'LineWidth', Li
 plot(rm3.regular.oet.b2b.time, rm3.regular.oet.b2b.spar.pos_heave, '--', 'LineWidth', LineWidth)
 
 title('Heave Position','Interpreter','latex')
-ylabel('z [m]','Interpreter','latex')
-legend('Float WS','Float OET','Spar WS','Spar OET','Location','best','Interpreter','latex')
+ylabel('$z\;[m]$','Interpreter','latex')
+legend('WEC-Sim (float)','OET (float)','WEC-Sim (spar)','OET (spar)','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
@@ -143,10 +149,12 @@ plot(rm3.regular.ws.b2b.time, rm3.regular.ws.b2b.spar.vel_heave, 'LineWidth', Li
 plot(rm3.regular.oet.b2b.time, rm3.regular.oet.b2b.spar.vel_heave, '--', 'LineWidth', LineWidth)
 
 title('Heave Velocity','Interpreter','latex')
-ylabel('v [m/s]','Interpreter','latex')
+ylabel('$v\;[m/s]$','Interpreter','latex')
 legend('Float WS','Float OET','Spar WS','Spar OET','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
@@ -166,6 +174,8 @@ ylabel('$\theta$ [rad]','Interpreter','latex')
 legend('WS','OET','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
@@ -179,17 +189,20 @@ plot(rm3.regular.oet.b2b.time, rm3.regular.oet.b2b.float.vel_pitch, '--', 'LineW
 
 title('Pitch Velocity (Float)','Interpreter','latex')
 ylabel('$\omega$ [rad/s]','Interpreter','latex')
+xlabel('$t\;[s]$','Interpreter','latex')
 legend('WS','OET','Location','best','Interpreter','latex')
 xlim([0 400])
+yticks(-0.02:0.01:0.02)
 xlabel('t [s]','Interpreter','latex')
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth)
 set(get(gca,'XLabel'),'FontSize',Fsize);
 set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
-
 
 figure('Name', 'Regular - B2B - Float and spar Position')
 
@@ -202,6 +215,7 @@ title('Float Heave','Interpreter','latex')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([100 200])
+xticks(100:25:200)
 legend('Location','best','Interpreter','latex')
 
 set(gca,'FontSize',Fsize);
@@ -212,14 +226,26 @@ set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
 
 subplot(2,1,2)
-plot(rm3.regular.ws.b2b.time, rm3.regular.ws.b2b.spar.pos_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+plot(rm3.regular.ws.b2b.time, rm3.regular.ws.b2b.spar.pos_heave, ...
+    'DisplayName', 'WEC-Sim', ...
+    'LineWidth', LineWidth, ...
+    'Color', [0.9290 0.6940 0.1250])
 hold on
-plot(rm3.regular.oet.b2b.time, rm3.regular.oet.b2b.spar.pos_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+plot(rm3.regular.oet.b2b.time, rm3.regular.oet.b2b.spar.pos_heave, '--', ...
+    'DisplayName', 'OET', ...
+    'LineWidth', LineWidth, ...
+    'Color', [0.4940 0.1840 0.5560])   
+yline(-21.29, '-.', 'Color', [0.4660 0.6740 0.1880], ...
+    'LineWidth', LineWidth, ...
+    'DisplayName', 'Hydrostatic equilibrium (spar)')
 
 title('Spar Heave','Interpreter','latex')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([250 350])
+xticks(250:25:350)
+ylim([-21.45 -21.05])
+yticks(-21.45:0.2:-21.05)
 legend('Location','best','Interpreter','latex')
 
 set(gca,'FontSize',Fsize);
@@ -239,11 +265,13 @@ plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.pos_heave, 'LineWidth', 
 plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.pos_heave, '--', 'LineWidth', LineWidth)
 
 title('Heave Position','Interpreter','latex')
-ylabel('z [m]','Interpreter','latex')
+ylabel('$z\;[m]$','Interpreter','latex')
 
-legend('Float WS','Float OET','Spar WS','Spar OET','Location','best','Interpreter','latex')
+legend('WEC-Sim (float)','OET (float)','WEC-Sim (spar)','OET (spar)','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth);
@@ -258,17 +286,20 @@ plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.vel_heave, 'LineWidth', 
 plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.vel_heave, '--', 'LineWidth', LineWidth)
 
 title('Heave Velocity','Interpreter','latex')
-ylabel('v [m/s]','Interpreter','latex')
+ylabel('$v\;[m/s]$','Interpreter','latex')
 
 legend('Float WS','Float OET','Spar WS','Spar OET','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth);
 set(get(gca,'XLabel'),'FontSize',Fsize);
 set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
+
 
 figure('Name','Irregular B2B - Positions and Pitch A')
 
@@ -277,11 +308,13 @@ plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.pos_pitch, 'LineWidth',
 plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.pos_pitch, '--', 'LineWidth', LineWidth)
 
 title('Pitch Position (Float)','Interpreter','latex')
-ylabel('\theta [rad]','Interpreter','latex')
+ylabel('$\theta\;[rad]$','Interpreter','latex')
 
 legend('WS','OET','Location','best','Interpreter','latex')
 xlim([0 400])
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth);
@@ -294,12 +327,15 @@ plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.vel_pitch, 'LineWidth',
 plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.vel_pitch, '--', 'LineWidth', LineWidth)
 
 title('Pitch Velocity (Float)','Interpreter','latex')
-ylabel('\omega [rad/s]','Interpreter','latex')
+ylabel('$\omega\;[rad/s]$','Interpreter','latex')
+xlabel('$t\;[s]$','Interpreter','latex')
 
 legend('WS','OET','Location','best','Interpreter','latex')
 xlim([0 400])
 xlabel('t [s]','Interpreter','latex')
 
+grid off;
+box off;
 set(gca,'FontSize',Fsize);
 set(gca,'TickDir','out');
 set(gca,'linewidth',AxisLineWidth);
@@ -307,6 +343,7 @@ set(get(gca,'XLabel'),'FontSize',Fsize);
 set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
 
+%%
 figure('Name', 'Irregular - B2B - Float and spar Position')
 
 subplot(2,1,1)
@@ -317,7 +354,9 @@ plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.pos_heave, '--', 'Dis
 title('Float Heave','Interpreter','latex')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
-xlim([300 400])
+xlim([300 375])
+xticks(300:25:375)
+yticks(-2:1:1)
 
 legend('Location','best','Interpreter','latex')
 
@@ -329,14 +368,23 @@ set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
 
 subplot(2,1,2)
-plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.pos_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.pos_heave, ...
+    'DisplayName', 'WEC-Sim', ...
+    'LineWidth', LineWidth, ...
+    'Color', [0.9290 0.6940 0.1250])  
 hold on
-plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.pos_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.pos_heave, '--', ...
+    'DisplayName', 'OET', ...
+    'LineWidth', LineWidth, ...
+    'Color', [0.4940 0.1840 0.5560])   
 
 title('Spar Heave','Interpreter','latex')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([100 300])
+xticks(100:50:300)
+yticks(-21.5:0.25:-21)
+ylim([-21.5 -21])
 
 legend('Location','best','Interpreter','latex')
 
@@ -346,6 +394,34 @@ set(gca,'linewidth',AxisLineWidth);
 set(get(gca,'XLabel'),'FontSize',Fsize);
 set(get(gca,'YLabel'),'FontSize',Fsize);
 legend box off
+
+%% Spar decay
+figure('Name', 'Spar Decay')
+
+subplot(2,1,1)
+yline(-21.29, '-.', 'Color', [0.4660 0.6740 0.1880], ...
+    'LineWidth', LineWidth, ...
+    'DisplayName', 'Hydrostatic equilibrium (spar)')
+hold on
+plot(rm3.decay.oet.time, rm3.decy.oet.spar.pos_heave, '--', ...
+    'DisplayName', 'OET', ...
+    'LineWidth', LineWidth, ...
+    'Color', [0.4940 0.1840 0.5560])
+
+title('Spar Heave','Interpreter','latex')
+xlabel('$t\;[s]$','Interpreter','latex')
+ylabel('$z\;[m]$','Interpreter','latex')
+legend('Location','best','Interpreter','latex')
+
+grid off;
+box off;
+set(gca,'FontSize',Fsize);
+set(gca,'TickDir','out');
+set(gca,'linewidth',AxisLineWidth)
+set(get(gca,'XLabel'),'FontSize',Fsize);
+set(get(gca,'YLabel'),'FontSize',Fsize);
+legend off
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
