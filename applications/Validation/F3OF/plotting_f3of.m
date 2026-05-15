@@ -4,7 +4,7 @@
 load("F3OF_data.mat")
 
 %% Plotting
-tools = {'pds','wdn','inw','wsm','hc'};
+tools = {'pds','wdn','inw','wsm','oet', 'hc'};
 dts = {'dt1','dt2'};
 motions = {'heave','surge','pitch'};
 

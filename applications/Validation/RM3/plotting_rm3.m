@@ -102,6 +102,17 @@
 % rm3.irreglar.oet.b2b.spar.pos_pitch = body(2).position(:,5);
 % rm3.irreglar.oet.b2b.spar.vel_pitch = body(2).velocity(:,5);
 
+% Backup OET check
+% rm3.irreglar.oet.b2b2.time = body.time;
+% rm3.irreglar.oet.b2b2.float.pos_heave = body(1).position(:,3);
+% rm3.irreglar.oet.b2b2.float.vel_heave = body(1).velocity(:,3);
+% rm3.irreglar.oet.b2b2.spar.pos_heave = body(2).position(:,3);
+% rm3.irreglar.oet.b2b2.spar.vel_heave = body(2).velocity(:,3);
+% rm3.irreglar.oet.b2b2.float.pos_pitch = body(1).position(:,5);
+% rm3.irreglar.oet.b2b2.float.vel_pitch = body(1).velocity(:,5);
+% rm3.irreglar.oet.b2b2.spar.pos_pitch = body(2).position(:,5);
+% rm3.irreglar.oet.b2b2.spar.vel_pitch = body(2).velocity(:,5);
+
 % Regular spar decay
 
 % rm3.decay.oet.time = body.time;
@@ -846,6 +857,123 @@ legend off
 % plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.vel_pitch, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
 % hold on
 % plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.vel_pitch, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% 
+% title('Spar Pitch')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$\omega\;[rad]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+
+
+% %% Irregular B2B check
+% figure('Name', 'Irregular - B2B - Float Position')
+% 
+% subplot(2,1,1)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.pos_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.pos_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.float.pos_heave, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Float Heave')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$z\;[m]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% subplot(2,1,2)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.pos_pitch, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.pos_pitch, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.float.pos_pitch, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Float Pitch')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$\theta\;[rad]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% 
+% figure('Name', 'Irregular - B2B - Spar Position')
+% 
+% subplot(2,1,1)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.pos_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.pos_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.spar.pos_heave, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Spar Heave')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$z\;[m]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% subplot(2,1,2)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.pos_pitch, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.pos_pitch, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.spar.pos_pitch, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Spar Pitch')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$\theta\;[rad]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% 
+% figure('Name', 'Irregular - B2B - Float Velocity')
+% 
+% subplot(2,1,1)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.vel_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.vel_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.float.vel_heave, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Float Heave')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$v\;[m]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% subplot(2,1,2)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.float.vel_pitch, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.float.vel_pitch, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.float.vel_pitch, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Float Pitch')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$\omega\;[rad]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% 
+% figure('Name', 'Irregular - B2B - Spar Velocity')
+% 
+% subplot(2,1,1)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.vel_heave, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.vel_heave, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.spar.vel_heave, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
+% 
+% title('Spar Heave')
+% xlabel('$t\;[s]$','Interpreter','latex')
+% ylabel('$v\;[m]$','Interpreter','latex')
+% xlim([0 400])
+% legend('Location','best','Interpreter','latex')
+% legend boxoff
+% 
+% subplot(2,1,2)
+% plot(rm3.irreglar.ws.b2b.time, rm3.irreglar.ws.b2b.spar.vel_pitch, 'DisplayName', 'WEC-Sim', 'LineWidth', LineWidth)
+% hold on
+% plot(rm3.irreglar.oet.b2b.time, rm3.irreglar.oet.b2b.spar.vel_pitch, '--', 'DisplayName', 'OET', 'LineWidth', LineWidth)
+% plot(rm3.irreglar.oet.b2b2.time, rm3.irreglar.oet.b2b2.spar.vel_pitch, ':', 'DisplayName', 'OET B2B2', 'LineWidth', LineWidth)
 % 
 % title('Spar Pitch')
 % xlabel('$t\;[s]$','Interpreter','latex')

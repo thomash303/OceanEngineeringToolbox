@@ -18,7 +18,7 @@ model RM3
     Placement(transformation(origin = {-3, -1}, extent = {{-15, -15}, {15, 15}})));
   Hydro.HydrodynamicBody float(enableRadiationForce = true, enableDampingDragForce = false, ra_CM = {0, 0, 20.57}, enableHydrostaticForce = true, bodyIndex = 1, I_11 = 20907301, I_22 = 21306091, I_33 = 37085481, enableExcitationForce = true, geometryFile = "file://C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/geometry/float.stl", animationEnable = true, bodyColour = {255, 255, 0}, redeclare Forces.RadiationB2B radiation(file = fileDirectory.file) "B2B Radiation Force")  annotation(
     Placement(transformation(origin = {67, 7}, extent = {{-15, -15}, {15, 15}})));
-  inner Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, waveSpectrum = OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType.JONSWAP) "Irregular wave")   annotation(
+  inner Environmental.Environment environment(redeclare IrregularWave wave(file = fileDirectory.file, waveSpectrum = WaveSpectrumType.Bretschneider) "Irregular wave")   annotation(
     Placement(transformation(origin = {-22, 52}, extent = {{-12, -12}, {12, 12}})));
   inner DataImport.FileDirectory fileDirectory(file = "C:/Users/thogan1/Documents/GitHub/OceanEngineeringToolbox/applications/Validation/RM3/RM3v1hydroCoeff.mat")  annotation(
     Placement(transformation(origin = {24, 52}, extent = {{-12, -12}, {12, 12}})));
@@ -28,6 +28,8 @@ model RM3
     Placement(transformation(origin = {32, -26}, extent = {{-10, -10}, {10, 10}})));
   Multibody.Joints.Planar planar annotation(
     Placement(transformation(origin = {-42, -26}, extent = {{-10, -10}, {10, 10}})));
+  inner Hydro.Forces.SubForces.RadiationForces.RadiationB2BCoupler radiationB2BCoupler annotation(
+    Placement(transformation(origin = {64, 54}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(prismatic.frame_b, float.frame_a) annotation(
     Line(points = {{42, -26}, {42, 7}, {52, 7}}, color = {95, 95, 95}));

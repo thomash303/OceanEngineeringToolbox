@@ -54,6 +54,7 @@ radiationForceOptions = {...
     '_radiation_radiationForceNoB2B', ...
     '_radiation_radiationForceB2B'};
 
+radiationForce = '_radiation_radiationForce';
 
 for i = 1:length(radiationForceOptions)
     keyword = radiationForceOptions{i};

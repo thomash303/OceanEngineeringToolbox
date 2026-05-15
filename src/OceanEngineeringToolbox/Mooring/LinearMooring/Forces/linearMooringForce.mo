@@ -13,7 +13,6 @@ model linearMooringForce
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));  
-    
   // Displacement connectors
   Interfaces.RealVectorInput u_abs[3] "Linear position vector" annotation(
     Placement(transformation(origin = {-92, 113}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {-78, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
@@ -29,6 +28,8 @@ model linearMooringForce
   // Force/torque vector
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
   Real s_ref[6] = cat(1, s_refTrans, s_refRot) "Reference or equilibirum position (Unstretched spring length/angle)";
+  
+  
   parameter SI.TranslationalSpringConstant Km[6,6] = zeros(6,6) "Mooring stiffness vector" annotation(HideResult = true, Dialog(group = "Mooring"));
   parameter SI.TranslationalDampingConstant Cm[6,6] = zeros(6,6) "Mooring damping vector" annotation(HideResult = true, Dialog(group = "Mooring"));
   parameter SI.Force pre_Tension[6] = {0, 0, 0, 0, 0, 0} "Pretension force";

@@ -6,6 +6,7 @@ model linearMooring "Model representing a linear mooring (coefficients input in 
   import Modelica.Mechanics.MultiBody.Types;
   import Modelica.Mechanics.MultiBody.Sensors;
   import Modelica.Units.SI;
+ 
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
@@ -44,6 +45,7 @@ equation
     Line(points = {{9, 53}, {9, 16}}, color = {0, 0, 127}, thickness = 0.5));
   connect(linearMooringForce.frame_a, frame_a) annotation(
     Line(points = {{-12, 0}, {-100, 0}}, color = {95, 95, 95}));
+
 annotation(
     Icon(
         coordinateSystem(

@@ -1,5 +1,7 @@
 %% Reading WEC3 data for F-3OF
 
+% F3OF_data = struct();
+
 %% Orginal WEC3 Codes
 tools = {'PDS','WDN','INW','WSM'};
 dts   = {'DT1','DT2','DT3'};
@@ -8,8 +10,6 @@ motions_std = {'HEAVE','PITCH','SURGE'};
 motions_dt3 = {'FLAP1','FLAP2'};
 
 basePath = 'Reference_data';
-
-F3OF_data = struct();
 
 for t = 1:length(tools)
 
@@ -50,7 +50,6 @@ for t = 1:length(tools)
     end
 end
 
-%% HydroChrono data
 %% HydroChrono data
 hcPath = 'Reference_data\HC\';
 
@@ -104,6 +103,52 @@ for i = 1:length(dts)
 
     end
 end
+
+%% Saving OET data
+
+dt = lower(extractAfter(deviceName{1}, 'F3OF_'));
+
+for i = 1:length(body)
+
+    bodyName_i = lower(body(i).body);
+
+    if strcmp(dt,'dt1') || strcmp(dt,'dt2')
+
+        if strcmp(bodyName_i,'base')
+
+            F3OF_data.(dt).oet.heave = ...
+                table(body(i).time, body(i).position(:,3), ...
+                'VariableNames', {'time','value'});
+
+            F3OF_data.(dt).oet.pitch = ...
+                table(body(i).time, rad2deg(body(i).position(:,5)), ...
+                'VariableNames', {'time','value'});
+
+            F3OF_data.(dt).oet.surge = ...
+                table(body(i).time, body(i).position(:,1), ...
+                'VariableNames', {'time','value'});
+
+        end
+
+    elseif strcmp(dt,'dt3')
+
+        if strcmp(bodyName_i,'flap1')
+
+            F3OF_data.dt3.oet.flap1 = ...
+                table(body(i).time, rad2deg(body(i).position(:,5)), ...
+                'VariableNames', {'time','value'});
+
+        elseif strcmp(bodyName_i,'flap2')
+
+            F3OF_data.dt3.oet.flap2 = ...
+                table(body(i).time, rad2deg(body(i).position(:,5)), ...
+                'VariableNames', {'time','value'});
+
+        end
+
+    end
+end
+
 
 %% Saving
 save('F3OF_data.mat','F3OF_data')
