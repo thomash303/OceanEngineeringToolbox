@@ -27,10 +27,6 @@ model AddedMassForceB2B
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   Real aCoupledEx[nDoF-bodyDoF] "Reduced acceleration vector (with accelerations of all bodies except itself)";
   
-  
-    Real F_int[6];
-  
-  import Modelica.Mechanics.MultiBody.Frames.resolve2;
 protected
   
   Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined velocity vector";
@@ -55,13 +51,7 @@ equation
   end for;
 
   // Force calculation using reduced coupling
-  F_int = AinfEx * aCoupledEx;
-  
-  
-    
-      F[4:6] = resolve2(frame_a.R,F_int[4:6]);
-  F[1:3] = resolve2(frame_a.R,F_int[1:3]);
-    //F = F_int;
+  F = AinfEx * aCoupledEx;
   
     annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "B2B Added Mass Force")}),

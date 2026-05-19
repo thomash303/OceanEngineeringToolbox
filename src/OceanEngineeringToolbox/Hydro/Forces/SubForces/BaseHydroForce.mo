@@ -5,6 +5,7 @@ partial model BaseHydroForce
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
+  import Modelica.Mechanics.MultiBody.Frames.resolve2;
   
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
@@ -16,9 +17,11 @@ partial model BaseHydroForce
 protected
   SI.Force f_element[3];
   SI.Torque t_element[3];
+  SI.Force f_element_loc[3] = resolve2(frame_a.R, f_element);
+  SI.Torque t_element_loc[3] = resolve2(frame_a.R, t_element);
   
 equation
-  frame_a.f = f_element;
-  frame_a.t = t_element;
+  frame_a.f = f_element_loc;
+  frame_a.t = t_element_loc;
 
 end BaseHydroForce;

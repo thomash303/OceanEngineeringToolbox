@@ -9,7 +9,6 @@ model linearMooringForce
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.g_n;
   import Modelica.Mechanics.MultiBody.Frames.resolve2;
-
     
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
@@ -40,9 +39,11 @@ model linearMooringForce
 protected
   SI.Force f_element[3];
   SI.Torque t_element[3];
+  SI.Force f_element_loc[3] = resolve2(frame_a.R, f_element);
+  SI.Torque t_element_loc[3] = resolve2(frame_a.R, t_element);
 
-  //parameter SI.Position s_refTrans[3] "Reference position";
-  //parameter SI.Angle s_refRot[3] "Reference angle";
+  parameter SI.Position s_refTrans[3] "Reference position";
+  parameter SI.Angle s_refRot[3] "Reference angle";
   Real position[6] = cat(1, u_abs, theta_abs) "Combined position vector";  
   Real displacement[6] = position - s_ref "Combined displacement vector";
   Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";
@@ -52,7 +53,7 @@ equation
   // Calculate the mooring force/torque vector
   F = Km*displacement + Cm*velocity + pre_Tension;
   
-  frame_a.f = resolve2(frame_a.R, f_element);
-  frame_a.t = resolve2(frame_a.R, t_element);
+  frame_a.f = f_element_loc;
+  frame_a.t = t_element_loc;
 
 end linearMooringForce;

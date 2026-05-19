@@ -8,9 +8,7 @@ model BuoyancyForce
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.g_n;
-  
-  import Modelica.Mechanics.MultiBody.Frames.resolve2;
-  
+    
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
@@ -33,7 +31,7 @@ equation
 
   //F = cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
   
-  F =  cat(1, resolve2(frame_a.R,f_gravity - f_buoyancy), resolve2(frame_a.R,cross(f_buoyancy, offset)));
+  F =  cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Buoyancy Force")}));
 
