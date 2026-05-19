@@ -11,7 +11,8 @@ srcPath = fullfile(projectRoot, 'OceanEngineeringToolbox', 'src', 'Processing', 
 addpath(srcPath);
 
 currentPath = pwd;
-filePath = fullfile('hydroData', 'wec3.h5');
-deviceName = 'F3OF';
+filePath = fullfile('hydroData', 'wec3_short.h5');
+% filePath = fullfile('hydroData', 'f3of.h5');
+deviceName = 'F3OF_W';
 
 [hydro] = preprocess(currentPath, filePath, deviceName);

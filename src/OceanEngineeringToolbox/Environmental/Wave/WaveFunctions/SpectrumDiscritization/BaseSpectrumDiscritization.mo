@@ -18,7 +18,7 @@ partial model BaseSpectrumDiscritization
   outer DataImport.FileDirectory fileDirectory;
   
   // Wave parameters
-  parameter WaveTypes.WaveSpectrumType waveSpectrum = environment.wave.waveSpectrum "Wave Spectrum Type" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter String waveSpectrum = environment.wave.waveSpectrum "Wave Spectrum Type" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.Height Hs = environment.wave.Hs "Significant wave height"  annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   parameter SI.AngularFrequency omegaPeak = environment.wave.omegaPeak "Peak angular frequency" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   

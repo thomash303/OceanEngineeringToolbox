@@ -1,6 +1,6 @@
 %% Reading WEC3 data for F-3OF
 
-% F3OF_data = struct();
+F3OF_data = struct();
 
 %% Orginal WEC3 Codes
 tools = {'PDS','WDN','INW','WSM'};

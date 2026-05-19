@@ -8,6 +8,8 @@ model linearMooringForce
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.g_n;
+  import Modelica.Mechanics.MultiBody.Frames.resolve2;
+
     
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
@@ -50,7 +52,7 @@ equation
   // Calculate the mooring force/torque vector
   F = Km*displacement + Cm*velocity + pre_Tension;
   
-  frame_a.f = f_element;
-  frame_a.t = t_element;
+  frame_a.f = resolve2(frame_a.R, f_element);
+  frame_a.t = resolve2(frame_a.R, t_element);
 
 end linearMooringForce;

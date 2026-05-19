@@ -17,15 +17,15 @@ model IrregularWave
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.BaseSpectrumDiscritization;
   
   
-  parameter WaveSpectrumType waveSpectrum = WaveSpectrumType.PiersonMoskowitz 
+  parameter String waveSpectrum = "Bretschneider" 
     "Wave Spectrum Type" 
     annotation(
       Dialog(group = "Wave Parameters"),
       choices(
-        choice = WaveSpectrumType.PiersonMoskowitz "Pierson-Moskowitz",
-        choice = WaveSpectrumType.Bretschneider    "Bretschneider",
-        choice = WaveSpectrumType.JONSWAP          "JONSWAP",
-        choice = WaveSpectrumType.OchiHubble       "Ochi-Hubble"
+        choice = "PiersonMoskowitz" "Pierson-Moskowitz",
+        choice = "Bretschneider"    "Bretschneider",
+        choice = "JONSWAP"          "JONSWAP",
+        choice = "OchiHubble"       "Ochi-Hubble"
       ));
     
   // Multidirectional wave Parameters
@@ -37,24 +37,24 @@ model IrregularWave
   // Wave spectrum parameters
   // Pierson-Moskowitz parameters
   parameter Real alphaPM(min=0) = 0.0081 "Energy scale (Phillips constant)" annotation(
-    Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.PiersonMoskowitz));
+    Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSpectrum == "PiersonMoskowitz"));
     
   // JONSWAP parameters
   parameter Real gamma(min=0) = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
   parameter Real sigmaA(min=0) = 0.07 "Lower spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
   parameter Real sigmaB(min=0) = 0.09 "Upper spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
 
 // Ochi-Hubble parameters (including sample values from original paper)
   // Default parameters computed from most likely sea state
   parameter SI.Height HsOH[componentSpectra] = {0.84*Hs,0.54*Hs} "Significant wave heights" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble)); 
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble")); 
   parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0.7*exp(-0.046*Hs),1.15*exp(-0.039*Hs)} "Peak spectral frequencies" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble)); 
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble")); 
   parameter Real lambdaOH[componentSpectra] = {3,1.54*exp(-0.062*Hs)} "Peak shape parameter" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble));
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble"));
   parameter Integer componentSpectra(min=0) = 2 annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Random phase selection
