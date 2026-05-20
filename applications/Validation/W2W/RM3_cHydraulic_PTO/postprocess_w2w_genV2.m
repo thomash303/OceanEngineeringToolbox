@@ -8,7 +8,8 @@ projectRoot = fileparts(fileparts(fileparts(pwd)));
 % Entering RM3 specific data
 filePath = {''};
 % deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens_control','w2w_sens_control'};
-deviceName = {'w2w_sens_control_none','w2w_sens_control_none'};
+% deviceName = {'w2w_sens_control_none','w2w_sens_control_none'};
+deviceName = {'OpenHydraulics.Developed.Circuits.w2w_sens','w2w_sens'};
 currentPath = {pwd};
 
 % Importing Modelica simulation data
@@ -47,95 +48,96 @@ nToMN = 1e-6;
 % Ramp Time
 Tramp = 100;
 idx = time >= Tramp;
-t_idx = time(idx);
+w2w.t_idx = time(idx);
+w2w.time = time;
 % Body
-s = outputData.daq_sensor_bus_s;
-v = outputData.daq_sensor_bus_v;
+w2w.s = outputData.daq_sensor_bus_s;
+w2w.v = outputData.daq_sensor_bus_v;
 
 % Pressures
-pA = outputData.daq_sensor_bus_pA*paToBar;
-pB = outputData.daq_sensor_bus_pB*paToBar;
-pHP = outputData.daq_sensor_bus_pHP*paToBar;
-pLP = outputData.daq_sensor_bus_pLP*paToBar;
+w2w.pA = outputData.daq_sensor_bus_pA*paToBar;
+w2w.pB = outputData.daq_sensor_bus_pB*paToBar;
+w2w.pHP = outputData.daq_sensor_bus_pHP*paToBar;
+w2w.pLP = outputData.daq_sensor_bus_pLP*paToBar;
 
 % Mass flows
-mHP = outputData.daq_sensor_bus_mHP;
-mLP = outputData.daq_sensor_bus_mLP;
-mm = outputData.daq_sensor_bus_mm;
-%D = outputData.daq_D;
+w2w.mHP = outputData.daq_sensor_bus_mHP;
+w2w.mLP = outputData.daq_sensor_bus_mLP;
+w2w.mm = outputData.daq_sensor_bus_mm;
+w2w.D = outputData.daq_D;
 
 % Shaft
-omega = outputData.daq_sensor_bus_omega;
-T = outputData.daq_sensor_bus_T;
+w2w.omega = outputData.daq_sensor_bus_omega;
+w2w.T = outputData.daq_sensor_bus_T;
 
 % Generator
-V = outputData.daq_sensor_bus_V;
-i = outputData.daq_sensor_bus_i;
+w2w.V = outputData.daq_sensor_bus_V;
+w2w.i = outputData.daq_sensor_bus_i;
 
 % Wave
-eta = outputData.daq_eta;
+w2w.eta = outputData.daq_eta;
 
 % Hydro forces
-Fpto = outputData.daq_Fpto*nToKN;
-Fexc = outputData.daq_Fexc*nToKN;
+w2w.Fpto = outputData.daq_Fpto*nToKN;
+w2w.Fexc = outputData.daq_Fexc*nToKN;
 
 % PTO force
-Fcyl_iner = outputData.daq_Finer;
-Fcyl_fric = outputData.daq_Ffric;
+w2w.Fcyl_iner = outputData.daq_Finer;
+w2w.Fcyl_fric = outputData.daq_Ffric;
 
 % Generator losses
-Pgen_fric = outputData.daq_Pgen_fric;
-Pgen_cop = outputData.daq_Pgen_cop;
-Pgen_elec = outputData.daq_Pelec;
-Pgen_mech = outputData.daq_Pgen_mech;
+w2w.Pgen_fric = outputData.daq_Pgen_fric;
+w2w.Pgen_cop = outputData.daq_Pgen_cop;
+w2w.Pgen_elec = outputData.daq_Pelec;
+w2w.Pgen_mech = outputData.daq_Pgen_mech;
 
 % Energy stored in accumulators (not currently used)
-gamma = 1.4;
-Tmax = max(time);
+w2w.gamma = 1.4;
+w2w.Tmax = max(w2w.time);
 
-VHP = outputData.hpAccumulator_liquidChamber_V;         
-pHP = outputData.hpAccumulator_liquidChamber_p_vol;
-VLP = outputData.lpAccumulator_liquidChamber_V;
-pLP = outputData.lpAccumulator_liquidChamber_p_vol;
+w2w.VHP = outputData.hpAccumulator_liquidChamber_V;         
+w2w.pHP = outputData.hpAccumulator_liquidChamber_p_vol;
+w2w.VLP = outputData.lpAccumulator_liquidChamber_V;
+w2w.pLP = outputData.lpAccumulator_liquidChamber_p_vol;
 
-EHP = (pHP .* VHP) / (gamma - 1);                      
-dEHP_t = EHP - EHP(1);                                 
-dpHP_t = gradient(EHP, time);                             
-dEHP  = EHP(end) - EHP(1);                              
-dpHP  = dEHP / Tmax;         
+w2w.EHP = (w2w.pHP .* w2w.VHP) / (w2w.gamma - 1);                      
+w2w.dEHP_t = w2w.EHP - w2w.EHP(1);                                 
+w2w.dpHP_t = gradient(w2w.EHP, w2w.time);                             
+w2w.dEHP  = w2w.EHP(end) - w2w.EHP(1);                              
+w2w.dpHP  = dEHP / w2w.Tmax;         
 
-ELP = (pLP .* VLP) / (gamma - 1);                       
-dELP_t = ELP - ELP(1);                                  
-dpLP_t = gradient(ELP, time);                              
-dELP  = ELP(end) - ELP(1);                              
-dpLP  = dELP / Tmax;                                       
+w2w.ELP = (w2w.pLP .* w2w.VLP) / (w2w.gamma - 1);                       
+w2w.dELP_t = w2w.ELP - w2w.ELP(1);                                  
+w2w.dpLP_t = gradient(w2w.ELP, w2w.time);                              
+w2w.dELP  = ELP(end) - ELP(1);                              
+w2w.dpLP  = w2w.dELP / w2w.Tmax;                                       
 
 % Power (not saved in output data for some reason)
 %Pwav = outputData.environment_wave_P;
-Pwav = 57e3;
-Pcap = outputData.daq_Pcyl_mech;
-Ptrans = Pgen_mech;
-Pgen = Pgen_elec;
+w2w.Pwav = 57e3;
+w2w.Pcap = outputData.daq_Pcyl_mech;
+w2w.Ptrans = -Pgen_mech;
+w2w.Pgen = -Pgen_elec;
 
+% Energy
+% w2w.Ecap = outputData.daq_Ecyl_mech;
+% w2w.Etrans = outputData.daq_E_mech;
+% w2w.Egen = outputData.daq_Eelec;
 
-Energy
-Ecap = outputData.daq_Ecyl_mech;
-Etrans = -outputData.daq_E_mech;
-Egen = -outputData.daq_Eelec;
-
-Ecap  =  cumtrapz(t_idx, Pcap(idx));
-Etrans = cumtrapz(t_idx, Ptrans(idx));
-Egen  = cumtrapz(t_idx, Pgen(idx));
+w2w.Ecap  =  cumtrapz(t_idx, w2w.Pcap(idx));
+w2w.Etrans = cumtrapz(t_idx, w2w.Ptrans(idx));
+w2w.Egen  = cumtrapz(t_idx, w2w.Pgen(idx));
 
 % Efficiency (this will have to be as a table)
-ncap = mean(Pcap(idx)) / mean(Pwav) * 100;
-ntrans = mean(Ptrans(idx))/ mean(Pcap(idx)) * 100;
-ngen = mean(Pgen(idx)) / mean(Ptrans(idx)) * 100;
+w2w.ncap = mean(w2w.Pcap(idx)) / mean(w2w.Pwav) * 100;
+w2w.ntrans = mean(w2w.Ptrans(idx))/ mean(w2w.Pcap(idx)) * 100;
+w2w.ngen = mean(w2w.Pgen(idx)) / mean(w2w.Ptrans(idx)) * 100;
 
-npto = (ntrans * ngen) / 100;
-nw2w = ncap * npto /100;
+w2w.npto = (w2w.ntrans * w2w.ngen) / 100;
+w2w.nw2w = w2w.ncap * w2w.npto /100;
 % 
 % clear outputdata
+save('w2w_testing.mat','w2w')
 
 %% Figure 1 - Multibody Dynamics
 s_offset = 0.72;
@@ -143,11 +145,11 @@ s_offset = 0.72;
 figure('Name','Multibody Dynamics')
 subplot(2,1,1)
 yyaxis left
-plot(time, s + s_offset, 'DisplayName','s')
+plot(w2w.time, w2w.s + s_offset, 'DisplayName','s')
 ylabel('Displacement (m)')
 ylim([-1.5 1.5])
 yyaxis right
-plot(time, v, 'DisplayName','v')
+plot(w2w.time, w2w.v, 'DisplayName','v')
 ylabel('Velocity (m/s)')
 ylim([-0.75 0.75])
 xlim([200 250])
@@ -156,9 +158,9 @@ title('Kinematics')
 legend('Location','best')
 
 subplot(2,1,2)
-plot(time, Fexc, 'DisplayName','F_{exc}')
+plot(w2w.time, w2w.Fexc, 'DisplayName','F_{exc}')
 hold on
-plot(time, Fpto, 'DisplayName','F_{pto}')
+plot(w2w.time, w2w.Fpto, 'DisplayName','F_{pto}')
 ylim([-2500 2500])
 xlim([200 250])
 grid on
@@ -171,11 +173,11 @@ hold off
 %% Figure 2 - Hydraulic Dynamics
 figure('Name','Hydraulic Dynamics')
 subplot(3,1,1)
-plot(time, pA, 'DisplayName','p_A')
+plot(w2w.time, w2w.pA, 'DisplayName','p_A')
 hold on
-plot(time, pB, 'DisplayName','p_B')
-plot(time, pHP, 'DisplayName','p_{HP}')
-plot(time, pLP, 'DisplayName','p_{LP}')
+plot(w2w.time, w2w.pB, 'DisplayName','p_B')
+plot(w2w.time, w2w.pHP, 'DisplayName','p_{HP}')
+plot(w2w.time, w2w.pLP, 'DisplayName','p_{LP}')
 ylim([0 60])
 xlim([200 250])
 ylabel('Pressure (bar)')
@@ -185,10 +187,10 @@ title('Hydraulic pressures')
 hold off
 
 subplot(3,1,2)
-plot(time, mHP, 'DisplayName','m_{HP}')
+plot(w2w.time, w2w.mHP, 'DisplayName','m_{HP}')
 hold on
-plot(time, mLP, 'DisplayName','m_{LP}')
-plot(time, mm, 'DisplayName','m_{m}')
+plot(w2w.time, w2w.mLP, 'DisplayName','m_{LP}')
+plot(w2w.time, w2w.mm, 'DisplayName','m_{m}')
 ylim([0 10])
 xlim([200 250])
 yticks(0:5:30)
@@ -200,8 +202,8 @@ title('HP Pressures')
 hold off
 
 subplot(3,1,3)
-%plot(time, D, 'DisplayName','D')
-%ylim([0 30])
+plot(w2w.time, w2w.D, 'DisplayName','D')
+ylim([0 30e-5])
 xlim([200 250])
 ylabel('Displacement (V^3)')
 xlabel('Time (s)')
@@ -210,7 +212,7 @@ title('Motor Displacement')
 %% Figure 3 - Shaft Dynamcis
 figure('Name','Shaft Mechancis')
 subplot(2,1,1)
-plot(time, omega, 'DisplayName','\omega')
+plot(w2w.time, w2w.omega, 'DisplayName','\omega')
 %ylim([160 161])
 xlim([200 250])
 ylabel('Angular Velocity (rad/s)')
@@ -218,7 +220,7 @@ xlabel('Time (s)')
 title('Shaft Speed')
 
 subplot(2,1,2)
-plot(time, T, 'DisplayName','\tau')
+plot(w2w.time, w2w.T, 'DisplayName','\tau')
 %ylim([100 115])
 xlim([200 250])
 ylabel('Torque (N)')
@@ -228,7 +230,7 @@ title('Shaft Torque')
 %% Figure 4 - Generator Dynamics
 figure('Name','Generator Dynamics')
 subplot(2,1,1)
-plot(time, V, 'DisplayName','V')
+plot(w2w.time, w2w.V, 'DisplayName','V')
 ylim([57 59])
 xlim([200 250])
 ylabel('RMS Voltage (V)')
@@ -236,7 +238,7 @@ xlabel('Time (s)')
 title('Generator Voltage')
 
 subplot(2,1,2)
-plot(time, i, 'DisplayName','i')
+plot(w2w.time, w2w.i, 'DisplayName','i')
 %ylim([110 120])
 xlim([200 250])
 ylabel('RMS Current (A)')
@@ -246,10 +248,10 @@ title('Generator Current')
 %% Figure 5 - PTO Force
 figure('Name','PTO Force')
 
-plot(time, Fpto, 'DisplayName','F_{pto}')
+plot(w2w.time, w2w.Fpto, 'DisplayName','F_{pto}')
 hold on
-plot(time, Fcyl_iner * nToKN, 'DisplayName','F_{iner}')
-plot(time, Fcyl_fric * nToKN, 'DisplayName','F_{fric}')
+plot(w2w.time, w2w.Fcyl_iner * nToKN, 'DisplayName','F_{iner}')
+plot(w2w.time, w2w.Fcyl_fric * nToKN, 'DisplayName','F_{fric}')
 
 xlim([200 250])
 ylabel('Force (kN)')
@@ -262,11 +264,11 @@ hold off
 %% Figure 6 - Generator Losses
 figure('Name','Generator Losses')
 
-plot(time, Pgen_mech, 'DisplayName','P_{mech,in}')
+plot(w2w.time, w2w.Pgen_mech, 'DisplayName','P_{mech,in}')
 hold on
-plot(time, Pgen_elec, 'DisplayName','P_{elec,out}')
-plot(time, Pgen_fric, 'DisplayName','P_{fric}')
-plot(time, Pgen_cop, 'DisplayName','P_{copper}')
+plot(w2w.time, w2w.Pgen_elec, 'DisplayName','P_{elec,out}')
+plot(w2w.time, w2w.Pgen_fric, 'DisplayName','P_{fric}')
+plot(w2w.time, w2w.Pgen_cop, 'DisplayName','P_{copper}')
 
 xlim([200 250])
 ylabel('Power (W)')
@@ -279,11 +281,11 @@ hold off
 figure('Name','Power Flow')
 
 %plot(time, Pwav, 'DisplayName','P_{wav}')
-plot(time, Pwav*ones(length(time),1), 'DisplayName','P_{wav}')
+plot(w2w.time, w2w.Pwav*ones(length(time),1), 'DisplayName','P_{wav}')
 hold on
-plot(time, Pcap, 'DisplayName','P_{cap}')
-plot(time, Ptrans, 'DisplayName','P_{trans}')
-plot(time, Pgen, 'DisplayName','P_{gen}')
+plot(w2w.time, w2w.Pcap, 'DisplayName','P_{cap}')
+plot(w2w.time, w2w.Ptrans, 'DisplayName','P_{trans}')
+plot(w2w.time, w2w.Pgen, 'DisplayName','P_{gen}')
 
 xlim([200 250])
 ylabel('Power (W)')
@@ -296,10 +298,10 @@ hold off
 %% Figure 8 - Energy
 figure('Name','Energy')
 
-plot(t_idx, Ecap, 'DisplayName','E_{cap}')
+plot(w2w.t_idx, w2w.Ecap, 'DisplayName','E_{cap}')
 hold on
-plot(t_idx, Etrans, 'DisplayName','E_{trans}')
-plot(t_idx, Egen, 'DisplayName','E_{gen}')
+plot(w2w.t_idx, w2w.Etrans, 'DisplayName','E_{trans}')
+plot(w2w.t_idx, w2w.Egen, 'DisplayName','E_{gen}')
 
 xlim([200 250])
 ylabel('Energy (J)')
@@ -316,7 +318,7 @@ hold off
 % pto, w2w
 
 EfficiencyTable = table( ...
-    ncap, ntrans, ngen, npto, nw2w, ...
+    w2w.ncap, w2w.ntrans, w2w.ngen, w2w.npto, w2w.nw2w, ...
     'VariableNames', {'Absorption','Transmission','Generation','PTO','W2W'} );
 
 disp(EfficiencyTable)

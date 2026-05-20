@@ -4,6 +4,7 @@ model MorisonForce
   "Model representing the Morison force"
   /* The development of this model is derived from the Morison formulation in WEC-Sim. */
 
+
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Constants.pi;
@@ -113,7 +114,7 @@ equation
 // Determining kinematics of the Morison element
     UME[:, i] = v_abs + cross(omega_abs, rMEG[:, i]);
     AME[:, i] = a_abs + cross(der(omega_abs), rMEG[:, i]) + cross(omega_abs, cross(omega_abs, rMEG[:, i]));
-/* The fluid and body kinematics are determined in the normal and tangential directions using vector projection. Since nHatME is given as a unit vector, its normalization is redundant (because it is already a unit vector); however, the original form of the equation is kept for clarity.*/
+/* The fluid and body kinematics are determined in the normal and tangential directions using vector projection. Since nHatME is given as a unit vector, its normalization is redundant (because it is already a unit vector); however, the original form of the equation is kept for clarity. */
 // Projecting the fluid velocity in the tangential direction
     UfT[:, i] = (Uf[:, i]*normalizeWithAssert(nHatMEG[:, i]))*normalizeWithAssert(nHatMEG[:, i]);
 // Computing the normal fluid velocity component
@@ -144,7 +145,7 @@ equation
     fI[:, i] = fFK[:, i] + fAM[:, i];
 // Drag
     fDN[:, i] = 1/2*rho*Ac[1, i]*Cd[1, i].*(UfN[:, i] - UMEN[:, i]) * length(UfN[:, i] - UMEN[:, i]);
-    fDT[:, i] = 1/2*rho*Ac[2, i]*Cd[2, i].*(UfT[:, i] - UMET[:, i]) * length(UfN[:, i] - UMEN[:, i]);
+    fDT[:, i] = 1/2*rho*Ac[2, i]*Cd[2, i].*(UfT[:, i] - UMET[:, i]) * length(UfT[:, i] - UMET[:, i]);
     fD[:, i] = fDN[:, i] + fDT[:, i];
 // Check if Z-coordinate of the Morison element is above the mean free surface
 // Should I Wheeler stretch??
@@ -160,4 +161,5 @@ equation
   // Connects
   connect(positionME, currentModel.positionME);
   connect(positionME, waveModel.positionME);
+
 end MorisonForce;
