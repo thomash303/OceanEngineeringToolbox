@@ -149,13 +149,13 @@ equation
     fD[:, i] = fDN[:, i] + fDT[:, i];
 // Check if Z-coordinate of the Morison element is above the mean free surface
 // Should I Wheeler stretch??
-    if positionME[3, i] <= 0 then
+    //if positionME[3, i] <= 0 then
       fME[:, i] = fI[:, i] + fD[:, i];
       mME[:, i] = cross(rME[:, i], fME[:, i]);
-    else
-      fME[:, i] = zeros(3);
-      mME[:, i] = zeros(3);
-    end if;
+    //else
+     // fME[:, i] = zeros(3);
+     // mME[:, i] = zeros(3);
+    //end if;
   end for;
   F = ramp.*cat(1, sum(fME[:, i] for i in 1:nME), sum(mME[:, i] for i in 1:nME));
   // Connects

@@ -148,6 +148,10 @@ xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
 xlim([30 40])
 ylim([-0.025 0.025])
+xticks(30:5:40)
+yticks(-0.025:0.0125:0.025)
+% xlim([5 15])
+% ylim([-0.6 0.4])
 grid off;
 % box off;
 set(gca,'FontSize',Fsize);
@@ -204,8 +208,10 @@ legend('Location','best','Interpreter','latex')
 title('5m Decay Test (truncated)')
 xlabel('$t\;[s]$','Interpreter','latex')
 ylabel('$z\;[m]$','Interpreter','latex')
-xlim([30 40])
-ylim([-0.1 0.15])
+% xlim([30 40])
+% ylim([-0.1 0.15])
+xlim([5 15])
+ylim([-3 3])
 grid off;
 % box off;
 set(gca,'FontSize',Fsize);

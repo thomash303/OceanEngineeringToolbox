@@ -11,7 +11,9 @@ srcPath = fullfile(projectRoot, 'OceanEngineeringToolbox', 'src', 'Processing', 
 addpath(srcPath);
 
 currentPath = pwd;
-filePath = fullfile('hydroData', 'sphere_1680p.h5');
-deviceName = 'SPHERE';
+% filePath = fullfile('hydroData', 'sphere_3480p.h5');
+filePath = fullfile('hydroData', 'sphere_3480p_test.h5');
+deviceName = 'SPHERE_3480p';
+% deviceName = 'SPHERE_BEMIO';
 
 [hydro] = preprocess(currentPath, filePath, deviceName);

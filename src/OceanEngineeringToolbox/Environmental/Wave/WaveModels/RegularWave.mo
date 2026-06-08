@@ -34,7 +34,7 @@ model RegularWave
   parameter SI.WaveNumber k[n_omega] = WaveFunctions.waveNumber(d, vector(omegaPeak), n_omega) "Wave number component" annotation(Dialog(enable = false,tab = "Misc"));
   
   // Spectrum Variables
-  parameter WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, A = A, n_omega = n_omega) "Wave time-average power per unit wave crest length" annotation(Dialog(enable = false,tab = "Misc"));
+  WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, A = A, n_omega = n_omega) "Wave time-average power per unit wave crest length" annotation(Dialog(enable = false,tab = "Misc"));
 
   // Output variables for excitation, Morison, and wave gauge
   parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = fill(A,waveHeadingSpreadBins,n_omega) "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));

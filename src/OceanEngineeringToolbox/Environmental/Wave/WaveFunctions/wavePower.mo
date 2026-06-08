@@ -28,7 +28,7 @@ algorithm
   if n_omega == 1 then
     E := vector(1/2 * rho * g_n * A^2);
   else
-    E := 1/2 * rho * g_n * S .* domega;
+    E := rho * g_n * S .* domega;
   end if;
 
   // Compute wave power
