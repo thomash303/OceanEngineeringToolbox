@@ -25,8 +25,7 @@ outputData = outputData(uidx, :);
 
 % Extracting Modelica data
 elevationData(:,1) = outputData.time;        % Time
-elevationData(:,2) = outputData.environment_SSE;       % Wave elevation
-
+elevationData(:,2) = outputData.environment_wave_SSE;      % Wave elevation
 
 % Save the elevation variable to a MATLAB structure. Note, this structure
 % must be saved inside the WEC-Sim simulation directory to enable import.

@@ -8,6 +8,7 @@ model Prismatic
   import Modelica.Mechanics.Translational.{Interfaces, Components, Sources};
   import Modelica.Mechanics.MultiBody.{Types, Visualizers, Frames};
   import Modelica.Math.Vectors;
+  import Modelica.Constants;
 
   extends PartialElementaryJoint;
   Interfaces.Flange_a axis if useAxisFlange
@@ -20,7 +21,7 @@ model Prismatic
   parameter Boolean useAxisFlange=false "= true, if axis flange is enabled"
     annotation(Evaluate=true, HideResult=true, choices(checkBox=true));
   parameter Boolean animation=true "= true, if animation shall be enabled";
-  parameter Types.Axis n={1,0,0}
+  parameter Types.Axis n={0,0,1}
     "Axis of translation resolved in frame_a (= same as in frame_b)"
     annotation (Evaluate=true);
   parameter Types.Axis boxWidthDirection={0,1,0}
@@ -60,6 +61,20 @@ Possible reasons:
     "First derivative of s (relative velocity)";
   SI.Acceleration a(start=0) "Second derivative of s (relative acceleration)";
   SI.Force f "Actuation force in direction of joint axis";
+  
+  // End-Stop
+  parameter Boolean endStopEnable = false "Enable end-stops" annotation(Dialog(group="End-Stop"),choices(checkBox=true));
+  // Lower end-stop
+  parameter SI.Position s_min = -Constants.inf "Lower (minimum) end-stop position (frame_a)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalDampingConstant b_min = 0 "Lower (minimum) end-stop damping coefficient (frame_a)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalSpringConstant k_min = 0 "Lower (minimum) end-stop stiffness coefficient (frame_a)" annotation(Dialog(group="End-Stop"));
+  SI.Force f_stop_min "Lower (minimum) end-stop force (frame_a)";
+  
+  // Upper end-stop
+  parameter SI.Position s_max = Constants.inf "Upper (maximum) end-stop position (frame_b)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalDampingConstant b_max = 0 "Upper (maximum) end-stop damping coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalSpringConstant k_max = 0 "Upper (maximum) end-stop stiffness coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
+  SI.Force f_stop_max "Upper (maximum) end-stop force (frame_b)";
 
 protected
   Visualizers.Advanced.Shape box(
@@ -92,10 +107,36 @@ equation
   zeros(3) = frame_a.t + frame_b.t + cross(e*s, frame_b.f);
 
   // d'Alemberts principle
-  f = -e*frame_b.f;
+  f = -e*frame_b.f + (if endStopEnable then f_stop_min + f_stop_max else 0);
 
   // Connection to internal connectors
   s = internalAxis.s;
+  
+  // Enable end-stop
+  if endStopEnable then
+    
+    // Upper end-stop
+    if s > s_max then
+      f_stop_max = -((s - s_max) * k_max  + v * b_max);
+      f_stop_min = 0;
+      
+    // Lower end-stop
+    elseif s < s_min then
+      f_stop_min = -((s - s_min) * k_min +  v * b_min);
+      f_stop_max = 0;
+      
+    else 
+      f_stop_min = 0;
+      f_stop_max = 0;
+      
+    end if;
+    
+  // Disable end-stop  
+  else
+    f_stop_min = 0;
+    f_stop_max = 0;
+  
+  end if;
 
   connect(fixed.flange, support) annotation (Line(
       points={{-40,40},{-40,60}}, color={0,127,0}));

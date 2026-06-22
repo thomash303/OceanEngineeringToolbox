@@ -5,71 +5,37 @@ model randomGenerator
   
   // Importing from the MSL
   import Modelica.Units.SI;
-  import Modelica.Constants.pi;
+  import Modelica.Constants.{pi,g_n};
+  import Modelica.Math;
 
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.ImportRecords.EnvironmentalImport.physicalConstantData;
   extends DataImport.ImportRecords.EnvironmentalImport.frequencyData;
-  
-  // Spectrum Parameters  
-  parameter String waveSelector = "PiersonMoskowitz";
-  parameter SI.Length Hs"Significant Wave Height";
-  parameter SI.AngularFrequency omegaPeak "Peak angular frequency";
-  
-  // Pierson-Moskowitz parameters
-  parameter Real alphaPM = 0.0081 "Energy scale";
-  
-  // JONSWAP parameters
-  parameter Real gamma = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3";
-  parameter Real sigmaA = 0.07 "Lower spectral bound for JONSWAP";
-  parameter Real sigmaB = 0.09 "Upper spectral bound for JONSWAP";
-  
-  // Ochi-Hubble Parameters
-  parameter SI.Height HsOH[componentSpectra] "Significant wave heights";
-  parameter SI.AngularFrequency omegaPeakOH[componentSpectra] "Peak spectral frequencies";
-  parameter Real lambdaOH[componentSpectra] "Peak shape parameter";
-  final parameter Integer componentSpectra = 2; 
-  
-  // Ramp
-  Real ramp "Ramping function";
-  parameter SI.Time Trmp "Interval for ramping up of waves during start phase";
+  extends BaseSpectrumDiscritization;
   
   // Random frequency selection
-  parameter Integer localSeedFrequency = 614657 "Local random seed for frequency selection";
-  parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection";
+  parameter Integer localSeedFrequency = environment.wave.localSeedFrequency "Local random seed for frequency selection" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter Integer globalSeedFrequency = environment.wave.globalSeedFrequency  "Global random seed for frequency selection" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Frequency variables
-  constant Integer n_omega "Number of frequency components (default is 100 for irregular)";
-  parameter SI.AngularFrequency omegaMin = w[1] "Lowest frequency component";
-  parameter SI.AngularFrequency omegaMax = w[end]"Highest frequency component";
-  parameter SI.AngularFrequency omega[n_omega] = RandomFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation";
-  parameter SI.AngularFrequency domega[n_omega] = fill(SpectrumCalculations.constantFrequencyStep(omegaMin, omegaMax, n_omega), n_omega) "Frequency step size";
+  parameter SI.AngularFrequency omega[n_omega] = RandomFunctions.randomFrequencySelector(omegaMin, omegaMax, localSeedFrequency, globalSeedFrequency, n_omega) "Frequency components selected for simulation" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+  parameter SI.AngularFrequency domega[n_omega] = fill(SpectrumCalculations.constantFrequencyStep(omegaMin, omegaMax, n_omega), n_omega) "Frequency step size" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+    
+  // Intermediate calculations
+  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Spectrum variables
-  parameter SI.Height zeta[n_omega] = sqrt(2*S.*domega) "Wave amplitude component";
-  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumGeneration.SpectrumGenerator(waveSelector = waveSelector, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Wave energy spectrum";
-  SI.Height SSE "Sea surface elevation";
-  
-  // Random phase selection
-  parameter Integer localSeedPhase = 614757 "Local random seed for phase shifts";
-  // readd , enable = frequencySelection == "random"
-  parameter Integer globalSeedPhase = 40020 "Global random seed for phase shifts";
-  parameter SI.Angle phi[n_omega] = 2*pi.*RandomFunctions.randomVectorGenerator(localSeedPhase, globalSeedPhase, n_omega) "Wave components phase shift";
-    
-protected
-  // Intermediate calculations
-  parameter SI.WaveNumber k[n_omega] = waveNumber(d, omega, n_omega) "Wave number component";
+ parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = WaveFunctions.zeta(S = S, D = D, domega = domega, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins) "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
+ 
+  parameter WaveUnits.spectrumEnergyDensity S[n_omega] = SpectrumGeneration.SpectrumGenerator(waveSpectrum = waveSpectrum, Hs = Hs, alphaPM = alphaPM, omegaPeak = omegaPeak, omega = omega, n_omega = n_omega, gamma = gamma, sigmaA = sigmaA, sigmaB = sigmaB, HsOH = HsOH, omegaPeakOH = omegaPeakOH, lambdaOH = lambdaOH) "Wave energy spectrum" annotation(Dialog(enable = false, tab = "Misc"));
+
+  WaveUnits.powerPerUnitLength P = WaveFunctions.wavePower(rho = rho, d = d, k = k, S = S, domega = domega, n_omega = n_omega) "Wave time-average power per unit wave crest length" annotation(Dialog(enable = false, tab = "Misc"));
   
 equation
-  if time < Trmp then
-    ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
-// Ramp up the excitation force during the initial phase
-  else
-    ramp = 1;
-  end if;
-  SSE = ramp.*sum(zeta.*cos(omega*time - phi));
   
+  SSE = WaveFunctions.waveElevation(zeta = zeta, phi = phi, omegaTime = omega*time, k = k, ramp = ramp, n_omega = n_omega, waveHeadingSpreadBins = waveHeadingSpreadBins, theta = waveHeading);
+    
   annotation(
   defaultComponentName = "RandomGenerator");
 

@@ -9,6 +9,7 @@ model Revolute
   import Modelica.Mechanics.MultiBody.{Types, Visualizers, Frames};
   import Modelica.Mechanics.MultiBody;
   import Modelica.Math.Vectors;
+  import Modelica.Constants;
 
   Interfaces.Flange_a axis if useAxisFlange
     "1-dim. rotational flange that drives the joint"
@@ -64,6 +65,20 @@ Possible reasons:
     "Second derivative of angle phi (relative angular acceleration)";
   SI.Torque tau "Driving torque in direction of axis of rotation";
   SI.Angle angle "= phi";
+  
+  // End-Stop
+  parameter Boolean endStopEnable = false "Enable end-stops" annotation(Dialog(group="End-Stop"),choices(checkBox=true));
+  // Lower end-stop
+  parameter SI.Angle phi_min = -Constants.inf "Lower (minimum) end-stop angular position (frame_a)" annotation(Dialog(group="End-Stop"));
+  parameter SI.RotationalDampingConstant b_min = 0 "Lower (minimum) end-stop damping coefficient (frame_a)" annotation(Dialog(group="End-Stop"));
+  parameter SI.RotationalSpringConstant k_min = 0 "Lower (minimum) end-stop stiffness coefficient (frame_a)" annotation(Dialog(group="End-Stop"));
+  SI.Torque t_stop_min "Lower (minimum) end-stop torque (frame_a)";
+  
+  // Upper end-stop
+  parameter SI.Angle phi_max = Constants.inf "Upper (maximum) end-stop angular position (frame_b)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalDampingConstant b_max = 0 "Upper (maximum) end-stop damping coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
+  parameter SI.TranslationalSpringConstant k_max = 0 "Upper (maximum) end-stop stiffness coefficient (frame_b)" annotation(Dialog(group="End-Stop"));
+  SI.Torque t_stop_max "Upper (maximum) end-stop torque (frame_b)";
 
 protected
   outer MultiBody.World world;
@@ -120,10 +135,36 @@ equation
   end if;
 
   // d'Alemberts principle
-  tau = -frame_b.t*e;
+  tau = -frame_b.t*e + t_stop_min + t_stop_max;
 
   // Connection to internal connectors
   phi = internalAxis.phi;
+  
+  // Enable end-stop
+  if endStopEnable then
+    
+    // Upper end-stop
+    if phi > phi_max then
+      t_stop_max = -((phi - phi_max) * k_max  + w * b_max);
+      t_stop_min = 0;
+      
+    // Lower end-stop
+    elseif phi < phi_min then
+      t_stop_min = -((phi - phi_min) * k_min +  w * b_min);
+      t_stop_max = 0;
+      
+    else 
+      t_stop_min = 0;
+      t_stop_max = 0;
+      
+    end if;
+    
+  // Disable end-stop  
+  else
+    t_stop_min = 0;
+    t_stop_max = 0;
+  
+  end if;
 
   connect(fixed.flange, support) annotation (Line(
       points={{-60,80},{-60,100}}));

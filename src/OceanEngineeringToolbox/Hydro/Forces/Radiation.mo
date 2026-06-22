@@ -9,20 +9,19 @@ model Radiation
   import Modelica.Mechanics.MultiBody.Sensors;
   
   // Extending and inheriting from the OET
-  import OET;
   extends DataImport.InputRecords.FilePath;
-  extends DataImport.InputRecords.BodyIndex;
-
+  //extends DataImport.InputRecords.BodyIndex;
+  
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
   
-  Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Types.ResolveInFrameA.world) annotation(
+  Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Types.ResolveInFrameA.world) annotation(HideResult = true,
     HideResult = true,
     Placement(transformation(origin = {1, 53}, extent = {{-15, -15}, {15, 15}}, rotation = -0)));
 
-      SubForces.RadiationForces.RadiationForceNoB2B radiationForceNoB2B(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+  SubForces.RadiationForces.RadiationForceNoB2B radiationForceNoB2B(file = file) annotation(
     Placement(transformation(origin = {0, -20}, extent = {{-18, -18}, {18, 18}})));
 
 equation

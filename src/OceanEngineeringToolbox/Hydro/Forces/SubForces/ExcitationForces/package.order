@@ -1,2 +1,3 @@
-ExcitationForceRegularWave
-ExcitationForceIrregularWave
+ExcitationForce
+MeanDriftForce
+ExcitationFunctions

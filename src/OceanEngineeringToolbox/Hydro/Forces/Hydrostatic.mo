@@ -6,6 +6,7 @@ model Hydrostatic
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Mechanics.MultiBody.Types;
   import Modelica.Mechanics.MultiBody.Sensors;
+  import Modelica.Units.SI;
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
@@ -14,11 +15,14 @@ model Hydrostatic
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}}))); 
   
-  SubForces.HydrostaticForces.HydrostaticForce hydrostaticForce(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+  parameter SI.Mass M[1, 1] annotation(
+    Dialog(group = "Mass"));
+  
+  SubForces.HydrostaticForces.HydrostaticForce hydrostaticForce(file = file, bodyIndex = bodyIndex) annotation(
     Placement(transformation(origin = {1, 29}, extent = {{-13, -13}, {13, 13}})));
-  SubForces.HydrostaticForces.BuoyancyForce buoyancyForce(filePath = filePath, hydroCoeffFile = hydroCoeffFile, bodyIndex = bodyIndex) annotation(
+  SubForces.HydrostaticForces.BuoyancyForce buoyancyForce(file = file, bodyIndex = bodyIndex, M = M) annotation(
     Placement(transformation(origin = {2, -32}, extent = {{-14, -14}, {14, 14}})));
-  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Types.ResolveInFrameA.world)  annotation(
+  Sensors.AbsoluteSensor absoluteSensor(get_r = true, get_angles = true, resolveInFrame = Types.ResolveInFrameA.world)  annotation(HideResult = true,
     Placement(transformation(origin = {4, 80}, extent = {{-12, -12}, {12, 12}})));
 equation
   connect(absoluteSensor.frame_a, frame_a) annotation(
