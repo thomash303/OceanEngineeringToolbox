@@ -1,6 +1,7 @@
 within OceanEngineeringToolbox.Multibody.Frame;
 
-partial model PartialThreeFrames_Bottom "Base model for components providing two frame connectors + outer world + assert to guarantee that the component is connected"
+partial model PartialThreeFrames_Bottom
+ "Base model for components providing two frame connectors + outer world + assert to guarantee that the component is connected"
   import Modelica.Mechanics.MultiBody.{Interfaces,World};
   Interfaces.Frame_a frame_a "Coordinate system a fixed to the component with one cut-force and cut-torque" annotation(
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
