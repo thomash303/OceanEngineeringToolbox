@@ -32,7 +32,7 @@ Publications contributing to the development of the OET include:
 
 Publications citing the OET include:
 1. T. Hogan and K. Bubbar, "[Ocean Wave Energy Converter Mid-Fidelity Numerical Simulation Tools: A Review](https://www.researchgate.net/publication/395468564_Ocean_Wave_Energy_Converter_Mid-Fidelity_Numerical_Simulation_Tools_A_Review)," in *Proceedings of the 16th European Wave and Tidal Energy Conference*, Madeira, Portugal, 2025.
-2. L. Friedl, "[Design and Simulation of a Three-Body Self Reacting Point Absorber Wave Energy Converter Using Inertial Control](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://dspace.library.uvic.ca/server/api/core/bitstreams/82137183-b44b-4041-bd2d-9ecca10379c5/content)," M.A.Sc. thesis, University of Victoria, Victoria, BC, Canada, 2026.
+2. L. Friedl, "[Design and Simulation of a Three-Body Self Reacting Point Absorber Wave Energy Converter Using Inertial Control](https://dspace.library.uvic.ca/bitstreams/82137183-b44b-4041-bd2d-9ecca10379c5/download)," M.A.Sc. thesis, University of Victoria, Victoria, BC, Canada, 2026.
 
 #### Acknowledgements
 This work is independently developed but draws inspiration from NREL and Sandia National Laboratories’ open-source wave energy converter simulation tool, WEC-Sim, as well as preliminary work at NTNU, to illustrate that an Ocean Engineering library in Modelica is a feasible concept.
