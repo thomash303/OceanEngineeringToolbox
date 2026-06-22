@@ -24,6 +24,7 @@ model HydrostaticForce
     HideResult = true,
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
 
+
 protected
   Real CoG[6] = cat(1, vector(cg), zeros(3));
 

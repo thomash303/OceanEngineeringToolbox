@@ -10,7 +10,8 @@ model Radiation
   
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
-
+  //extends DataImport.InputRecords.BodyIndex;
+  
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
     HideResult = true,

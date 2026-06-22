@@ -7,7 +7,7 @@ function waveElevation
   import Modelica.Units.SI;
   
   // Inputs
-  input SI.Height A = 0 "Wave amplitude";
+  //input SI.Height A = 0 "Wave amplitude";
   input SI.Height zeta[waveHeadingSpreadBins,n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave amplitude component";
   input SI.Angle phi[waveHeadingSpreadBins, n_omega] = fill(0, waveHeadingSpreadBins, n_omega) "Wave components phase shift";
   input SI.Angle omegaTime[n_omega] "Frequency components selected for simulation multiplied by the current time";

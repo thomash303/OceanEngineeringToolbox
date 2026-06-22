@@ -8,7 +8,7 @@ model BuoyancyForce
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Blocks.Interfaces;
   import Modelica.Constants.g_n;
-  
+    
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
@@ -22,14 +22,16 @@ model BuoyancyForce
     HideResult = true,
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));  
 
-protected
+//protected
   parameter SI.Force f_gravity[3]= {0, 0, g_n *M[1,1]} "Gravitational force";
   parameter SI.Force f_buoyancy[3] = {0,0, vol[1,1]*rho*g_n} "BuoyancyForce";
   parameter Real offset[3] = vector(cb - cg) "Offset between centres of bouyancy and gravity";
   
 equation
 
-  F = cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
+  //F = cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
+  
+  F =  cat(1, f_gravity - f_buoyancy, cross(f_buoyancy, offset));
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "Buoyancy Force")}));
 

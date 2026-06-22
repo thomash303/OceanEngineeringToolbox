@@ -26,6 +26,7 @@ model AddedMassForceB2B
     HideResult = true,
     Placement(transformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270), iconTransformation(origin = {20, 115}, extent = {{-15, -15}, {15, 15}}, rotation = 270)));
   Real aCoupledEx[nDoF-bodyDoF] "Reduced acceleration vector (with accelerations of all bodies except itself)";
+  
 protected
   
   Real acceleration[6] = cat(1, a_abs, alpha_abs) "Combined velocity vector";

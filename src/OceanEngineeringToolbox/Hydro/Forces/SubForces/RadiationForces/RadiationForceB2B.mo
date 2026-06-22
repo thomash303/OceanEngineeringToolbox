@@ -31,7 +31,6 @@ equation
   der(x) = A * x + B * radiationB2BCoupler.vCoupled;
   F = C * x + D * radiationB2BCoupler.vCoupled;
   
-  
   annotation(
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}), graphics = {Rectangle(extent = {{-100, -100}, {100, 100}}), Text(extent = {{-100, -100}, {100, 100}}, textString = "B2B Radiation Force")}),
     Diagram(coordinateSystem(extent = {{-120, 140}, {40, -20}})));

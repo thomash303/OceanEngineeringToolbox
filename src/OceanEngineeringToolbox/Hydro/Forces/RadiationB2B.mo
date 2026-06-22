@@ -10,6 +10,7 @@ model RadiationB2B
   
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath; 
+  //extends DataImport.InputRecords.BodyIndex;
   
   // Frame_a connector
   Frame_a frame_a "Coordinate system fixed at body" annotation(
@@ -17,9 +18,9 @@ model RadiationB2B
     Placement(transformation(extent = {{-116, -16}, {-84, 16}})));
   
   Sensors.AbsoluteSensor absoluteSensor(get_v = true, get_w = true, resolveInFrame = Types.ResolveInFrameA.world, get_a = true, get_z = true) annotation(Placement(transformation(origin = {-2, 72}, extent = {{-10, -10}, {10, 10}})));
-  SubForces.RadiationForces.RadiationForceB2B radiationForceB2B annotation(
+  SubForces.RadiationForces.RadiationForceB2B radiationForceB2B(file = file) annotation(
     Placement(transformation(origin = {-38, 20}, extent = {{-18, -18}, {18, 18}})));
-  SubForces.RadiationForces.AddedMassForceB2B addedMassForceB2B annotation(
+  SubForces.RadiationForces.AddedMassForceB2B addedMassForceB2B(file = file) annotation(
     Placement(transformation(origin = {40, 20}, extent = {{-18, -18}, {18, 18}})));
 equation
   connect(frame_a, absoluteSensor.frame_a) annotation(

@@ -8,6 +8,7 @@ model IrregularWave
   import Modelica.Constants.pi;
   
   // Extending and inheriting from the OET
+   outer DataImport.FileDirectory fileDirectory;
   extends DataImport.InputRecords.FilePath;
   import OceanEngineeringToolbox.Environmental.Wave.WaveTypes.WaveSpectrumType;
   extends BaseWave(n_omega = 100);
@@ -15,9 +16,17 @@ model IrregularWave
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.RandomDiscritization.randomGenerator;
   import OceanEngineeringToolbox.Environmental.Wave.WaveFunctions.SpectrumDiscritization.BaseSpectrumDiscritization;
   
-  // Wave parameters
-  parameter WaveSpectrumType waveSpectrum = WaveTypes.WaveSpectrumType.PiersonMoskowitz "Wave Spectrum Type" annotation(
-    Dialog(group = "Wave Parameters"));
+  
+  parameter String waveSpectrum = "Bretschneider" 
+    "Wave Spectrum Type" 
+    annotation(
+      Dialog(group = "Wave Parameters"),
+      choices(
+        choice = "PiersonMoskowitz" "Pierson-Moskowitz",
+        choice = "Bretschneider"    "Bretschneider",
+        choice = "JONSWAP"          "JONSWAP",
+        choice = "OchiHubble"       "Ochi-Hubble"
+      ));
     
   // Multidirectional wave Parameters
   parameter Boolean multidirectionalEnable = false "Enable multidirectional wave" annotation(choices(checkBox = true), Dialog(group = "Multidirectional Wave Parameters"));
@@ -28,24 +37,24 @@ model IrregularWave
   // Wave spectrum parameters
   // Pierson-Moskowitz parameters
   parameter Real alphaPM(min=0) = 0.0081 "Energy scale (Phillips constant)" annotation(
-    Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.PiersonMoskowitz));
+    Dialog(group = "Pierson-Moskowitz Parameters", enable = waveSpectrum == "PiersonMoskowitz"));
     
   // JONSWAP parameters
   parameter Real gamma(min=0) = 3.3 "Peak enhancement factor for JONSWAP spectrum. The mean typical value is 3.3" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
   parameter Real sigmaA(min=0) = 0.07 "Lower spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
   parameter Real sigmaB(min=0) = 0.09 "Upper spectral bound for JONSWAP" annotation(
-    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.JONSWAP));
+    Dialog(group = "JONSWAP Parameters", enable = waveSpectrum == "JONSWAP"));
 
 // Ochi-Hubble parameters (including sample values from original paper)
   // Default parameters computed from most likely sea state
   parameter SI.Height HsOH[componentSpectra] = {0.84*Hs,0.54*Hs} "Significant wave heights" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble)); 
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble")); 
   parameter SI.AngularFrequency omegaPeakOH[componentSpectra] = {0.7*exp(-0.046*Hs),1.15*exp(-0.039*Hs)} "Peak spectral frequencies" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble)); 
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble")); 
   parameter Real lambdaOH[componentSpectra] = {3,1.54*exp(-0.062*Hs)} "Peak shape parameter" annotation(
-    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == WaveTypes.WaveSpectrumType.OchiHubble));
+    Dialog(group = "Ochi-Hubble Parameters", enable = waveSpectrum == "OchiHubble"));
   parameter Integer componentSpectra(min=0) = 2 annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
   
   // Random phase selection
@@ -59,7 +68,7 @@ model IrregularWave
   parameter Integer globalSeedFrequency = 30020 "Global random seed for frequency selection" annotation(Dialog(enable = false, tab = "Misc"));
 
   // Random frequency discritization model
-  replaceable randomGenerator frequencySelector(file = file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = file) "Equal-energy frequency selection")));
+  replaceable randomGenerator frequencySelector(file = fileDirectory.file) constrainedby BaseSpectrumDiscritization "Frequency discritization method" annotation(Dialog(group = "Wave Parameters"), choices(choice(redeclare randomGenerator frequencySelector(file = fileDirectory.file) "Random frequency selection"), choice(redeclare equalEnergyGenerator frequencySelector(file = file) "Equal-energy frequency selection")));
  
   // Output variables for excitation, Morison, and wave gauge
   parameter SI.Height zeta[waveHeadingSpreadBins,n_omega] = frequencySelector.zeta "Wave amplitude component" annotation(HideResult = true, Dialog(enable = false, tab = "Misc"));
@@ -68,6 +77,12 @@ model IrregularWave
   parameter SI.WaveNumber k[n_omega] = frequencySelector.k "Wave number component" annotation(Dialog(enable = false, tab = "Misc"));
   parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] = frequencySelector.spreadBinCentres "Bin centres" annotation(Dialog(enable = false, tab = "Misc"));
   parameter Real D[waveHeadingSpreadBins] = frequencySelector.D "Directional spreading weights" annotation(Dialog(enable = false, tab = "Misc"));
+  
+  // Wave elevation
+  SI.Position SSE = frequencySelector.SSE "Sea surface elevation";
+  output WaveUnits.powerPerUnitLength P = frequencySelector.P "Wave time-average power per unit wave crest length";
+  //output WaveUnits.spectrumEnergyDensity S[n_omega] = frequencySelector.S "Wave spectrum";
+  //output SI.AngularFrequency omegaO[n_omega] = frequencySelector.omega;
 
 equation
   // Assert

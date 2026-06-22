@@ -10,17 +10,17 @@ working directory.
 
 projectRoot = fileparts(fileparts(fileparts(pwd)));
 srcPath = fullfile(projectRoot, 'src', 'Processing', 'MATLAB',...
-    'WECSimComparison');
+    'Postprocess');
 addpath(srcPath);
 
 % Entering RM3 specific data
 filePath = {'OceanEngineeringToolbox.Tutorial'};
 deviceName = {'RM3'};
 bodyName = {'float', 'spar'};
-waveName = {'environment_SSE'}; % Do not edit
+waveName = {}; % Do not edit
 mooringName = {};
-ptoName = {'linearTranslationalPTO'};
+ptoName = {};
 currentPath = {pwd};
 
-[body, wave, mooring, pto] = postprocess_WS(filePath, deviceName, ...
-    bodyName, waveName, mooringName, ptoName);
+[body] = postprocess(filePath, deviceName, ...
+    bodyName);

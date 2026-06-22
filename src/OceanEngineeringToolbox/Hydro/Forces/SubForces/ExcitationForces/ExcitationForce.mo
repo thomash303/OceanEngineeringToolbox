@@ -1,13 +1,13 @@
 within OceanEngineeringToolbox.Hydro.Forces.SubForces.ExcitationForces;
 
 model ExcitationForce
-  "Model representing the excitation force arising from an irregular wave"
+  "Model representing the excitation force"
   // Importing from the MSL
   import Modelica.Units.SI;
   import Modelica.Mechanics.MultiBody.Interfaces.Frame_a;
   import Modelica.Constants.{pi, g_n};
   import Modelica.Math.Vectors.find;
-
+  
   // Extending and inheriting from the OET
   extends DataImport.InputRecords.FilePath;
   extends DataImport.InputRecords.BodyIndex;
@@ -28,7 +28,7 @@ model ExcitationForce
   parameter SI.Angle waveHeading "Wave heading";
   parameter Integer waveHeadingSpreadBins = 2 "Number of discrete headings centered around the mean heading to consider in the spectrum spread";  
  parameter SI.Angle spreadBinCentres[waveHeadingSpreadBins] "Bin centres";
-
+ 
 protected
   
   parameter Real ExcCoeffRe[waveHeadingSpreadBins, bodyDoF, n_omega](each start=0, each fixed=false) "Real component of excitation coefficient for frequency components" annotation(HideResult = true);
