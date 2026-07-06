@@ -24,7 +24,7 @@ model linearMooring "Model representing a linear mooring (coefficients input in 
   parameter SI.Force pre_Tension[6] = {0, 0, 0, 0, 0, 0} "Pretension force" annotation(
     HideResult = true,
     Dialog(group = "Mooring Parameters"));
-  SI.Position s_ref[6] = {0, 0, 0, 0, 0, 0} "Reference or equilibirum position (Unstretched spring length/angle)" annotation(
+  parameter SI.Position s_ref[6] = {0, 0, 0, 0, 0, 0} "Reference or equilibirum position (Unstretched spring length/angle)" annotation(
     HideResult = true,
     Dialog(group = "Mooring Parameters"));
   Forces.linearMooringForce linearMooringForce(Km = Km, Cm = Cm, pre_Tension = pre_Tension, s_ref = s_ref) if enableMooringForce annotation(

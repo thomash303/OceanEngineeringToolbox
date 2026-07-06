@@ -28,7 +28,7 @@ model linearMooringForce
 
   // Force/torque vector
   Real F[6] = cat(1, f_element, t_element) "Combined force and torque vector";
-  Real s_ref[6] = cat(1, s_refTrans, s_refRot) "Reference or equilibirum position (Unstretched spring length/angle)";
+  parameter Real s_ref[6] = cat(1, s_refTrans, s_refRot) "Reference or equilibirum position (Unstretched spring length/angle)";
   
   
   parameter SI.TranslationalSpringConstant Km[6,6] = zeros(6,6) "Mooring stiffness vector" annotation(HideResult = true, Dialog(group = "Mooring"));
@@ -42,8 +42,8 @@ protected
   SI.Force f_element_loc[3] = resolve2(frame_a.R, f_element);
   SI.Torque t_element_loc[3] = resolve2(frame_a.R, t_element);
 
-  parameter SI.Position s_refTrans[3] "Reference position";
-  parameter SI.Angle s_refRot[3] "Reference angle";
+  parameter SI.Position s_refTrans[3] = {0,0,0} "Reference position";
+  parameter SI.Angle s_refRot[3] = {0,0,0} "Reference angle";
   Real position[6] = cat(1, u_abs, theta_abs) "Combined position vector";  
   Real displacement[6] = position - s_ref "Combined displacement vector";
   Real velocity[6] = cat(1, v_abs, omega_abs) "Combined velocity vector";
