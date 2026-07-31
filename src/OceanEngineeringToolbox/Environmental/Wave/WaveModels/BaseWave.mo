@@ -34,9 +34,15 @@ partial model BaseWave
   
 equation
   // Ramp up the excitation force during the initial phase
-  if time < Trmp then
+  /*if time < Trmp then
     ramp = 0.5*(1 + cos(pi + (pi*time/Trmp)));
   else
     ramp = 1;
   end if; 
+  */
+  // Ramp up the excitation force during the initial phase (this form avoids triggering a state event)
+  ramp = smooth(1, if noEvent(time < Trmp) then
+                    0.5*(1 + cos(pi + (pi*time/Trmp)))
+                  else
+                    1);
 end BaseWave;

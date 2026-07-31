@@ -12,6 +12,6 @@ addpath(srcPath);
 
 currentPath = pwd;
 filePath = fullfile('hydroData', 'oswec.h5');
-deviceName = 'OSWEC';
+deviceName = 'OSWEC_1dir';
 
 [hydro] = preprocess(currentPath, filePath, deviceName);
