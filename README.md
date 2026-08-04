@@ -1,15 +1,7 @@
 ## Ocean Engineering Toolbox (OET) - Modelica Library
-The Modelica™ Ocean Engineering Toolbox (OET) is an open-source toolbox developed by Sys-MoDEL™ at the University of New Brunswick, designed specifically for the time-domain modelling and simulation of wave-to-wire marine renewable energy systems.  
+The Modelica™ Ocean Engineering Toolbox (OET) is an open-source toolbox developed by Sys-MoDEL™ at the University of New Brunswick, designed specifically for the time-domain wave-to-wire modelling and simulation of wave energy converters.  
 
-Latest release version: [OET v0.3 (2025)](src/OceanEngineeringToolbox/package.mo).
-
-#### Overview
-
-
-Repository directory:
-
-- `OET.mo` - OET library source code (Modelica)
-- `Processor.m` - Pre- and post-processing script (Matlab)
+Latest release version: OET v1.0.0 (2026)
 
 #### Development Team
 The OET is a research product from the Sys-MoDEL research group at the University of New Brunswick (Fredericton), Canada. 
